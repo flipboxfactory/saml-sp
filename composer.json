@@ -1,0 +1,51 @@
+{
+  "name": "flipboxfactory/saml-sp",
+  "description": "SAML SSO Service Provider",
+  "version": "1.0.0-rc.1",
+  "type": "craft-plugin",
+  "keywords": [
+    "cms",
+    "craftcms",
+    "saml",
+    "sso",
+    "yii2"
+  ],
+  "require": {
+    "craftcms/cms": "~3.0.0-RC1",
+    "lightsaml/lightsaml": "1.3.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.0",
+    "squizlabs/php_codesniffer": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "flipbox\\saml\\sp\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "flipbox\\saml\\sp\\tests\\": "tests/src/"
+    }
+  },
+  "support": {
+    "email": "support@flipboxfactory.com",
+    "issues": "https://github.com/flipboxfactory/saml-sp/issues?state=open",
+    "source": "https://github.com/flipboxfactory/saml-sp",
+    "docs":   "https://github.com/flipboxfactory/saml-sp",
+    "rss":    "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
+  },
+  "extra": {
+    "name": "SAML SSO Service Provider",
+    "handle": "saml-sp",
+    "class": "flipbox\\saml\\sp\\Saml",
+    "developer": "Flipbox Digital",
+    "developerUrl": "https://www.flipboxdigital.com",
+    "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/saml-sp/master/CHANGELOG.md",
+    "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip",
+    "components": {
+      "metadata":"flipbox\\saml\\sp\\services\\Metadata"
+    }
+
+  }
+}
