@@ -26,6 +26,7 @@ class LoginController extends Controller
 
     protected $allowAnonymous = [
         'actionIndex',
+        'actionRequest',
     ];
 
     public $enableCsrfValidation = false;
