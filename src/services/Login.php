@@ -239,6 +239,9 @@ class Login extends Component
     }
 
     /**
+     * DYI method due to an issue with craft\services\UserGroups::getGroupByHandle
+     * https://github.com/craftcms/cms/issues/2317
+     *
      * @param $handle
      * @return UserGroup|null
      */
