@@ -10,7 +10,6 @@ namespace flipbox\saml\sp\services;
 
 
 use craft\base\Component;
-use Craft;
 use flipbox\ember\models\Model;
 use flipbox\ember\services\traits\AccessorByIdOrString;
 use flipbox\ember\services\traits\ModelDelete;
@@ -56,20 +55,32 @@ class Provider extends Component
 
     public function modelToRecord(Model $model, bool $mirrorScenario = true): ActiveRecord
     {
+//        if (!$record = $this->findRecordByObject($model)) {
+//            $record = $this->createRecord();
+//        }
+//
+//        if ($mirrorScenario === true) {
+//            $record->setScenario($model->getScenario());
+//        }
+//
+//        // Populate the record attributes
+//        $this->transferToRecord($model, $record);
+//        return $record;
 
         /** @var $model ProviderModel */
         return new ProviderRecord([
+            'id' => $model->getId(),
             'isNewRecord' => $this->isNew($model),
             'entityId' => $model->getEntityId(),
             'metadata' => SerializeHelper::toXml($model->getMetadata()),
-            'enabled'  => $model->enabled,
-            'default'  => $model->default,
+            'enabled'  => (bool)$model->enabled,
+            'default'  => (bool)$model->default,
         ]);
     }
 
     public function isNew(Model $model): bool
     {
-        return ! $model->id;//$this->getRecordByModel($model) === null;
+        return ! $model->id;
     }
 
     public function findDefaultProvider()

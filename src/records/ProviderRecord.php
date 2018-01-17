@@ -9,10 +9,18 @@
 namespace flipbox\saml\sp\records;
 
 
-use craft\db\ActiveRecord;
+use flipbox\ember\records\ActiveRecord;
+use flipbox\ember\records\traits\StateAttribute;
 
 class ProviderRecord extends ActiveRecord
 {
+
+    use StateAttribute;
+
+    /**
+     * The table alias
+     */
+    const TABLE_ALIAS = 'saml_sp_providers';
 
     /**
      * @inheritdoc

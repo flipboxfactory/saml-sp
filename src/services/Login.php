@@ -11,6 +11,7 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use craft\elements\User;
+use craft\helpers\StringHelper;
 use craft\models\UserGroup;
 use flipbox\saml\sp\events\RegisterAttributesTransformer;
 use flipbox\saml\sp\exceptions\InvalidMessage;
@@ -227,6 +228,7 @@ class Login extends Component
                  *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_member</saml2:AttributeValue>
                  * </saml2:Attribute>
                  */
+
                 foreach ($attribute->getAllAttributeValues() as $value) {
                     $groups[] = $this->findOrCreateUserGroup($value)->id;
                 }

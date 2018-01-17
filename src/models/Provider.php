@@ -10,12 +10,17 @@ namespace flipbox\saml\sp\models;
 
 
 use craft\base\Model;
+use flipbox\ember\helpers\ModelHelper;
 use flipbox\ember\models\ModelWithId;
+use flipbox\ember\traits\StateAttribute;
 use LightSaml\Model\Context\DeserializationContext;
 use LightSaml\Model\Metadata\EntityDescriptor;
 
 class Provider extends ModelWithId
 {
+
+    use StateAttribute;
+
     public $id;
     /**
      * @var $enabled bool
@@ -36,6 +41,23 @@ class Provider extends ModelWithId
      * @var $metadata EntityDescriptor
      */
     protected $metadata;
+
+    public function rules()
+    {
+        return array_merge(
+            parent::rules(),
+            [
+                [
+                    'entityId',
+                    'metadata'
+                ],
+                'safe',
+                'on' => [
+                    ModelHelper::SCENARIO_DEFAULT
+                ]
+            ]
+        );
+    }
 
     public function attributes()
     {
@@ -79,11 +101,12 @@ class Provider extends ModelWithId
     public function setMetadata($metadata)
     {
         if (is_string($metadata)) {
-            $this->metadata = EntityDescriptor::fromXML($metadata, new DeserializationContext());
+            $metadata = EntityDescriptor::fromXML($metadata, new DeserializationContext());
             $this->setEntityId(
-                $this->metadata->getEntityID()
+                $metadata->getEntityID()
             );
         }
+        $this->metadata = $metadata;
 
         return $this;
     }

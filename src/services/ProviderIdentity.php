@@ -65,7 +65,7 @@ class ProviderIdentity extends Component
             'providerIdentity' => $model->providerIdentity,
             'providerId'       => $model->providerId,
             'userId'           => $model->getUserId(),
-            'enabled'          => $model->enabled ?: true,
+            'enabled'          => (bool)($model->enabled ?: true),
             'lastLoginDate'    => $model->lastLoginDate,
         ]);
     }
