@@ -70,6 +70,10 @@ class Settings extends Model
      * @var bool
      */
     public $enableUser = true;
+    public $syncGroups = true;
+    public $groupAttributeNames = [
+        'groups',
+    ];
 
     /**
      * Key Value store that maps the Response name (the array key) with

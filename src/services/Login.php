@@ -11,18 +11,21 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use craft\elements\User;
+use craft\models\UserGroup;
 use flipbox\saml\sp\events\RegisterAttributesTransformer;
 use flipbox\saml\sp\exceptions\InvalidMessage;
+use flipbox\saml\sp\helpers\SerializeHelper;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\traits\Security;
 use flipbox\saml\sp\transformers\AbstractResponseToUser;
 use Flipbox\Transform\Factory;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Assertion\Assertion;
+use LightSaml\Model\Assertion\Attribute;
 use LightSaml\Model\Protocol\Response as SamlResponse;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use yii\base\UserException;
-
+use craft\db\Query;
 class Login extends Component
 {
     use Security;
@@ -152,10 +155,19 @@ class Login extends Component
             ]);
         }
 
+        /**
+         * Run event to fetch registered transformers.
+         */
         $event = new RegisterAttributesTransformer();
+
         $this->trigger(static::EVENT_ATTRIBUTE_TRANSFORMER, $event);
+
         /** @var AbstractResponseToUser $transformer */
         $transformer = $event->getTransformer($provider->getEntityId());
+
+        /**
+         * The transformer takes precedent due to it being more flexible and elegant
+         */
         if ($transformer instanceof AbstractResponseToUser) {
             Factory::item(new $transformer($user), $response);
         } else {
@@ -166,7 +178,19 @@ class Login extends Component
             throw new UserException("User save failed.");
         }
 
-        if(! $identity) {
+        /**
+         * Sync groups depending on the plugin setting.
+         */
+        if (Saml::getInstance()->getSettings()->syncGroups) {
+            $this->syncUserGroupsByAssertion($user, $assertion);
+        }
+
+        /**
+         * Create the new identity if one wasn't found above.
+         * Since we now have the user id, and we might not have above,
+         * do this last.
+         */
+        if (! $identity) {
             $identity = new \flipbox\saml\sp\models\ProviderIdentity([
                 'providerId'       => $provider->id,
                 'providerIdentity' => $username,
@@ -176,6 +200,82 @@ class Login extends Component
         }
 
         return $identity;
+    }
+
+    /**
+     * @param User $user
+     * @param Assertion $assertion
+     * @return bool
+     */
+    protected function syncUserGroupsByAssertion(User $user, Assertion $assertion)
+    {
+        $groupNames = Saml::getInstance()->getSettings()->groupAttributeNames;
+        $groups = [];
+        foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
+            /**
+             * Is there a group name match?
+             * Match the attribute name to the specified name in the plugin settings
+             */
+            if (in_array($attribute->getName(), $groupNames)) {
+                /**
+                 * Loop thru all of the attributes values because they could have multiple values.
+                 * Example XML:
+                 * <saml2:Attribute Name="groups" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                 *   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_admin</saml2:AttributeValue>
+                 *   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_member</saml2:AttributeValue>
+                 * </saml2:Attribute>
+                 */
+                foreach ($attribute->getAllAttributeValues() as $value) {
+                    $groups[] = $this->findOrCreateUserGroup($value)->id;
+                }
+
+            }
+        }
+
+        return \Craft::$app->getUsers()->assignUserToGroups($user->getId(), $groups);
+
+    }
+
+    /**
+     * @param $handle
+     * @return UserGroup|null
+     */
+    protected function getGroupByHandle($handle)
+    {
+        $result = (new Query())
+            ->select([
+                'id',
+                'name',
+                'handle',
+            ])
+            ->from(['{{%usergroups}}'])
+            ->where([
+                'handle' => $handle
+            ])->one();
+        return $result ? new UserGroup($result) : null;
+    }
+
+    /**
+     * @param $groupHandle
+     * @return UserGroup
+     * @throws UserException
+     */
+    protected function findOrCreateUserGroup($groupHandle) : UserGroup
+    {
+
+        if (! $userGroup = $this->getGroupByHandle($groupHandle)) {
+            if (! \Craft::$app->getUserGroups()->saveGroup($userGroup = new UserGroup([
+                'name'   => $groupHandle,
+                'handle' => $groupHandle,
+            ]))) {
+                throw new UserException("Error saving new group {$groupHandle}");
+            }
+        }
+
+        return $userGroup;
+
     }
 
     /**
