@@ -38,6 +38,14 @@ class Metadata extends Component
     ];
 
     /**
+     * @return array
+     */
+    public function getSupportedBindings()
+    {
+        return $this->supportedBindings;
+    }
+
+    /**
      * @return EntityDescriptor
      */
     public function create()
@@ -80,7 +88,7 @@ class Metadata extends Component
      */
     public function createDescriptor($binding)
     {
-        if (!in_array($binding, $this->supportedBindings))
+        if (!in_array($binding, $this->getSupportedBindings()))
         {
            throw new InvalidMetadata(
                sprintf("Binding is not supported: %s", $binding)
@@ -90,9 +98,10 @@ class Metadata extends Component
         $spDescriptor = (new SpSsoDescriptor())
             ->setWantAssertionsSigned(Saml::getInstance()->getSettings()->signAssertions);
 
+
         $acs = new AssertionConsumerService();
         $acs->setBinding($binding)
-            ->setLocation(UrlHelper::actionUrl(static::LOGIN_LOCATION));
+            ->setLocation(static::getLoginLocation());
         $spDescriptor->addAssertionConsumerService($acs);
 
         $this->setEncrypt($spDescriptor);
@@ -101,6 +110,12 @@ class Metadata extends Component
         return $spDescriptor;
 
     }
+
+    public static function getLoginLocation()
+    {
+        return UrlHelper::actionUrl(static::LOGIN_LOCATION);
+    }
+
 
     /**
      * @param SpSsoDescriptor $spSsoDescriptor

@@ -25,8 +25,8 @@ class MetadataController extends Controller
 
         $metadata = Saml::getInstance()->getMetadata()->create();
 
-        Craft::$app->getResponse()->format = Response::FORMAT_RAW;
-        Craft::$app->getResponse()->getHeaders()->add('Content-Type', 'text/xml');
+
+        SerializeHelper::xmlContentType();
         return SerializeHelper::toXml($metadata);
     }
 

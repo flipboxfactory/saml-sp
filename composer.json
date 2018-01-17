@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML SSO Service Provider",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.3",
   "type": "craft-plugin",
   "keywords": [
     "cms",
@@ -12,7 +12,9 @@
   ],
   "require": {
     "craftcms/cms": "~3.0.0-RC1",
-    "lightsaml/lightsaml": "1.3.3"
+    "lightsaml/lightsaml": "1.3.3",
+    "flipboxfactory/craft-ember": "^1.0.0-rc.6",
+    "flipboxdigital/transform": "^1.1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.0",
@@ -37,6 +39,8 @@
   },
   "extra": {
     "name": "SAML SSO Service Provider",
+    "version":"1.0.0-rc.3",
+    "schemaVersion":"1.0.0-rc.3",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",
@@ -44,7 +48,15 @@
     "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/saml-sp/master/CHANGELOG.md",
     "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip",
     "components": {
-      "metadata":"flipbox\\saml\\sp\\services\\Metadata"
+      "authnRequest":"flipbox\\saml\\sp\\services\\AuthnRequest",
+      "entityDescriptors": "flipbox\\saml\\sp\\services\\EntityDescriptors",
+      "httpPost":"flipbox\\saml\\sp\\services\\HttpPost",
+      "httpRedirect":"flipbox\\saml\\sp\\services\\HttpRedirect",
+      "login":"flipbox\\saml\\sp\\services\\Login",
+      "metadata":"flipbox\\saml\\sp\\services\\Metadata",
+      "provider":"flipbox\\saml\\sp\\services\\Provider",
+      "providerIdentity":"flipbox\\saml\\sp\\services\\ProviderIdentity",
+      "response":"flipbox\\saml\\sp\\services\\Response"
     }
 
   }
