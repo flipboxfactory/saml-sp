@@ -6,20 +6,20 @@
  * Time: 9:48 AM
  */
 
-namespace flipbox\saml\sp\services;
+namespace flipbox\saml\sp\services\messages;
 
 
 use craft\base\Component;
 use craft\helpers\UrlHelper;
 use flipbox\saml\sp\exceptions\InvalidMetadata;
 use LightSaml\Model\Metadata\EntityDescriptor;
+use LightSaml\Model\Metadata\SingleLogoutService;
 use LightSaml\Model\Metadata\SpSsoDescriptor;
 use LightSaml\Model\Metadata\KeyDescriptor;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Metadata\AssertionConsumerService;
 use LightSaml\SamlConstants;
 use flipbox\saml\sp\Saml;
-
 
 class Metadata extends Component
 {
@@ -51,15 +51,24 @@ class Metadata extends Component
     public function create()
     {
 
-        $spRedirectDescriptor = $this->createRedirectDescriptor();
-        $spPostDescriptor = $this->createPostDescriptor();
+        $spPostLogoutRequest = (new SingleLogoutService())
+            ->setLocation('http://localhost/request')
+            ->setResponseLocation('http://localhost/response')
+            ->setBinding(SamlConstants::BINDING_SAML2_HTTP_POST);
+        $spRedirectLogoutRequest = (new SingleLogoutService())
+            ->setLocation('http://localhost/request')
+            ->setResponseLocation('http://localhost/response')
+            ->setBinding(SamlConstants::BINDING_SAML2_HTTP_REDIRECT);
+        $spRedirectDescriptor = $this->createRedirectDescriptor()
+            ->addSingleLogoutService($spRedirectLogoutRequest);
+        $spPostDescriptor = $this->createPostDescriptor()
+            ->addSingleLogoutService($spPostLogoutRequest);
 
         $entityDescriptor = new EntityDescriptor(
             Saml::getInstance()->getSettings()->getEntityId(),
             [
                 $spRedirectDescriptor,
                 $spPostDescriptor,
-
             ]);
 
         return $entityDescriptor;
@@ -88,11 +97,10 @@ class Metadata extends Component
      */
     public function createDescriptor($binding)
     {
-        if (!in_array($binding, $this->getSupportedBindings()))
-        {
-           throw new InvalidMetadata(
-               sprintf("Binding is not supported: %s", $binding)
-           );
+        if (! in_array($binding, $this->getSupportedBindings())) {
+            throw new InvalidMetadata(
+                sprintf("Binding is not supported: %s", $binding)
+            );
         }
 
         $spDescriptor = (new SpSsoDescriptor())

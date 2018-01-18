@@ -6,7 +6,7 @@
  * Time: 8:30 PM
  */
 
-namespace flipbox\saml\sp\services;
+namespace flipbox\saml\sp\services\messages;
 
 
 use craft\base\Component;

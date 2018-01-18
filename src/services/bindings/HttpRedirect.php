@@ -6,23 +6,39 @@
  * Time: 9:44 PM
  */
 
-namespace flipbox\saml\sp\services;
+namespace flipbox\saml\sp\services\bindings;
 
 
-use craft\base\Component;
 use craft\web\Request;
+use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\traits\Security;
-use LightSaml\Context\Profile\MessageContext;
 use LightSaml\Error\LightSamlBindingException;
 use LightSaml\Model\Context\DeserializationContext;
 use LightSaml\Model\Protocol\SamlMessage;
 use LightSaml\Model\XmlDSig\SignatureStringReader;
-use LightSaml\Model\XmlDSig\SignatureWriter;
 use LightSaml\SamlConstants;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
+use LightSaml\Credential\X509Certificate;
 
 class HttpRedirect extends AbstractHttpBinding
 {
     use Security;
+
+    public function getKey(): XMLSecurityKey
+    {
+        return \LightSaml\Credential\KeyHelper::createPrivateKey(
+            Saml::getInstance()->getSettings()->keyPath,
+            '',
+            true
+        );
+    }
+
+    public function getCertificate(): X509Certificate
+    {
+        return X509Certificate::fromFile(
+            Saml::getInstance()->getSettings()->certPath
+        );
+    }
 
     /**
      * @param Request $request

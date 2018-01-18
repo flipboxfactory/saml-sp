@@ -65,6 +65,7 @@ class Install extends Migration
             'providerId' => $this->integer()->notNull(),
             'userId' => $this->integer()->notNull(),
             'providerIdentity' => $this->string()->notNull(),
+            'sessionId' => $this->string()->null(),
             'enabled' => $this->boolean()->defaultValue(true)->notNull(),
             'lastLoginDate' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),

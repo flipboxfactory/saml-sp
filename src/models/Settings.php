@@ -62,15 +62,25 @@ class Settings extends Model
      * @var bool
      */
     public $mergeLocalUsers = true;
+
     /**
      * @var bool
      */
     public $createUser = true;
+
     /**
      * @var bool
      */
     public $enableUser = true;
+
+    /**
+     * @var bool
+     */
     public $syncGroups = true;
+
+    /**
+     * @var array
+     */
     public $groupAttributeNames = [
         'groups',
     ];

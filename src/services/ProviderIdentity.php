@@ -12,6 +12,7 @@ namespace flipbox\saml\sp\services;
 use Craft;
 use craft\base\Component;
 use craft\elements\User;
+use craft\helpers\ArrayHelper;
 use flipbox\ember\models\Model;
 use flipbox\ember\records\ActiveRecord;
 use flipbox\ember\services\traits\AccessorByIdOrString;
@@ -19,6 +20,8 @@ use flipbox\ember\services\traits\ModelDelete;
 use flipbox\ember\services\traits\ModelSave;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\models\ProviderIdentity as ProviderIdentityModel;
+use yii\base\BaseObject;
+use yii\db\ActiveRecord as Record;
 
 /**
  * Class ProviderIdentity
@@ -26,7 +29,9 @@ use flipbox\saml\sp\models\ProviderIdentity as ProviderIdentityModel;
  */
 class ProviderIdentity extends Component
 {
-    use AccessorByIdOrString, ModelSave, ModelDelete;
+    use AccessorByIdOrString, ModelSave, ModelDelete {
+        AccessorByIdOrString::transferToRecord as accessorTransferToRecord;
+    }
 
     const STRING_HANDLE = 'providerIdentity';
 
@@ -55,19 +60,39 @@ class ProviderIdentity extends Component
 
     }
 
+    public function transferToRecord(BaseObject $object, Record $record)
+    {
+        /** @var ProviderIdentityModel $object */
+        /** @var ProviderIdentityRecord $record */
+        $this->accessorTransferToRecord($object, $record);
+        $record->lastLoginDate = $object->lastLoginDate->format(\DateTime::ISO8601);
+    }
+
     public function modelToRecord(Model $model, bool $mirrorScenario = true): ActiveRecord
     {
 
+        if (!$record = $this->findRecordByObject($model)) {
+            $record = $this->createRecord();
+        }
+
+        if ($mirrorScenario === true) {
+            $record->setScenario($model->getScenario());
+        }
+
+        // Populate the record attributes
+        $this->transferToRecord($model, $record);
+        return $record;
         /** @var $model ProviderIdentityModel */
-        return new ProviderIdentityRecord([
-            'isNewRecord'      => $this->isNew($model),
-            'id'               => $model->id,
-            'providerIdentity' => $model->providerIdentity,
-            'providerId'       => $model->providerId,
-            'userId'           => $model->getUserId(),
-            'enabled'          => (bool)($model->enabled ?: true),
-            'lastLoginDate'    => $model->lastLoginDate,
-        ]);
+//        return new ProviderIdentityRecord([
+//            'isNewRecord'      => $this->isNew($model),
+//            'id'               => $model->id,
+//            'providerIdentity' => $model->providerIdentity,
+//            'providerId'       => $model->providerId,
+//            'userId'           => $model->getUserId(),
+//            'sessionId'        => $model->sessionId,
+//            'enabled'          => (bool)($model->enabled ?: true),
+//            'lastLoginDate'    => $model->lastLoginDate,
+//        ]);
     }
 
     public function isNew(Model $model): bool

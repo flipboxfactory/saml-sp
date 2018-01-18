@@ -6,7 +6,7 @@
  * Time: 11:23 AM
  */
 
-namespace flipbox\saml\sp\services;
+namespace flipbox\saml\sp\services\messages;
 
 
 use craft\base\Component;
@@ -16,16 +16,8 @@ use flipbox\saml\sp\services\traits\Security;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Helper;
 use LightSaml\Model\Assertion\Issuer;
-use LightSaml\Model\Metadata\EntityDescriptor;
-use LightSaml\Model\XmlDSig\Signature;
-use LightSaml\Model\XmlDSig\SignatureWriter;
-use LightSaml\Store\EntityDescriptor\EntityDescriptorStoreInterface;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 
-/**
- * Class AuthnRequest
- * @package flipbox\saml\sp\services
- */
 class AuthnRequest extends Component
 {
 

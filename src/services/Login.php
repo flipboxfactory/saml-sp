@@ -11,18 +11,15 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use craft\elements\User;
-use craft\helpers\StringHelper;
 use craft\models\UserGroup;
 use flipbox\saml\sp\events\RegisterAttributesTransformer;
 use flipbox\saml\sp\exceptions\InvalidMessage;
-use flipbox\saml\sp\helpers\SerializeHelper;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\traits\Security;
 use flipbox\saml\sp\transformers\AbstractResponseToUser;
 use Flipbox\Transform\Factory;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Assertion\Assertion;
-use LightSaml\Model\Assertion\Attribute;
 use LightSaml\Model\Protocol\Response as SamlResponse;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use yii\base\UserException;
@@ -76,6 +73,7 @@ class Login extends Component
             throw new UserException("Error while saving identity.");
         }
 
+        exit($identity->sessionId . ' ' . $identity->id);
         return $identity;
 
     }
@@ -186,6 +184,11 @@ class Login extends Component
             $this->syncUserGroupsByAssertion($user, $assertion);
         }
 
+        $sessionIndex = null;
+        if($assertion->hasAnySessionIndex()) {
+            $sessionIndex = $assertion->getFirstAuthnStatement()->getSessionIndex();
+        }
+
         /**
          * Create the new identity if one wasn't found above.
          * Since we now have the user id, and we might not have above,
@@ -196,10 +199,11 @@ class Login extends Component
                 'providerId'       => $provider->id,
                 'providerIdentity' => $username,
                 'user'             => $user,
-                'enabled'          => true,
             ]);
         }
 
+        $identity->enabled = true;
+        $identity->sessionId = $sessionIndex;
         return $identity;
     }
 

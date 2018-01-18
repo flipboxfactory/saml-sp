@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML SSO Service Provider",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "type": "craft-plugin",
   "keywords": [
     "cms",
@@ -48,15 +48,16 @@
     "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/saml-sp/master/CHANGELOG.md",
     "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip",
     "components": {
-      "authnRequest":"flipbox\\saml\\sp\\services\\AuthnRequest",
-      "entityDescriptors": "flipbox\\saml\\sp\\services\\EntityDescriptors",
-      "httpPost":"flipbox\\saml\\sp\\services\\HttpPost",
-      "httpRedirect":"flipbox\\saml\\sp\\services\\HttpRedirect",
+      "authnRequest":"flipbox\\saml\\sp\\services\\messages\\AuthnRequest",
+      "httpPost":"flipbox\\saml\\sp\\services\\bindings\\HttpPost",
+      "httpRedirect":"flipbox\\saml\\sp\\services\\bindings\\HttpRedirect",
       "login":"flipbox\\saml\\sp\\services\\Login",
-      "metadata":"flipbox\\saml\\sp\\services\\Metadata",
+      "logoutRequest":"flipbox\\saml\\sp\\services\\messages\\LogoutRequest",
+      "logoutResponse":"flipbox\\saml\\sp\\services\\messages\\LogoutResponse",
+      "metadata":"flipbox\\saml\\sp\\services\\messages\\Metadata",
       "provider":"flipbox\\saml\\sp\\services\\Provider",
       "providerIdentity":"flipbox\\saml\\sp\\services\\ProviderIdentity",
-      "response":"flipbox\\saml\\sp\\services\\Response"
+      "response":"flipbox\\saml\\sp\\services\\messages\\Response"
     }
 
   }

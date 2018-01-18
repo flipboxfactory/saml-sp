@@ -42,23 +42,6 @@ class Provider extends ModelWithId
      */
     protected $metadata;
 
-    public function rules()
-    {
-        return array_merge(
-            parent::rules(),
-            [
-                [
-                    'entityId',
-                    'metadata'
-                ],
-                'safe',
-                'on' => [
-                    ModelHelper::SCENARIO_DEFAULT
-                ]
-            ]
-        );
-    }
-
     public function attributes()
     {
         return array_merge(

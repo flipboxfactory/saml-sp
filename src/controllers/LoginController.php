@@ -60,6 +60,7 @@ class LoginController extends Controller
         }catch(\Exception $e){
            $redirect = \Craft::$app->getUser()->getReturnUrl();
         }
+        exit;
 
         return $this->redirect($redirect);
     }

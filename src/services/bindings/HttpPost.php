@@ -6,26 +6,22 @@
  * Time: 9:44 PM
  */
 
-namespace flipbox\saml\sp\services;
+namespace flipbox\saml\sp\services\bindings;
 
 
-use craft\base\Component;
 use craft\web\Request;
-use flipbox\saml\sp\exceptions\InvalidIssuer;
-use flipbox\saml\sp\exceptions\InvalidMetadata;
 use flipbox\saml\sp\exceptions\InvalidSignature;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\traits\Security;
 use LightSaml\Context\Profile\MessageContext;
 use LightSaml\Error\LightSamlBindingException;
-use LightSaml\Model\AbstractSamlModel;
 use LightSaml\Model\Protocol\SamlMessage;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use LightSaml\Credential\X509Certificate;
 
 /**
  * Class HttpPost
- * @package flipbox\saml\sp\services
+ * @package flipbox\saml\sp\services\bindings
  */
 class HttpPost extends AbstractHttpBinding
 {

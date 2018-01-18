@@ -10,6 +10,8 @@ namespace flipbox\saml\sp\records;
 
 
 use flipbox\ember\records\ActiveRecord;
+use flipbox\ember\helpers\ModelHelper;
+use craft\validators\DateTimeValidator;
 
 /**
  * Class ProviderIdentityRecord
@@ -17,6 +19,7 @@ use flipbox\ember\records\ActiveRecord;
  * @property int $providerId
  * @property int $userId
  * @property string $providerIdentity
+ * @property string $sessionId
  * @property bool $enabled
  * @property \DateTime $lastLoginDate
  * @property \DateTime $dateCreated
@@ -24,6 +27,28 @@ use flipbox\ember\records\ActiveRecord;
  */
 class ProviderIdentityRecord extends ActiveRecord
 {
+
+    const TABLE_ALIAS = 'saml_sp_provider_identity';
+
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return array_merge(parent::rules(),[
+            [
+                [
+                    'lastLoginDate',
+                    'sessionId',
+                ],
+                'safe',
+                'on' => [
+                    ModelHelper::SCENARIO_DEFAULT
+                ]
+            ]
+        ]);
+    }
 
     /**
      * @inheritdoc

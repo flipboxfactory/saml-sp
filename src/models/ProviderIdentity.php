@@ -19,12 +19,12 @@ use flipbox\saml\sp\Saml;
  */
 class ProviderIdentity extends ModelWithId
 {
-    public $id;
     protected $provider;
     protected $providerId;
     protected $userId;
     protected $user;
     public $providerIdentity;
+    public $sessionId;
     public $enabled;
     public $lastLoginDate;
 
