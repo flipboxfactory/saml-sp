@@ -58,7 +58,7 @@ class LogoutController extends Controller
      * @param array $parameters
      * @param SignatureWriter|null $signature
      * @return array
-     * @todo move to HttpRedirect
+     * @todo move to AbstractHttpRedirect
      */
     protected function addSignatureToUrl(array $parameters, SignatureWriter $signature = null)
     {

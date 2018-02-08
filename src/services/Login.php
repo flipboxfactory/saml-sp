@@ -12,10 +12,10 @@ namespace flipbox\saml\sp\services;
 use craft\base\Component;
 use craft\elements\User;
 use craft\models\UserGroup;
-use flipbox\saml\sp\events\RegisterAttributesTransformer;
-use flipbox\saml\sp\exceptions\InvalidMessage;
+use flipbox\saml\core\events\RegisterAttributesTransformer;
+use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\traits\Security;
+use flipbox\saml\core\services\traits\Security;
 use flipbox\saml\sp\transformers\AbstractResponseToUser;
 use Flipbox\Transform\Factory;
 use LightSaml\Credential\X509Certificate;
@@ -24,26 +24,20 @@ use LightSaml\Model\Protocol\Response as SamlResponse;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use yii\base\UserException;
 use craft\db\Query;
+
 class Login extends Component
 {
-    use Security;
-
     const EVENT_ATTRIBUTE_TRANSFORMER = 'attributeTransformer';
-
-    public function getKey(): XMLSecurityKey
-    {
-        return Saml::getInstance()->getSettings()->getKey();
-    }
-
-    public function getCertificate(): X509Certificate
-    {
-        return Saml::getInstance()->getSettings()->getCertificate();
-    }
-
 
     /**
      * @param SamlResponse $response
      * @return \flipbox\saml\sp\models\ProviderIdentity
+     * @throws InvalidMessage
+     * @throws UserException
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \craft\errors\ElementNotFoundException
+     * @throws \yii\base\Exception
      */
     public function login(SamlResponse $response)
     {
@@ -73,7 +67,6 @@ class Login extends Component
             throw new UserException("Error while saving identity.");
         }
 
-        exit($identity->sessionId . ' ' . $identity->id);
         return $identity;
 
     }
@@ -104,7 +97,11 @@ class Login extends Component
     /**
      * @param SamlResponse $response
      * @return \flipbox\saml\sp\models\ProviderIdentity
+     * @throws InvalidMessage
      * @throws UserException
+     * @throws \Throwable
+     * @throws \craft\errors\ElementNotFoundException
+     * @throws \yii\base\Exception
      */
     protected function syncUser(\LightSaml\Model\Protocol\Response $response)
     {
@@ -185,7 +182,7 @@ class Login extends Component
         }
 
         $sessionIndex = null;
-        if($assertion->hasAnySessionIndex()) {
+        if ($assertion->hasAnySessionIndex()) {
             $sessionIndex = $assertion->getFirstAuthnStatement()->getSessionIndex();
         }
 
@@ -211,6 +208,7 @@ class Login extends Component
      * @param User $user
      * @param Assertion $assertion
      * @return bool
+     * @throws UserException
      */
     protected function syncUserGroupsByAssertion(User $user, Assertion $assertion)
     {
@@ -271,10 +269,10 @@ class Login extends Component
      * @return UserGroup
      * @throws UserException
      */
-    protected function findOrCreateUserGroup($groupHandle) : UserGroup
+    protected function findOrCreateUserGroup($groupHandle): UserGroup
     {
 
-        if (! $userGroup = $this->getGroupByHandle($groupHandle)) {
+        if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
             if (! \Craft::$app->getUserGroups()->saveGroup($userGroup = new UserGroup([
                 'name'   => $groupHandle,
                 'handle' => $groupHandle,

@@ -10,11 +10,10 @@ namespace flipbox\saml\sp\controllers;
 
 
 use craft\web\Controller;
-use craft\web\Response;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\Saml;
 use Craft;
-use flipbox\saml\sp\helpers\SerializeHelper;
+use flipbox\saml\core\helpers\SerializeHelper;
 use LightSaml\Model\Protocol\AuthnRequest;
 use LightSaml\Model\XmlDSig\SignatureWriter;
 use LightSaml\SamlConstants;
@@ -43,6 +42,16 @@ class LoginController extends Controller
         return parent::beforeAction($action);
     }
 
+    /**
+     * @return \yii\web\Response
+     * @throws HttpException
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \craft\errors\ElementNotFoundException
+     * @throws \flipbox\saml\core\exceptions\InvalidMessage
+     * @throws \yii\base\Exception
+     * @throws \yii\base\UserException
+     */
     public function actionIndex()
     {
 
@@ -60,33 +69,15 @@ class LoginController extends Controller
         }catch(\Exception $e){
            $redirect = \Craft::$app->getUser()->getReturnUrl();
         }
-        exit;
 
         return $this->redirect($redirect);
     }
 
 
     /**
-     * @param array $parameters
-     * @param SignatureWriter|null $signature
-     * @return array
-     * @todo move to HttpRedirect
+     * @return \yii\web\Response
+     * @throws \yii\base\Exception
      */
-    protected function addSignatureToUrl(array $parameters, SignatureWriter $signature = null)
-    {
-        /** @var $key XMLSecurityKey */
-        $key = $signature ? $signature->getXmlSecurityKey() : null;
-
-        if (null != $key) {
-            $parameters['SigAlg'] = urlencode($key->type);
-            $signature = $key->signData(http_build_query($parameters));
-            $parameters['Signature'] = base64_encode($signature);
-        }
-
-        return $parameters;
-
-    }
-
     public function actionRequest()
     {
 
@@ -99,23 +90,21 @@ class LoginController extends Controller
          */
         Saml::getInstance()->getAuthnRequest()->saveToSession($authnRequest);
 
-        $parameters['RelayState'] = SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl());
-
-        /**
-         * @var $settings Settings
-         */
-        $settings = Saml::getInstance()->getSettings();
+        $authnRequest->setRelayState(
+            SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl())
+        );
 
         if ($authnRequest->getProtocolBinding() === SamlConstants::BINDING_SAML2_HTTP_REDIRECT) {
+            Saml::getInstance()->getHttpRedirect()->send()
             $parameters['SAMLRequest'] = SerializeHelper::base64Message(
                 $authnRequest,
                 true
             );
             if ($signature = $authnRequest->getSignature()) {
                 $authnRequest->setSignature(null);
-                $dest = $authnRequest->getDestination() . '?' . http_build_query($this->addSignatureToUrl($parameters, $signature));
+                $dest = SerializeHelper::redirectUrl($authnRequest->getDestination(), SerializeHelper::addSignatureToUrl($parameters, $signature));
             } else {
-                $dest = $authnRequest->getDestination() . '?' . http_build_query($parameters);
+                $dest = SerializeHelper::redirectUrl($authnRequest->getDestination(), $parameters);
             }
 
             return $this->redirect($dest);

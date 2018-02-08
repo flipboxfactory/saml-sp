@@ -9,76 +9,44 @@
 namespace flipbox\saml\sp\services\bindings;
 
 
-use craft\web\Request;
-use flipbox\saml\sp\exceptions\InvalidSignature;
+use flipbox\saml\core\exceptions\InvalidIssuer;
+use flipbox\saml\core\models\ProviderInterface;
+use flipbox\saml\core\services\bindings\AbstractHttpPost;
+use flipbox\saml\core\services\traits\Security;
+use flipbox\saml\sp\models\Provider;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\traits\Security;
-use LightSaml\Context\Profile\MessageContext;
-use LightSaml\Error\LightSamlBindingException;
-use LightSaml\Model\Protocol\SamlMessage;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
 use LightSaml\Credential\X509Certificate;
+use LightSaml\Model\Assertion\Issuer;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 /**
- * Class HttpPost
+ * Class AbstractHttpPost
  * @package flipbox\saml\sp\services\bindings
  */
-class HttpPost extends AbstractHttpBinding
+class HttpPost extends AbstractHttpPost
 {
-
     use Security;
 
-    public function getKey(): XMLSecurityKey
-    {
-        return \LightSaml\Credential\KeyHelper::createPrivateKey(
-            Saml::getInstance()->getSettings()->keyPath,
-            '',
-            true
-        );
-    }
-
-    public function getCertificate(): X509Certificate
-    {
-        return X509Certificate::fromFile(
-            Saml::getInstance()->getSettings()->certPath
-        );
-    }
+    const TEMPLATE_PATH = 'saml-sp/_components/post-binding-submit.twig';
 
     /**
-     * @param Request $request
-     * @return \LightSaml\Model\Protocol\AuthnRequest|\LightSaml\Model\Protocol\LogoutRequest|\LightSaml\Model\Protocol\LogoutResponse|\LightSaml\Model\Protocol\Response|SamlMessage
+     * @inheritdoc
      */
-    public function receive(Request $request, $validateSender=true)
+    public function getProviderByIssuer(Issuer $issuer): ProviderInterface
     {
-
-        $post = $request->getBodyParams();
-        if (array_key_exists('SAMLRequest', $post)) {
-            $msg = $post['SAMLRequest'];
-        } elseif (array_key_exists('SAMLResponse', $post)) {
-            $msg = $post['SAMLResponse'];
-        } else {
-            throw new LightSamlBindingException('Missing SAMLRequest or SAMLResponse parameter');
+        $provider = Saml::getInstance()->getProvider()->findByIssuer(
+            $issuer
+        );
+        if (! $provider) {
+            throw new InvalidIssuer(
+                sprintf("Invalid issuer: %s", $issuer->getValue())
+            );
         }
-
-        $msg = base64_decode($msg);
-
-        $context = new MessageContext();
-        $deserializationContext = $context->getDeserializationContext();
-        $message = SamlMessage::fromXML($msg, $deserializationContext);
-
-        if($validateSender) {
-            $this->validSender($message);
-        }
-
-        if(!$this->validSignature($message)){
-            throw new InvalidSignature("Invalid request", 400);
-        }
-
-        if (array_key_exists('RelayState', $post)) {
-            $message->setRelayState($post['RelayState']);
-        }
-
-        return $message;
+        return $provider;
     }
 
+    public function getTemplatePath()
+    {
+        return static::TEMPLATE_PATH;
+    }
 }

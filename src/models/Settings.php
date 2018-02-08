@@ -86,6 +86,19 @@ class Settings extends Model
     ];
 
     /**
+     * Please overwrite this
+     * @var array
+     */
+    public $defaultOpenSSLValues = [
+        'countryName'            => 'US',
+        'stateOrProvinceName'    => 'Colorado',
+        'localityName'           => 'Denver',
+        'organizationName'       => 'Flipbox Digital',
+        'organizationalUnitName' => 'IT',
+        'commonName'             => 'flipboxdigital.com',
+        'emailAddress'           => 'it@flipboxdigital.com',
+    ];
+    /**
      * Key Value store that maps the Response name (the array key) with
      * the user property.
      *

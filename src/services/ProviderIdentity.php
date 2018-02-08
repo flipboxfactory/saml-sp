@@ -18,7 +18,7 @@ use flipbox\ember\records\ActiveRecord;
 use flipbox\ember\services\traits\AccessorByIdOrString;
 use flipbox\ember\services\traits\ModelDelete;
 use flipbox\ember\services\traits\ModelSave;
-use flipbox\saml\sp\records\ProviderIdentityRecord;
+use flipbox\saml\sp\records\AbstractProviderIdentityRecord;
 use flipbox\saml\sp\models\ProviderIdentity as ProviderIdentityModel;
 use yii\base\BaseObject;
 use yii\db\ActiveRecord as Record;
@@ -43,7 +43,7 @@ class ProviderIdentity extends Component
 
     public static function recordClass(): string
     {
-        return ProviderIdentityRecord::class;
+        return AbstractProviderIdentityRecord::class;
     }
 
     public function stringProperty(): string
@@ -54,7 +54,7 @@ class ProviderIdentity extends Component
     public function getRecordByModel(Model $model): ActiveRecord
     {
         /** @var $model ProviderIdentityModel */
-        return ProviderIdentityRecord::findOne([
+        return AbstractProviderIdentityRecord::findOne([
             'providerIdentity' => $model->providerIdentity,
         ]);
 
@@ -63,7 +63,7 @@ class ProviderIdentity extends Component
     public function transferToRecord(BaseObject $object, Record $record)
     {
         /** @var ProviderIdentityModel $object */
-        /** @var ProviderIdentityRecord $record */
+        /** @var AbstractProviderIdentityRecord $record */
         $this->accessorTransferToRecord($object, $record);
         $record->lastLoginDate = $object->lastLoginDate->format(\DateTime::ISO8601);
     }
@@ -82,17 +82,6 @@ class ProviderIdentity extends Component
         // Populate the record attributes
         $this->transferToRecord($model, $record);
         return $record;
-        /** @var $model ProviderIdentityModel */
-//        return new ProviderIdentityRecord([
-//            'isNewRecord'      => $this->isNew($model),
-//            'id'               => $model->id,
-//            'providerIdentity' => $model->providerIdentity,
-//            'providerId'       => $model->providerId,
-//            'userId'           => $model->getUserId(),
-//            'sessionId'        => $model->sessionId,
-//            'enabled'          => (bool)($model->enabled ?: true),
-//            'lastLoginDate'    => $model->lastLoginDate,
-//        ]);
     }
 
     public function isNew(Model $model): bool

@@ -10,10 +10,9 @@ namespace flipbox\saml\sp\controllers;
 
 
 use craft\web\Controller;
-use craft\web\Response;
-use flipbox\saml\sp\helpers\SerializeHelper;
+use flipbox\saml\core\helpers\SerializeHelper;
+use flipbox\saml\sp\models\Provider;
 use flipbox\saml\sp\Saml;
-use Craft;
 
 class MetadataController extends Controller
 {
@@ -23,7 +22,16 @@ class MetadataController extends Controller
 
         $this->requireAdmin();
 
-        $metadata = Saml::getInstance()->getMetadata()->create();
+        /** @var Provider $provider */
+        $provider = Saml::getInstance()->getProvider()->findByString(
+            Saml::getInstance()->getSettings()->getEntityId()
+        );
+
+        if($provider) {
+            $metadata = $provider->getMetadata();
+        }else{
+            $metadata = Saml::getInstance()->getMetadata()->create()->getMetadata();
+        }
 
 
         SerializeHelper::xmlContentType();

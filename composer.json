@@ -8,13 +8,14 @@
     "craftcms",
     "saml",
     "sso",
+    "sp",
+    "service provider",
     "yii2"
   ],
   "require": {
     "craftcms/cms": "~3.0.0-RC1",
-    "lightsaml/lightsaml": "1.3.3",
-    "flipboxfactory/craft-ember": "^1.0.0-rc.6",
-    "flipboxdigital/transform": "^1.1.0"
+    "flipboxfactory/saml-core": "^1.0.0-rc.1",
+    "flipboxfactory/keychain": "1.0.0-beta.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.0",
@@ -46,19 +47,6 @@
     "developer": "Flipbox Digital",
     "developerUrl": "https://www.flipboxdigital.com",
     "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/saml-sp/master/CHANGELOG.md",
-    "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip",
-    "components": {
-      "authnRequest":"flipbox\\saml\\sp\\services\\messages\\AuthnRequest",
-      "httpPost":"flipbox\\saml\\sp\\services\\bindings\\HttpPost",
-      "httpRedirect":"flipbox\\saml\\sp\\services\\bindings\\HttpRedirect",
-      "login":"flipbox\\saml\\sp\\services\\Login",
-      "logoutRequest":"flipbox\\saml\\sp\\services\\messages\\LogoutRequest",
-      "logoutResponse":"flipbox\\saml\\sp\\services\\messages\\LogoutResponse",
-      "metadata":"flipbox\\saml\\sp\\services\\messages\\Metadata",
-      "provider":"flipbox\\saml\\sp\\services\\Provider",
-      "providerIdentity":"flipbox\\saml\\sp\\services\\ProviderIdentity",
-      "response":"flipbox\\saml\\sp\\services\\messages\\Response"
-    }
-
+    "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip"
   }
 }

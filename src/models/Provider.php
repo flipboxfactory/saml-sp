@@ -22,6 +22,12 @@ class Provider extends ModelWithId
     use StateAttribute;
 
     public $id;
+
+    /**
+     * @var integer
+     */
+    public $localKeyId;
+
     /**
      * @var $enabled bool
      */
@@ -48,6 +54,7 @@ class Provider extends ModelWithId
             [
                 'entityId',
                 'metadata',
+                'localKeyId',
             ],
             parent::attributes()
         );

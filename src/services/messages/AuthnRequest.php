@@ -12,7 +12,7 @@ namespace flipbox\saml\sp\services\messages;
 use craft\base\Component;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\traits\Security;
+use flipbox\saml\core\services\traits\Security;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Helper;
 use LightSaml\Model\Assertion\Issuer;
@@ -21,27 +21,12 @@ use RobRichards\XMLSecLibs\XMLSecurityKey;
 class AuthnRequest extends Component
 {
 
-    use Security;
-
     const REQUEST_SESSION_KEY = 'authnrequest.requestId';
 
-    public function getKey(): XMLSecurityKey
-    {
-
-        return \LightSaml\Credential\KeyHelper::createPrivateKey(
-            Saml::getInstance()->getSettings()->keyPath,
-            '',
-            true
-        );
-    }
-
-    public function getCertificate(): X509Certificate
-    {
-        return X509Certificate::fromFile(
-            Saml::getInstance()->getSettings()->certPath
-        );
-    }
-
+    /**
+     * @param string|null $entityId
+     * @return \LightSaml\Model\Protocol\AuthnRequest|null
+     */
     public function create(string $entityId = null)
     {
         if (! $entityId) {
@@ -72,6 +57,7 @@ class AuthnRequest extends Component
         )->setID(Helper::generateID())
             ->setIssueInstant(new \DateTime())
             ->setDestination($location)
+            ->setRelayState(\Craft::$app->getUser()->getReturnUrl())
             ->setIssuer(new Issuer($samlSettings->getEntityId()));
 
         //set signed assertions

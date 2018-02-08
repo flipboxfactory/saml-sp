@@ -14,7 +14,7 @@ use flipbox\ember\helpers\ModelHelper;
 use craft\validators\DateTimeValidator;
 
 /**
- * Class ProviderIdentityRecord
+ * Class AbstractProviderIdentityRecord
  * @package flipbox\saml\sp\records
  * @property int $providerId
  * @property int $userId

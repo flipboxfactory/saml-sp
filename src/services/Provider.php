@@ -14,7 +14,7 @@ use flipbox\ember\models\Model;
 use flipbox\ember\services\traits\AccessorByIdOrString;
 use flipbox\ember\services\traits\ModelDelete;
 use flipbox\ember\services\traits\ModelSave;
-use flipbox\saml\sp\helpers\SerializeHelper;
+use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\models\Provider as ProviderModel;
 use LightSaml\Model\Assertion\Issuer;
@@ -73,6 +73,7 @@ class Provider extends Component
             'isNewRecord' => $this->isNew($model),
             'entityId' => $model->getEntityId(),
             'metadata' => SerializeHelper::toXml($model->getMetadata()),
+            'localKeyId' => $model->localKeyId,
             'enabled'  => (bool)$model->enabled,
             'default'  => (bool)$model->default,
         ]);

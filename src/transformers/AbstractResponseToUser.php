@@ -6,15 +6,13 @@
  * Time: 9:39 PM
  */
 
-namespace flipbox\saml\sp\transformers;
+namespace flipbox\saml\core\transformers;
 
 
 use craft\elements\User;
 use Flipbox\Transform\Scope;
 use Flipbox\Transform\Transformers\AbstractTransformer;
-use Flipbox\Transform\Transformers\Traits\ObjectData;
 use LightSaml\Model\Protocol\Response;
-use Traversable;
 
 abstract class AbstractResponseToUser extends AbstractTransformer
 {
