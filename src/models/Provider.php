@@ -24,21 +24,6 @@ class Provider extends ModelWithId
     public $id;
 
     /**
-     * @var integer
-     */
-    public $localKeyId;
-
-    /**
-     * @var $enabled bool
-     */
-    public $enabled;
-
-    /**
-     * @var $default bool
-     */
-    public $default;
-
-    /**
      * @var $entityId string
      */
     protected $entityId;
@@ -48,6 +33,22 @@ class Provider extends ModelWithId
      */
     protected $metadata;
 
+    /**
+     * @var int
+     * sortOrder set to have a way to pick a default
+     */
+    public $sortOrder = 0;
+
+    /**
+     * @var integer
+     */
+    public $localKeyId;
+
+    /**
+     * @var $enabled bool
+     */
+    public $enabled;
+
     public function attributes()
     {
         return array_merge(
@@ -55,6 +56,7 @@ class Provider extends ModelWithId
                 'entityId',
                 'metadata',
                 'localKeyId',
+                'sortOrder',
             ],
             parent::attributes()
         );

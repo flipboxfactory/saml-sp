@@ -10,24 +10,47 @@ namespace flipbox\saml\sp\cli;
 
 
 use craft\helpers\Console;
+use flipbox\keychain\keypair\traits\OpenSSL;
+use flipbox\keychain\keypair\traits\OpenSSLCliUtil;
+use flipbox\keychain\records\KeyChainRecord;
+use flipbox\saml\core\cli\AbstractMetadata;
+use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\models\Provider;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use yii\console\Controller;
 use yii\console\ExitCode;
 
-class Metadata extends Controller
+class Metadata extends AbstractMetadata
 {
+    use OpenSSL, OpenSSLCliUtil;
+
     /**
      * @var bool $force
      * Force save the metadata. If one already exists, it'll be overwritten.
      */
     public $force;
 
+    /**
+     * @var int
+     * Set the key pair id that you want to use to associate to this record
+     */
+    public $keyPairId;
+
+    /**
+     * @var bool
+     * Create a new key pair for this server to use to encrypt and sign messages to the remote server
+     */
+    public $createKeyPair = true;
+
     public function options($actionID)
     {
         return array_merge(
             [
                 'force',
+                'keyPairId',
+                'createKeyPair',
             ],
             parent::options($actionID)
         );
@@ -43,66 +66,17 @@ class Metadata extends Controller
         );
     }
 
-    public function actionSave($file = null, $default = true, $enabled = true)
+    /**
+     * @param array $config
+     * @return ProviderInterface
+     */
+    protected function newProviderRecord(array $config): ProviderInterface
     {
-
-        if (! $file) {
-            $this->stderr("No file passed.");
-            return ExitCode::NOINPUT;
-        }
-        $newProvider = new Provider([
-            'metadata' => file_get_contents($file),
-            'default'  => $default,
-            'enabled'  => $enabled,
-        ]);
-
-        /** @var Provider $provider */
-        if($provider = Saml::getInstance()->getProvider()->findByString($newProvider->getEntityId())){
-            $provider->setMetadata($newProvider->getMetadata());
-        }else{
-            $provider = new Provider([
-                'metadata' => file_get_contents($file),
-                'default'  => $default,
-                'enabled'  => $enabled,
-            ]);
-
-        }
-
-        if ($provider->id && ! $this->force) {
-
-            if (! $this->confirm(sprintf(
-                    "Are you sure you want to overwrite %s?",
-                    $provider->getEntityId()
-                )
-            )
-            ) {
-                $this->stdout('Exiting.'.PHP_EOL);
-                return ExitCode::OK;
-            }
-
-        }
-
-        if (Saml::getInstance()->getProvider()->save($provider)) {
-
-            $this->stdout(sprintf(
-                'Save for %s metadata was successful.',
-                $provider->getEntityId()
-            ).PHP_EOL, Console::FG_GREEN);
-            return ExitCode::OK;
-        }
-
-        return ExitCode::UNSPECIFIED_ERROR;
+        return new ProviderRecord($config);
     }
 
-    public function actionDelete($entityId)
+    protected function getSamlPlugin(): SamlPluginInterface
     {
-        if(!Saml::getInstance()->getProvider()->delete(new Provider([
-           'entityId' => $entityId,
-        ]))){
-            $this->stderr("Couldn't delete provider {$entityId}", Console::FG_RED);
-        }
-
-
-        $this->stdout("Successfully deleted provider {$entityId}".PHP_EOL, Console::FG_GREEN);
+        return Saml::getInstance();
     }
 }

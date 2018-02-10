@@ -9,26 +9,19 @@
 namespace flipbox\saml\sp\records;
 
 
-use flipbox\ember\records\ActiveRecord;
 use flipbox\ember\records\traits\StateAttribute;
+use flipbox\saml\core\records\AbstractProvider;
+use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\core\records\traits\ProviderFields;
 
-class ProviderRecord extends ActiveRecord
+class ProviderRecord extends AbstractProvider implements ProviderInterface
 {
 
-    use StateAttribute;
+    use StateAttribute, ProviderFields;
 
     /**
      * The table alias
      */
     const TABLE_ALIAS = 'saml_sp_providers';
 
-    /**
-     * @inheritdoc
-     *
-     * @return string
-     */
-    public static function tableName(): string
-    {
-        return '{{%saml_sp_providers}}';
-    }
 }

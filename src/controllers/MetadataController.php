@@ -23,7 +23,7 @@ class MetadataController extends Controller
         $this->requireAdmin();
 
         /** @var Provider $provider */
-        $provider = Saml::getInstance()->getProvider()->findByString(
+        $provider = Saml::getInstance()->getProvider()->findByEntityId(
             Saml::getInstance()->getSettings()->getEntityId()
         );
 

@@ -10,9 +10,13 @@ namespace flipbox\saml\sp;
 
 
 use Craft;
+use craft\base\Model;
 use craft\base\Plugin;
 use craft\console\Application as ConsoleApplication;
 use flipbox\keychain\traits\ModuleTrait;
+use flipbox\saml\core\SamlPluginInterface;
+use flipbox\saml\core\services\messages\MetadataServiceInterface;
+use flipbox\saml\core\services\messages\ProviderServiceInterface;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
@@ -25,7 +29,7 @@ use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
 
-class Saml extends Plugin
+class Saml extends Plugin implements SamlPluginInterface
 {
 
     use ModuleTrait;
@@ -37,11 +41,12 @@ class Saml extends Plugin
         $this->initComponents();
         $this->initModules();
 
-         // Switch target to console controllers
+        // Switch target to console controllers
         if (Craft::$app instanceof ConsoleApplication) {
             $this->controllerNamespace = __NAMESPACE__ . '\cli';
             $this->controllerMap = [
                 'metadata' => \flipbox\saml\sp\cli\Metadata::class,
+                'keychain' => \flipbox\saml\sp\cli\KeyChain::class,
             ];
         }
 
@@ -58,25 +63,26 @@ class Saml extends Plugin
     /**
      *
      */
-    public function initComponents() {
+    public function initComponents()
+    {
         $this->setComponents([
-            'authnRequest' => AuthnRequest::class,
-            'httpPost' => HttpPost::class,
-            'httpRedirect' => HttpRedirect::class,
-            'login' => Login::class,
-            'logoutRequest' => LogoutRequest::class,
-            'logoutResponse' => LogoutResponse::class,
-            'provider' => Provider::class,
+            'authnRequest'     => AuthnRequest::class,
+            'httpPost'         => HttpPost::class,
+            'httpRedirect'     => HttpRedirect::class,
+            'login'            => Login::class,
+            'logoutRequest'    => LogoutRequest::class,
+            'logoutResponse'   => LogoutResponse::class,
+            'provider'         => Provider::class,
             'providerIdentity' => ProviderIdentity::class,
-            'metadata' => Metadata::class,
-            'Response' => Response::class,
+            'metadata'         => Metadata::class,
+            'Response'         => Response::class,
         ]);
     }
 
     /**
      * @return Settings
      */
-    public function getSettings()
+    public function getSettings(): Model
     {
         return parent::getSettings();
     }
@@ -96,7 +102,8 @@ class Saml extends Plugin
     /**
      * @return Metadata
      */
-    public function getMetadata(){
+    public function getMetadata(): MetadataServiceInterface
+    {
         return $this->get('metadata');
     }
 
@@ -111,7 +118,8 @@ class Saml extends Plugin
     /**
      * @return Response
      */
-    public function getResponse(){
+    public function getResponse()
+    {
         return $this->get('response');
     }
 
@@ -158,14 +166,16 @@ class Saml extends Plugin
     /**
      * @returns Provider
      */
-    public function getProvider(){
+    public function getProvider(): ProviderServiceInterface
+    {
         return $this->get('provider');
     }
 
     /**
      * @returns ProviderIdentity
      */
-    public function getProviderIdentity(){
+    public function getProviderIdentity()
+    {
         return $this->get('providerIdentity');
     }
 }

@@ -14,20 +14,24 @@ use craft\helpers\UrlHelper;
 use flipbox\keychain\keypair\OpenSSL;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\exceptions\InvalidMetadata;
+use flipbox\saml\core\helpers\SerializeHelper;
+use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\core\SamlPluginInterface;
+use flipbox\saml\core\services\messages\MetadataServiceInterface;
 use flipbox\saml\sp\models\Provider;
+use flipbox\saml\sp\records\ProviderRecord;
 use LightSaml\Model\Metadata\EntityDescriptor;
 use LightSaml\Model\Metadata\SingleLogoutService;
 use LightSaml\Model\Metadata\SpSsoDescriptor;
-use LightSaml\Model\Metadata\KeyDescriptor;
-use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Metadata\AssertionConsumerService;
 use LightSaml\SamlConstants;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\core\services\traits\Metadata as MetadataTrait;
 
-class Metadata extends Component
+class Metadata extends Component implements MetadataServiceInterface
 {
 
-    use \flipbox\saml\core\services\traits\Metadata;
+    use MetadataTrait;
 
     /**
      *
@@ -77,12 +81,19 @@ class Metadata extends Component
     }
 
     /**
+     * @param KeyChainRecord|null $withKeyPair
+     * @param bool $createKeyFromSettings
      * @return Provider
      * @throws InvalidMetadata
      * @throws \Exception
      */
-    public function create()
+    public function create(KeyChainRecord $withKeyPair = null, $createKeyFromSettings = false) : ProviderInterface
     {
+        if (! $withKeyPair && $createKeyFromSettings) {
+            $withKeyPair = (new OpenSSL(Saml::getInstance()->getSettings()->defaultOpenSSLValues))->create();
+            $withKeyPair->save();
+        }
+
 
         $spRedirectDescriptor = $this->createRedirectDescriptor()
             ->addSingleLogoutService(
@@ -106,20 +117,19 @@ class Metadata extends Component
                 $spPostDescriptor,
             ]);
 
-        $keyPair = (new OpenSSL(Saml::getInstance()->getSettings()->defaultOpenSSLValues))->create();
-        $keyPair->save();
+        if ($withKeyPair) {
+            $this->setEncrypt($spRedirectDescriptor, $withKeyPair);
+            $this->setEncrypt($spPostDescriptor, $withKeyPair);
+            $this->setSign($spRedirectDescriptor, $withKeyPair);
+            $this->setSign($spPostDescriptor, $withKeyPair);
+        }
 
-        $this->setEncrypt($spRedirectDescriptor, $keyPair);
-        $this->setEncrypt($spPostDescriptor, $keyPair);
-        $this->setSign($spRedirectDescriptor,$keyPair);
-        $this->setSign($spPostDescriptor, $keyPair);
-
-        $provider = new Provider([
-            'metadata' => $entityDescriptor,
-            'localKeyId' => $keyPair->id,
+        $provider = new ProviderRecord([
+            'entityId' => $entityDescriptor->getEntityID(),
+            'metadata' => SerializeHelper::toXml($entityDescriptor),
         ]);
 
-        if (! Saml::getInstance()->getProvider()->save($provider)) {
+        if (! $provider->save()) {
             throw new \Exception($provider->getFirstError());
         }
 
@@ -172,45 +182,20 @@ class Metadata extends Component
             ->setLocation(static::getLoginLocation());
         $spDescriptor->addAssertionConsumerService($acs);
 
-//        $this->setEncrypt($spDescriptor);
-//        $this->setSign($spDescriptor);
-
         return $spDescriptor;
 
     }
 
     /**
-     * @param SpSsoDescriptor $spSsoDescriptor
-     * @param KeyChainRecord $keyChainRecord
+     * Utils
      */
-    public function setSign(SpSsoDescriptor $spSsoDescriptor, KeyChainRecord $keyChainRecord)
-    {
-        if (Saml::getInstance()->getSettings()->signAssertions) {
-
-            $spSsoDescriptor->addKeyDescriptor(
-                $keyDescriptor = (new KeyDescriptor())
-                    ->setUse(KeyDescriptor::USE_SIGNING)
-                    ->setCertificate((new X509Certificate())->loadPem($keyChainRecord->certificate))
-            );
-        }
-
-    }
 
     /**
-     * @param SpSsoDescriptor $spSsoDescriptor
-     * @param KeyChainRecord $keyChainRecord
+     * @inheritdoc
      */
-    public function setEncrypt(SpSsoDescriptor $spSsoDescriptor, KeyChainRecord $keyChainRecord)
+    protected function getSamlPlugin(): SamlPluginInterface
     {
-
-        if (Saml::getInstance()->getSettings()->encryptAssertions) {
-            $spSsoDescriptor->addKeyDescriptor(
-                $keyDescriptor = (new KeyDescriptor())
-                    ->setUse(KeyDescriptor::USE_ENCRYPTION)
-                    ->setCertificate((new X509Certificate())->loadPem($keyChainRecord->certificate))
-            );
-
-        }
+        return Saml::getInstance();
     }
 
 }
