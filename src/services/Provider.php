@@ -11,6 +11,7 @@ namespace flipbox\saml\sp\services;
 
 use flipbox\saml\core\services\messages\AbstractProviderService;
 use flipbox\saml\core\services\messages\ProviderServiceInterface;
+use flipbox\saml\sp\records\ProviderRecord;
 
 
 /**
@@ -19,4 +20,11 @@ use flipbox\saml\core\services\messages\ProviderServiceInterface;
  */
 class Provider extends AbstractProviderService implements ProviderServiceInterface
 {
+    /**
+     * @inheritdoc
+     */
+    protected function getRecordClass()
+    {
+        return ProviderRecord::class;
+    }
 }

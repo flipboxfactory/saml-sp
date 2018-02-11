@@ -9,33 +9,14 @@
 namespace flipbox\saml\sp\controllers;
 
 
-use craft\web\Controller;
-use flipbox\saml\core\helpers\SerializeHelper;
-use flipbox\saml\sp\models\Provider;
+use flipbox\saml\core\controllers\AbstractMetadataController;
+use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\Saml;
 
-class MetadataController extends Controller
+class MetadataController extends AbstractMetadataController
 {
-
-    public function actionIndex()
+    protected function getSamlPlugin(): SamlPluginInterface
     {
-
-        $this->requireAdmin();
-
-        /** @var Provider $provider */
-        $provider = Saml::getInstance()->getProvider()->findByEntityId(
-            Saml::getInstance()->getSettings()->getEntityId()
-        );
-
-        if($provider) {
-            $metadata = $provider->getMetadata();
-        }else{
-            $metadata = Saml::getInstance()->getMetadata()->create()->getMetadata();
-        }
-
-
-        SerializeHelper::xmlContentType();
-        return SerializeHelper::toXml($metadata);
+        return Saml::getInstance();
     }
-
 }

@@ -21,9 +21,11 @@ use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use yii\console\Controller;
 use yii\console\ExitCode;
+use yii\db\ActiveQuery;
 
 class Metadata extends AbstractMetadata
 {
+
     use OpenSSL, OpenSSLCliUtil;
 
     /**
@@ -75,6 +77,9 @@ class Metadata extends AbstractMetadata
         return new ProviderRecord($config);
     }
 
+    /**
+     * @return SamlPluginInterface
+     */
     protected function getSamlPlugin(): SamlPluginInterface
     {
         return Saml::getInstance();

@@ -15,6 +15,7 @@ use flipbox\keychain\keypair\OpenSSL;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\SerializeHelper;
+use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
@@ -65,19 +66,29 @@ class Metadata extends Component implements MetadataServiceInterface
     }
 
     /**
-     * @var array
-     */
-    protected $supportedBindings = [
-        SamlConstants::BINDING_SAML2_HTTP_REDIRECT,
-        SamlConstants::BINDING_SAML2_HTTP_POST,
-    ];
-
-    /**
      * @return array
      */
     public function getSupportedBindings()
     {
         return $this->supportedBindings;
+    }
+
+    /**
+     * @param AbstractProvider $provider
+     * @return bool
+     */
+    protected function useEncryption(AbstractProvider $provider)
+    {
+        return Saml::getInstance()->getSettings()->encryptAssertions;
+    }
+
+    /**
+     * @param AbstractProvider $provider
+     * @return bool
+     */
+    protected function useSigning(AbstractProvider $provider)
+    {
+        return Saml::getInstance()->getSettings()->signAssertions;
     }
 
     /**
@@ -87,7 +98,7 @@ class Metadata extends Component implements MetadataServiceInterface
      * @throws InvalidMetadata
      * @throws \Exception
      */
-    public function create(KeyChainRecord $withKeyPair = null, $createKeyFromSettings = false) : ProviderInterface
+    public function create(KeyChainRecord $withKeyPair = null, $createKeyFromSettings = false): ProviderInterface
     {
         if (! $withKeyPair && $createKeyFromSettings) {
             $withKeyPair = (new OpenSSL(Saml::getInstance()->getSettings()->defaultOpenSSLValues))->create();
@@ -117,19 +128,26 @@ class Metadata extends Component implements MetadataServiceInterface
                 $spPostDescriptor,
             ]);
 
+        $provider = (new ProviderRecord())
+            ->loadDefaultValues();
+
         if ($withKeyPair) {
-            $this->setEncrypt($spRedirectDescriptor, $withKeyPair);
-            $this->setEncrypt($spPostDescriptor, $withKeyPair);
-            $this->setSign($spRedirectDescriptor, $withKeyPair);
-            $this->setSign($spPostDescriptor, $withKeyPair);
+            if ($this->useEncryption($provider)) {
+                $this->setEncrypt($spRedirectDescriptor, $withKeyPair);
+                $this->setEncrypt($spPostDescriptor, $withKeyPair);
+            }
+            if ($this->useSigning($provider)) {
+                $this->setSign($spRedirectDescriptor, $withKeyPair);
+                $this->setSign($spPostDescriptor, $withKeyPair);
+            }
         }
 
-        $provider = new ProviderRecord([
+        \Craft::configure($provider, [
             'entityId' => $entityDescriptor->getEntityID(),
             'metadata' => SerializeHelper::toXml($entityDescriptor),
         ]);
 
-        if (! $provider->save()) {
+        if (! $this->saveProvider($provider)) {
             throw new \Exception($provider->getFirstError());
         }
 
@@ -170,12 +188,12 @@ class Metadata extends Component implements MetadataServiceInterface
         $spDescriptor = (new SpSsoDescriptor())
             ->setWantAssertionsSigned(Saml::getInstance()->getSettings()->signAssertions);
 
-        $spDescriptor->addNameIDFormat(
-            SamlConstants::NAME_ID_FORMAT_EMAIL
-        );
-        $spDescriptor->addNameIDFormat(
-            SamlConstants::NAME_ID_FORMAT_X509_SUBJECT_NAME
-        );
+//        $spDescriptor->addNameIDFormat(
+//            SamlConstants::NAME_ID_FORMAT_EMAIL
+//        );
+//        $spDescriptor->addNameIDFormat(
+//            SamlConstants::NAME_ID_FORMAT_X509_SUBJECT_NAME
+//        );
 
         $acs = new AssertionConsumerService();
         $acs->setBinding($binding)

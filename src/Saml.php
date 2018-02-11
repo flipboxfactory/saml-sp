@@ -13,10 +13,10 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\console\Application as ConsoleApplication;
-use flipbox\keychain\traits\ModuleTrait;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
 use flipbox\saml\core\services\messages\ProviderServiceInterface;
+use flipbox\saml\core\traits\SamlCore;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
@@ -28,11 +28,12 @@ use flipbox\saml\sp\services\bindings\HttpRedirect;
 use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
+use flipbox\keychain\traits\ModuleTrait as KeyChainModuleTrait;
 
 class Saml extends Plugin implements SamlPluginInterface
 {
 
-    use ModuleTrait;
+    use KeyChainModuleTrait, SamlCore;
 
     public function init()
     {
@@ -58,6 +59,7 @@ class Saml extends Plugin implements SamlPluginInterface
     protected function initModules()
     {
         $this->initKeyChain();
+        $this->initCore();
     }
 
     /**
