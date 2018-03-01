@@ -17,7 +17,6 @@ class LogoutRequest extends Component
     public function create()
     {
         $logout = new LogoutRequestModel();
-//        $logout->
     }
 
 }

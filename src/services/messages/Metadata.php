@@ -10,7 +10,7 @@ namespace flipbox\saml\sp\services\messages;
 
 
 use craft\base\Component;
-use craft\helpers\UrlHelper;
+use flipbox\saml\core\helpers\UrlHelper;
 use flipbox\keychain\keypair\OpenSSL;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\exceptions\InvalidMetadata;
@@ -105,40 +105,55 @@ class Metadata extends Component implements MetadataServiceInterface
             $withKeyPair->save();
         }
 
+        $descriptors = [];
 
-        $spRedirectDescriptor = $this->createRedirectDescriptor()
-            ->addSingleLogoutService(
-                (new SingleLogoutService())
-                    ->setLocation(static::getLogoutRequestLocation())
-                    ->setResponseLocation(static::getLogoutResponseLocation())
-                    ->setBinding(SamlConstants::BINDING_SAML2_HTTP_REDIRECT)
-            );
-        $spPostDescriptor = $this->createPostDescriptor()
-            ->addSingleLogoutService(
-                (new SingleLogoutService())
-                    ->setLocation(static::getLogoutRequestLocation())
-                    ->setResponseLocation(static::getLogoutResponseLocation())
-                    ->setBinding(SamlConstants::BINDING_SAML2_HTTP_POST)
-            );
+        if ($this->supportsRedirect()) {
+            $spRedirectDescriptor = $this->createRedirectDescriptor()
+                ->addSingleLogoutService(
+                    (new SingleLogoutService())
+                        ->setLocation(static::getLogoutRequestLocation())
+                        ->setResponseLocation(static::getLogoutResponseLocation())
+                        ->setBinding(SamlConstants::BINDING_SAML2_HTTP_REDIRECT)
+                );
+            $descriptors[] = $spRedirectDescriptor;
+        }
+        if ($this->supportsPost()) {
+            $spPostDescriptor = $this->createPostDescriptor()
+                ->addSingleLogoutService(
+                    (new SingleLogoutService())
+                        ->setLocation(static::getLogoutRequestLocation())
+                        ->setResponseLocation(static::getLogoutResponseLocation())
+                        ->setBinding(SamlConstants::BINDING_SAML2_HTTP_POST)
+                );
+            $descriptors[] = $spPostDescriptor;
+        }
 
         $entityDescriptor = new EntityDescriptor(
             Saml::getInstance()->getSettings()->getEntityId(),
-            [
-                $spRedirectDescriptor,
-                $spPostDescriptor,
-            ]);
+            $descriptors
+        );
 
         $provider = (new ProviderRecord())
             ->loadDefaultValues();
 
+        $provider->providerType = 'sp';
+
         if ($withKeyPair) {
             if ($this->useEncryption($provider)) {
-                $this->setEncrypt($spRedirectDescriptor, $withKeyPair);
-                $this->setEncrypt($spPostDescriptor, $withKeyPair);
+                if ($this->supportsRedirect()) {
+                    $this->setEncrypt($spRedirectDescriptor, $withKeyPair);
+                }
+                if ($this->supportsPost()) {
+                    $this->setEncrypt($spPostDescriptor, $withKeyPair);
+                }
             }
             if ($this->useSigning($provider)) {
-                $this->setSign($spRedirectDescriptor, $withKeyPair);
-                $this->setSign($spPostDescriptor, $withKeyPair);
+                if ($this->supportsRedirect()) {
+                    $this->setSign($spRedirectDescriptor, $withKeyPair);
+                }
+                if ($this->supportsPost()) {
+                    $this->setSign($spPostDescriptor, $withKeyPair);
+                }
             }
         }
 

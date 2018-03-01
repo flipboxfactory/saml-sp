@@ -23,32 +23,6 @@ class Response extends Component
 {
 
     /**
-     * @param \craft\web\Request $request
-     * @return \LightSaml\Model\Protocol\Response
-     * @throws InvalidMessage
-     * @throws \Exception
-     */
-    public function parseByRequest(\craft\web\Request $request) : \LightSaml\Model\Protocol\Response
-    {
-
-        switch ($request->getMethod()) {
-            case 'POST':
-                $response = Saml::getInstance()->getHttpPost()->receive($request);
-                break;
-            case 'GET':
-            default:
-                $response = Saml::getInstance()->getHttpRedirect()->receive($request);
-                break;
-        }
-
-        if( !($response instanceof \LightSaml\Model\Protocol\Response)) {
-            throw new InvalidMessage("Invalid message request.");
-        }
-        return $response;
-
-    }
-
-    /**
      * @param Assertion $assertion
      * @return bool
      */

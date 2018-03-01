@@ -15,7 +15,7 @@ use craft\base\Plugin;
 use craft\console\Application as ConsoleApplication;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
-use flipbox\saml\core\services\messages\ProviderServiceInterface;
+use flipbox\saml\core\services\ProviderServiceInterface;
 use flipbox\saml\core\traits\SamlCore;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\services\messages\AuthnRequest;
@@ -77,7 +77,7 @@ class Saml extends Plugin implements SamlPluginInterface
             'provider'         => Provider::class,
             'providerIdentity' => ProviderIdentity::class,
             'metadata'         => Metadata::class,
-            'Response'         => Response::class,
+            'response'         => Response::class,
         ]);
     }
 

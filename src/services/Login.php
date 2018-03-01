@@ -14,20 +14,19 @@ use craft\elements\User;
 use craft\models\UserGroup;
 use flipbox\saml\core\events\RegisterAttributesTransformer;
 use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\core\services\traits\Security;
-use flipbox\saml\sp\transformers\AbstractResponseToUser;
+use flipbox\saml\sp\transformers\ResponseAssertion;
 use Flipbox\Transform\Factory;
-use LightSaml\Credential\X509Certificate;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Protocol\Response as SamlResponse;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
 use yii\base\UserException;
 use craft\db\Query;
 
 class Login extends Component
 {
     const EVENT_ATTRIBUTE_TRANSFORMER = 'attributeTransformer';
+    const DEFAULT_ATTRIBUTE_TRANSFORMER = ResponseAssertion::class;
 
     /**
      * @param SamlResponse $response
@@ -112,19 +111,21 @@ class Login extends Component
          * Get username from the NameID
          * @todo Give an option to map another attribute value to $username (like email)
          */
-        $providerIdentity = $username = $assertion->getSubject()->getNameID()->getValue();
+        $nameId = $username = $assertion->getSubject()->getNameID()->getValue();
+
+        $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
+            $response->getIssuer()->getValue()
+        );
 
         /** @var \flipbox\saml\sp\models\ProviderIdentity $identity */
-        if (! $identity = Saml::getInstance()->getProviderIdentity()->findByString($providerIdentity)) {
+        if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
+            $nameId,
+            $idpProvider
+        )) {
             if (! Saml::getInstance()->getSettings()->createUser) {
                 throw new UserException("System doesn't have permission to create a new user.");
             }
         }
-
-        /** @var \flipbox\saml\sp\models\Provider $provider */
-        $provider = Saml::getInstance()->getProvider()->findByIssuer(
-            $response->getIssuer()
-        );
 
         /**
          * Is there a user that exists already?
@@ -158,17 +159,14 @@ class Login extends Component
 
         $this->trigger(static::EVENT_ATTRIBUTE_TRANSFORMER, $event);
 
-        /** @var AbstractResponseToUser $transformer */
-        $transformer = $event->getTransformer($provider->getEntityId());
+        if (! $transformer = $event->getTransformer($idpProvider->getEntityId())) {
+            $transformer = static::DEFAULT_ATTRIBUTE_TRANSFORMER;
+        }
 
         /**
          * The transformer takes precedent due to it being more flexible and elegant
          */
-        if ($transformer instanceof AbstractResponseToUser) {
-            Factory::item(new $transformer($user), $response);
-        } else {
-            $this->setAttributesFromAssertion($user, $assertion);
-        }
+        Factory::item(new $transformer($user), $response);
 
         if (! \Craft::$app->getElements()->saveElement($user)) {
             throw new UserException("User save failed.");
@@ -192,10 +190,10 @@ class Login extends Component
          * do this last.
          */
         if (! $identity) {
-            $identity = new \flipbox\saml\sp\models\ProviderIdentity([
-                'providerId'       => $provider->id,
-                'providerIdentity' => $username,
-                'user'             => $user,
+            $identity = new ProviderIdentityRecord([
+                'providerId' => $idpProvider->id,
+                'nameId'     => $username,
+                'userId'     => $user->id,
             ]);
         }
 
@@ -268,6 +266,7 @@ class Login extends Component
      * @param $groupHandle
      * @return UserGroup
      * @throws UserException
+     * @throws \craft\errors\WrongEditionException
      */
     protected function findOrCreateUserGroup($groupHandle): UserGroup
     {
@@ -286,43 +285,17 @@ class Login extends Component
     }
 
     /**
-     * @param User $user
-     * @param Assertion $assertion
-     */
-    protected function setAttributesFromAssertion(User $user, Assertion $assertion)
-    {
-        $attributeMap = Saml::getInstance()->getSettings()->responseAttributeMap;
-        /**
-         * Loop thru attributes and set to the user
-         */
-        foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
-            if (isset($attributeMap[$attribute->getName()])) {
-                $craftProperty = $attributeMap[$attribute->getName()];
-
-                //check if it exists as a property first
-                if (property_exists($user, $craftProperty)) {
-                    $user->{$craftProperty} = $attribute->getFirstAttributeValue();
-                } else {
-                    if (is_callable($craftProperty)) {
-                        call_user_func($craftProperty, $user, $attribute);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @param \flipbox\saml\sp\models\ProviderIdentity $identity
+     * @param ProviderIdentityRecord $identity
      * @return bool
      * @throws UserException
+     * @throws \Throwable
      */
-    protected function loginUser(\flipbox\saml\sp\models\ProviderIdentity $identity)
+    protected function loginUser(\flipbox\saml\sp\records\ProviderIdentityRecord $identity)
     {
         if ($identity->getUser()->getStatus() !== User::STATUS_ACTIVE) {
             if (! \Craft::$app->getUsers()->activateUser($identity->getUser())) {
                 throw new UserException("Can't activate user.");
             }
-
         }
 
         if (\Craft::$app->getUser()->login(

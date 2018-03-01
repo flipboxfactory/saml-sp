@@ -12,31 +12,19 @@ namespace flipbox\saml\sp\records;
 use flipbox\ember\records\ActiveRecord;
 use flipbox\ember\helpers\ModelHelper;
 use craft\validators\DateTimeValidator;
+use flipbox\saml\core\records\AbstractProviderIdentity;
 
-/**
- * Class AbstractProviderIdentityRecord
- * @package flipbox\saml\sp\records
- * @property int $providerId
- * @property int $userId
- * @property string $providerIdentity
- * @property string $sessionId
- * @property bool $enabled
- * @property \DateTime $lastLoginDate
- * @property \DateTime $dateCreated
- * @property \DateTime $dateUpdated
- */
-class ProviderIdentityRecord extends ActiveRecord
+class ProviderIdentityRecord extends AbstractProviderIdentity
 {
 
     const TABLE_ALIAS = 'saml_sp_provider_identity';
-
 
     /**
      * @inheritdoc
      */
     public function rules()
     {
-        return array_merge(parent::rules(),[
+        return array_merge(parent::rules(), [
             [
                 [
                     'lastLoginDate',
@@ -52,12 +40,14 @@ class ProviderIdentityRecord extends ActiveRecord
 
     /**
      * @inheritdoc
-     *
-     * @return string
      */
-    public static function tableName(): string
+    public function getProvider()
     {
-        return '{{%saml_sp_provider_identity}}';
+        return $this->hasOne(
+            ProviderRecord::class,
+            [
+                'providerId' => 'id',
+            ]
+        );
     }
-
 }

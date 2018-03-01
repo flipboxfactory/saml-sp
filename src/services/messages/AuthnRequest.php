@@ -10,12 +10,17 @@ namespace flipbox\saml\sp\services\messages;
 
 
 use craft\base\Component;
+use flipbox\keychain\records\KeyChainRecord;
+use flipbox\saml\core\helpers\SecurityHelper;
+use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\models\Settings;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\core\services\traits\Security;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Helper;
 use LightSaml\Model\Assertion\Issuer;
+use LightSaml\Model\Protocol\SamlMessage;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 class AuthnRequest extends Component
@@ -24,25 +29,12 @@ class AuthnRequest extends Component
     const REQUEST_SESSION_KEY = 'authnrequest.requestId';
 
     /**
-     * @param string|null $entityId
-     * @return \LightSaml\Model\Protocol\AuthnRequest|null
+     * @param AbstractProvider $idp
+     * @return \LightSaml\Model\Protocol\AuthnRequest
      */
-    public function create(string $entityId = null)
+    public function create(AbstractProvider $idp)
     {
-        if (! $entityId) {
-
-            /**
-             * @var \flipbox\saml\sp\models\Provider $provider
-             */
-            if (! $provider = Saml::getInstance()->getProvider()->findDefaultProvider()) {
-                return null;
-            }
-
-        }else{
-            $provider = Saml::getInstance()->getProvider()->findByString($entityId);
-        }
-
-        $location = $provider->getMetadata()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getLocation();
+        $location = $idp->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getLocation();
 
         /**
          * @var $samlSettings Settings
@@ -53,16 +45,22 @@ class AuthnRequest extends Component
         $authnRequest->setAssertionConsumerServiceURL(
             Metadata::getLoginLocation()
         )->setProtocolBinding(
-            $provider->getMetadata()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getBinding()
+            $idp->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getBinding()
         )->setID(Helper::generateID())
             ->setIssueInstant(new \DateTime())
             ->setDestination($location)
             ->setRelayState(\Craft::$app->getUser()->getReturnUrl())
             ->setIssuer(new Issuer($samlSettings->getEntityId()));
 
-        //set signed assertions
-        if ($samlSettings->signAssertions) {
-            $this->signMessage($authnRequest);
+        /** @var ProviderRecord $thisSp */
+        $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
+            Saml::getInstance()->getSettings()->getEntityId()
+        );
+        /** @var KeyChainRecord $pair */
+        $pair = $thisSp->getKeychain()->one();
+
+        if (($pair) && $samlSettings->signAssertions) {
+            SecurityHelper::signMessage($authnRequest, $pair);
         }
 
         return $authnRequest;
@@ -73,7 +71,7 @@ class AuthnRequest extends Component
      */
     public function saveToSession(\LightSaml\Model\Protocol\AuthnRequest $authnRequest)
     {
-        \Craft::$app->getSession()->set(static::REQUEST_SESSION_KEY , $authnRequest->getID());
+        \Craft::$app->getSession()->set(static::REQUEST_SESSION_KEY, $authnRequest->getID());
     }
 
     /**

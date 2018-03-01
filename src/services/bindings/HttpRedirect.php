@@ -20,7 +20,6 @@ use flipbox\saml\core\services\bindings\AbstractHttpRedirect;
 
 class HttpRedirect extends AbstractHttpRedirect
 {
-    use Security;
 
     /**
      * @inheritdoc

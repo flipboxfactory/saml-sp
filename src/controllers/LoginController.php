@@ -9,11 +9,17 @@
 namespace flipbox\saml\sp\controllers;
 
 
+use craft\helpers\UrlHelper;
+use craft\web\assets\selectize\SelectizeAsset;
 use craft\web\Controller;
+use craft\web\Response;
+use flipbox\saml\core\models\Transport;
 use flipbox\saml\sp\models\Settings;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use Craft;
 use flipbox\saml\core\helpers\SerializeHelper;
+use flipbox\saml\sp\services\bindings\Factory;
 use LightSaml\Model\Protocol\AuthnRequest;
 use LightSaml\Model\XmlDSig\SignatureWriter;
 use LightSaml\SamlConstants;
@@ -55,7 +61,8 @@ class LoginController extends Controller
     public function actionIndex()
     {
 
-        $response = Saml::getInstance()->getResponse()->parseByRequest(Craft::$app->request);
+        $response = Factory::receive(Craft::$app->request);
+
         if (! Saml::getInstance()->getAuthnRequest()->isResponseValidWithSession($response)) {
             throw new HttpException(400, "Invalid request");
         }
@@ -64,10 +71,10 @@ class LoginController extends Controller
 
         //get relay state but don't error!
         $relayState = \Craft::$app->request->getQueryParam('RelayState') ?: \Craft::$app->request->getBodyParam('RelayState');
-        try{
-           $redirect = base64_decode($relayState);
-        }catch(\Exception $e){
-           $redirect = \Craft::$app->getUser()->getReturnUrl();
+        try {
+            $redirect = base64_decode($relayState);
+        } catch (\Exception $e) {
+            $redirect = \Craft::$app->getUser()->getReturnUrl();
         }
 
         return $this->redirect($redirect);
@@ -80,11 +87,15 @@ class LoginController extends Controller
      */
     public function actionRequest()
     {
+        /** @var ProviderRecord $provider */
+        $idp = Saml::getInstance()->getProvider()->findByIdp();
+        $parameters = [];
 
         /**
          * @var $authnRequest AuthnRequest
          */
-        $authnRequest = Saml::getInstance()->getAuthnRequest()->create();
+        $authnRequest = Saml::getInstance()->getAuthnRequest()->create($idp);
+
         /**
          * Extra layer of security, save the id and check it on the return.
          */
@@ -94,28 +105,16 @@ class LoginController extends Controller
             SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl())
         );
 
+        $parameters['RelayState'] = SerializeHelper::toBase64($authnRequest->getRelayState());
+
         if ($authnRequest->getProtocolBinding() === SamlConstants::BINDING_SAML2_HTTP_REDIRECT) {
-            Saml::getInstance()->getHttpRedirect()->send()
-            $parameters['SAMLRequest'] = SerializeHelper::base64Message(
-                $authnRequest,
-                true
-            );
-            if ($signature = $authnRequest->getSignature()) {
-                $authnRequest->setSignature(null);
-                $dest = SerializeHelper::redirectUrl($authnRequest->getDestination(), SerializeHelper::addSignatureToUrl($parameters, $signature));
-            } else {
-                $dest = SerializeHelper::redirectUrl($authnRequest->getDestination(), $parameters);
-            }
+
+            $dest = SerializeHelper::getRedirectURL($authnRequest, $authnRequest->getDestination());
 
             return $this->redirect($dest);
         }
-        //else POST Binding
-        $parameters['SAMLRequest'] = SerializeHelper::base64Message(
-            $authnRequest
-        );
-
         $parameters['destination'] = $authnRequest->getDestination();
-
+        $parameters['SAMLRequest'] = SerializeHelper::base64Message($authnRequest);
         $view = Craft::$app->getView();
         $mode = $view->getTemplateMode();
 
