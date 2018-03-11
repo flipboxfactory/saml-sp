@@ -12,6 +12,7 @@ namespace flipbox\saml\sp\models;
 use craft\base\Model;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
+use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\Metadata;
 use LightSaml\ClaimTypes;
@@ -22,7 +23,7 @@ use yii\base\InvalidConfigException;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use LightSaml\Credential\X509Certificate;
 
-class Settings extends Model
+class Settings extends Model implements SettingsInterface
 {
     /**
      * File system path to the rsa key used to sign and encrypt assertions

@@ -87,9 +87,8 @@ class LoginController extends Controller
      */
     public function actionRequest()
     {
-        /** @var ProviderRecord $provider */
+        /** @var ProviderRecord $idp */
         $idp = Saml::getInstance()->getProvider()->findByIdp();
-        $parameters = [];
 
         /**
          * @var $authnRequest AuthnRequest
@@ -105,30 +104,10 @@ class LoginController extends Controller
             SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl())
         );
 
-        $parameters['RelayState'] = SerializeHelper::toBase64($authnRequest->getRelayState());
 
-        if ($authnRequest->getProtocolBinding() === SamlConstants::BINDING_SAML2_HTTP_REDIRECT) {
+        Factory::send($authnRequest,$idp);
 
-            $dest = SerializeHelper::getRedirectURL($authnRequest, $authnRequest->getDestination());
-
-            return $this->redirect($dest);
-        }
-        $parameters['destination'] = $authnRequest->getDestination();
-        $parameters['SAMLRequest'] = SerializeHelper::base64Message($authnRequest);
-        $view = Craft::$app->getView();
-        $mode = $view->getTemplateMode();
-
-        // Switch to admin
-        $view->setTemplateMode($view::TEMPLATE_MODE_CP);
-
-        $response = $this->renderTemplate('saml-sp/_components/post-binding-submit.twig', $parameters);
-
-        // Revert mode
-        $view->setTemplateMode($mode);
-
-
-        return $response;
-
+        exit;
     }
 
 }

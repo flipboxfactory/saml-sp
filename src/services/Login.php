@@ -12,11 +12,11 @@ namespace flipbox\saml\sp\services;
 use craft\base\Component;
 use craft\elements\User;
 use craft\models\UserGroup;
-use flipbox\saml\core\events\RegisterAttributesTransformer;
+use flipbox\saml\sp\events\RegisterAttributesTransformer;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\transformers\ResponseAssertion;
+use flipbox\saml\sp\transformers\Response;
 use Flipbox\Transform\Factory;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Protocol\Response as SamlResponse;
@@ -26,11 +26,11 @@ use craft\db\Query;
 class Login extends Component
 {
     const EVENT_ATTRIBUTE_TRANSFORMER = 'attributeTransformer';
-    const DEFAULT_ATTRIBUTE_TRANSFORMER = ResponseAssertion::class;
+    const DEFAULT_ATTRIBUTE_TRANSFORMER = Response::class;
 
     /**
      * @param SamlResponse $response
-     * @return \flipbox\saml\sp\models\ProviderIdentity
+     * @return \flipbox\saml\sp\records\ProviderIdentityRecord
      * @throws InvalidMessage
      * @throws UserException
      * @throws \Exception
@@ -95,7 +95,7 @@ class Login extends Component
 
     /**
      * @param SamlResponse $response
-     * @return \flipbox\saml\sp\models\ProviderIdentity
+     * @return \flipbox\saml\sp\records\ProviderIdentityRecord
      * @throws InvalidMessage
      * @throws UserException
      * @throws \Throwable
@@ -117,7 +117,7 @@ class Login extends Component
             $response->getIssuer()->getValue()
         );
 
-        /** @var \flipbox\saml\sp\models\ProviderIdentity $identity */
+        /** @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity */
         if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
             $nameId,
             $idpProvider

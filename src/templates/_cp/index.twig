@@ -1,0 +1,63 @@
+{% extends "_layouts/cp" %}
+
+{% block actionButton %}
+    <div class="btngroup submit first">
+        <a class="btn submit add icon" href="{{ cpUrl('saml-sp/metadata/new') }}">Add New IDP</a>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <nav>
+        <ul>
+            <li class="heading"><span>Menu</span></li>
+            <li>
+                <a href="{{ cpUrl('saml-sp') }}" class="sel">
+                    <span class="label">Provider List</span>
+                </a>
+                <a href="{{ cpUrl('saml-sp/keychain') }}" class="">
+                    <span class="label">Keychain</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
+
+    {% block content %}
+        <div class="elements">
+            <div class="tableview">
+                <table class="data fullwidth">
+                    <thead>
+                    <tr>
+                        <td scope="col" data-attribute="id">ID</td>
+                        <td scope="col" data-attribute="entityid">EntityId</td>
+                        <td scope="col" data-attribute="type">Type</td>
+                        <td scope="col" data-attribute="dateCreated">Date Created</td>
+                        <td scope="col" data-attribute="dateUpdated">Date Updated</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for provider in providers %}
+                        <tr data-id="">
+                            <td data-title="ID">{{ provider.id }}</td>
+                            <td data-title="entityid">
+                                <div class="element small hasstatus " data-type="craft\elements\User" data-id="3"
+                                     data-status="active" data-url="{{ cpUrl('saml-sp/metadata/' ~ provider.id) }}"
+                                     data-level="" data-editable="">
+                                    <span class="status {% if provider.enabled %}active{% else %}inactive{% endif %}"></span>
+                                    <div class="label">
+                                        <span class="title">
+                                            <a href="{{ cpUrl('saml-sp/metadata/' ~ provider.id) }}">{{ provider.entityId }}</a>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-title="Type">{{ provider.type }}</td>
+                            <td data-title="Date Created">{{ provider.dateCreated|date }}</td>
+                            <td data-title="Date Updated">{{ provider.dateUpdated|date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endblock %}

@@ -1,0 +1,85 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% block actionButton %}
+    <div class="btngroup submit right">
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+
+        <div class="btn submit menubtn"></div>
+        <div class="menu">
+            <ul>
+                <li><a class="formsubmit" data-redirect="{{ continueEditingUrl }}">
+                        {{ "Save and continue editing"|t('app') }}
+                        {{ forms.optionShortcutLabel('S') }}
+                    </a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="grid first" data-max-cols="3">
+        <div class="item" data-position="left" data-colspan="2">
+
+            <input type="hidden" name="action"
+                   value="{{ baseActionPath }}/{% if provider.id %}update{% else %}create{% endif %}">
+            {{ redirectInput(baseCpPath) }}
+
+            {% if provider.id %}<input type="hidden" name="identifier" value="{{ provider.id }}">{% endif %}
+
+            {{ forms.textField({
+                label: "Entity ID"|t('saml-sp'),
+                instructions: "This is pulled from the Metadata and is readonly."|t('saml-sp'),
+                name: "entityId",
+                id: 'entityId',
+                class: "code",
+                value: provider.entityId,
+                errors: provider.getErrors('entityId'),
+                readonly: true,
+                disabled: true
+            }) }}
+
+            {{ forms.lightswitchField({
+                label: "Enable"|t('saml-sp'),
+                id: 'enabled',
+                name: 'enabled',
+                on: provider.enabled,
+                errors: provider.getErrors('enabled')
+            }) }}
+
+            {{ forms.textareaField({
+                label: "Metadata XML"|t('saml-sp'),
+                instructions: "Paste Metadata XML from the provider."|t('saml-sp'),
+                class: "code",
+                id: 'metadata',
+                name: 'metadata',
+                value: provider.metadata,
+                errors: provider.getErrors('metadata'),
+                required: true,
+                rows: 10
+            }) }}
+
+            {{ forms.selectField({
+                label: "Type"|t('saml-sp'),
+                instructions: "Specify whether this is the an Service or Identity Provider."|t('saml-sp'),
+                id: 'Type',
+                name: 'Type',
+                value: provider.type,
+                errors: provider.getErrors('type'),
+                options: [{
+                    value: 'idp',
+                    label: 'idp',
+                },{
+                    value: 'sp',
+                    label: 'sp',
+                }],
+                required: true
+            }) }}
+
+        </div>
+        <div class="item" data-position="right" data-colspan="1"></div>
+    </div>
+
+{% endblock %}

@@ -10,9 +10,11 @@ namespace flipbox\saml\sp;
 
 
 use Craft;
-use craft\base\Model;
 use craft\base\Plugin;
 use craft\console\Application as ConsoleApplication;
+use craft\events\RegisterUrlRulesEvent;
+use craft\web\UrlManager;
+use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
 use flipbox\saml\core\services\ProviderServiceInterface;
@@ -29,11 +31,13 @@ use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
 use flipbox\keychain\traits\ModuleTrait as KeyChainModuleTrait;
+use yii\base\Event;
 
 class Saml extends Plugin implements SamlPluginInterface
 {
 
     use KeyChainModuleTrait, SamlCore;
+    public $hasCpSection = true;
 
     public function init()
     {
@@ -41,6 +45,7 @@ class Saml extends Plugin implements SamlPluginInterface
 
         $this->initComponents();
         $this->initModules();
+        $this->initEvents();
 
         // Switch target to console controllers
         if (Craft::$app instanceof ConsoleApplication) {
@@ -54,7 +59,20 @@ class Saml extends Plugin implements SamlPluginInterface
     }
 
     /**
-     *
+     * Events
+     */
+    protected function initEvents()
+    {
+        // CP routes
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            [self::class, 'onRegisterCpUrlRules']
+        );
+    }
+
+    /**
+     * Modules
      */
     protected function initModules()
     {
@@ -63,7 +81,7 @@ class Saml extends Plugin implements SamlPluginInterface
     }
 
     /**
-     *
+     * Components
      */
     public function initComponents()
     {
@@ -82,9 +100,27 @@ class Saml extends Plugin implements SamlPluginInterface
     }
 
     /**
+     * @param RegisterUrlRulesEvent $event
+     */
+    public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event)
+    {
+        $event->rules = array_merge(
+            $event->rules,
+            [
+                'saml-sp'                           => 'saml-sp/cp/view/general/index',
+                /**
+                 * Metadata
+                 */
+                'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
+                'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
+            ]
+        );
+    }
+
+    /**
      * @return Settings
      */
-    public function getSettings(): Model
+    public function getSettings(): SettingsInterface
     {
         return parent::getSettings();
     }

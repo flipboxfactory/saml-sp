@@ -10,23 +10,15 @@ namespace flipbox\saml\sp\transformers;
 
 use craft\elements\User;
 use flipbox\saml\sp\Saml;
-use Flipbox\Transform\Scope;
-use Flipbox\Transform\Transformers\AbstractTransformer;
-use LightSaml\Model\Assertion\Assertion;
-use LightSaml\Model\Protocol\Response;
+use LightSaml\Model\Protocol\Response as ResponseMessage;
 
-class ResponseAssertion extends AbstractTransformer
+class Response extends AbstractResponse
 {
 
-    protected $user;
-
-    public function __construct(User $user, array $config = [])
-    {
-        parent::__construct($config);
-        $this->user = $user;
-    }
-
-    public function transform(Response $response, User $user)
+    /**
+     * @inheritdoc
+     */
+    public function transform(ResponseMessage $response, User $user)
     {
 
         $assertion = $response->getFirstAssertion();
@@ -52,14 +44,6 @@ class ResponseAssertion extends AbstractTransformer
 
         return $user;
 
-    }
-
-    public function __invoke($data, Scope $scope, string $identifier = null)
-    {
-        return $this->transform(
-            $data,
-            $this->user
-        );
     }
 
 }
