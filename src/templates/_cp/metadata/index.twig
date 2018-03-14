@@ -78,6 +78,18 @@
                 required: true
             }) }}
 
+            {% if keypair %}
+                {{ forms.selectField({
+                    label: "Key Pair"|t('saml-sp'),
+                    instructions: "Key pair associated to this metadata."|t('saml-sp'),
+                    id: 'keychain',
+                    name: 'keychain',
+                    value: keypair.id,
+                    errors: provider.getErrors('keychain'),
+                    options: allkeypairs,
+                    required: true
+                }) }}
+            {% endif %}
         </div>
         <div class="item" data-position="right" data-colspan="1"></div>
     </div>
