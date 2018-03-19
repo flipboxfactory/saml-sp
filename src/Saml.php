@@ -106,10 +106,20 @@ class Saml extends Plugin implements SamlPluginInterface
         $event->rules = array_merge(
             $event->rules,
             [
-                'saml-sp'                           => 'saml-sp/cp/view/general/index',
+                'saml-sp/'                          => 'saml-sp/cp/view/general/setup',
+
+                /**
+                 * Keychain
+                 */
+                'saml-sp/keychain'                  => 'saml-sp/cp/view/keychain/index',
+                'saml-sp/keychain/new'              => 'saml-sp/cp/view/keychain/edit',
+                'saml-sp/keychain/new-openssl'      => 'saml-sp/cp/view/keychain/edit/openssl',
+                'saml-sp/keychain/<keypairId:\d+>'  => 'saml-sp/cp/view/keychain/edit',
+
                 /**
                  * Metadata
                  */
+                'saml-sp/metadata'                  => 'saml-sp/cp/view/general/metadata',
                 'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
                 'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
             ]

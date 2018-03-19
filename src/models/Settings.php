@@ -80,6 +80,12 @@ class Settings extends Model implements SettingsInterface
     public $syncGroups = true;
 
     /**
+     * Create groups when they don't exist in craft
+     * @var bool
+     */
+    public $autoCreateGroups = true;
+
+    /**
      * @var array
      */
     public $groupAttributeNames = [

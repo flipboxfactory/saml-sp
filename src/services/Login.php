@@ -77,12 +77,12 @@ class Login extends Component
      */
     public function getFirstAssertion(\LightSaml\Model\Protocol\Response $response)
     {
-
-        if (Saml::getInstance()->getSettings()->encryptAssertions) {
-            $assertions = $this->decryptAssertions($response);
-        } else {
+        /** todo make this work!! */
+//        if (Saml::getInstance()->getSettings()->encryptAssertions) {
+//            $assertions = $this->decryptAssertions($response);
+//        } else {
             $assertions = $response->getAllAssertions();
-        }
+//        }
 
         if (! isset($assertions[0])) {
             throw new InvalidMessage("Invalid message. No assertions found in response.");
@@ -230,7 +230,9 @@ class Login extends Component
                  */
 
                 foreach ($attribute->getAllAttributeValues() as $value) {
-                    $groups[] = $this->findOrCreateUserGroup($value)->id;
+                    if($group = $this->findOrCreateUserGroup($value)) {
+                        $groups[] = $group;
+                    }
                 }
 
             }
@@ -238,28 +240,6 @@ class Login extends Component
 
         return \Craft::$app->getUsers()->assignUserToGroups($user->getId(), $groups);
 
-    }
-
-    /**
-     * DYI method due to an issue with craft\services\UserGroups::getGroupByHandle
-     * https://github.com/craftcms/cms/issues/2317
-     *
-     * @param $handle
-     * @return UserGroup|null
-     */
-    protected function getGroupByHandle($handle)
-    {
-        $result = (new Query())
-            ->select([
-                'id',
-                'name',
-                'handle',
-            ])
-            ->from(['{{%usergroups}}'])
-            ->where([
-                'handle' => $handle
-            ])->one();
-        return $result ? new UserGroup($result) : null;
     }
 
     /**
