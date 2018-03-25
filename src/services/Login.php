@@ -231,7 +231,7 @@ class Login extends Component
 
                 foreach ($attribute->getAllAttributeValues() as $value) {
                     if($group = $this->findOrCreateUserGroup($value)) {
-                        $groups[] = $group;
+                        $groups[] = $group->id;
                     }
                 }
 

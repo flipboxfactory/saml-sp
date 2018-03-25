@@ -18,7 +18,7 @@ use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
 use flipbox\saml\core\services\ProviderServiceInterface;
-use flipbox\saml\core\traits\SamlCore;
+use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
@@ -30,13 +30,11 @@ use flipbox\saml\sp\services\bindings\HttpRedirect;
 use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
-use flipbox\keychain\traits\ModuleTrait as KeyChainModuleTrait;
 use yii\base\Event;
 
-class Saml extends Plugin implements SamlPluginInterface
+class Saml extends AbstractPlugin implements SamlPluginInterface
 {
 
-    use SamlCore;
     public $hasCpSection = true;
 
     public function init()
@@ -44,7 +42,6 @@ class Saml extends Plugin implements SamlPluginInterface
         parent::init();
 
         $this->initComponents();
-        $this->initModules();
         $this->initEvents();
 
         // Switch target to console controllers
@@ -69,14 +66,6 @@ class Saml extends Plugin implements SamlPluginInterface
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             [self::class, 'onRegisterCpUrlRules']
         );
-    }
-
-    /**
-     * Modules
-     */
-    protected function initModules()
-    {
-        $this->initCore();
     }
 
     /**
@@ -119,8 +108,9 @@ class Saml extends Plugin implements SamlPluginInterface
                 /**
                  * Metadata
                  */
-                'saml-sp/metadata'                  => 'saml-sp/cp/view/general/metadata',
+                'saml-sp/metadata'                  => 'saml-sp/cp/view/metadata/default',
                 'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
+                'saml-sp/metadata/my-provider'      => 'saml-sp/cp/view/metadata/edit/my-provider',
                 'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
             ]
         );

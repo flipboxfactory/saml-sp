@@ -18,21 +18,22 @@ use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\SamlPluginInterface;
+use flipbox\saml\core\services\messages\AbstractMetadata;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
 use flipbox\saml\sp\models\Provider;
 use flipbox\saml\sp\records\ProviderRecord;
+use flipbox\saml\sp\transformers\MetadataTransformer;
 use LightSaml\Model\Metadata\EntityDescriptor;
 use LightSaml\Model\Metadata\SingleLogoutService;
 use LightSaml\Model\Metadata\SpSsoDescriptor;
 use LightSaml\Model\Metadata\AssertionConsumerService;
 use LightSaml\SamlConstants;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\core\services\traits\Metadata as MetadataTrait;
 
-class Metadata extends Component implements MetadataServiceInterface
+class Metadata extends AbstractMetadata implements MetadataServiceInterface
 {
 
-    use MetadataTrait;
+    const DEFAULT_TRANSFORMER = MetadataTransformer::class;
 
     /**
      *
@@ -40,30 +41,6 @@ class Metadata extends Component implements MetadataServiceInterface
     const LOGIN_LOCATION = 'saml-sp/login';
     const LOGOUT_RESPONSE_LOCATION = 'saml-sp/logout/response';
     const LOGOUT_REQUEST_LOCATION = 'saml-sp/logout/request';
-
-    /**
-     * @return string
-     */
-    public static function getLogoutResponseLocation()
-    {
-        return UrlHelper::actionUrl(static::LOGOUT_RESPONSE_LOCATION);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getLogoutRequestLocation()
-    {
-        return UrlHelper::actionUrl(static::LOGOUT_REQUEST_LOCATION);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getLoginLocation()
-    {
-        return UrlHelper::actionUrl(static::LOGIN_LOCATION);
-    }
 
     /**
      * @return array
@@ -89,134 +66,6 @@ class Metadata extends Component implements MetadataServiceInterface
     protected function useSigning(AbstractProvider $provider)
     {
         return Saml::getInstance()->getSettings()->signAssertions;
-    }
-
-    /**
-     * @param KeyChainRecord|null $withKeyPair
-     * @param bool $createKeyFromSettings
-     * @return Provider
-     * @throws InvalidMetadata
-     * @throws \Exception
-     */
-    public function create(KeyChainRecord $withKeyPair = null, $createKeyFromSettings = false): ProviderInterface
-    {
-        if (! $withKeyPair && $createKeyFromSettings) {
-            $withKeyPair = (new OpenSSL(Saml::getInstance()->getSettings()->defaultOpenSSLValues))->create();
-            $withKeyPair->save();
-        }
-
-        $descriptors = [];
-
-        if ($this->supportsRedirect()) {
-            $spRedirectDescriptor = $this->createRedirectDescriptor()
-                ->addSingleLogoutService(
-                    (new SingleLogoutService())
-                        ->setLocation(static::getLogoutRequestLocation())
-                        ->setResponseLocation(static::getLogoutResponseLocation())
-                        ->setBinding(SamlConstants::BINDING_SAML2_HTTP_REDIRECT)
-                );
-            $descriptors[] = $spRedirectDescriptor;
-        }
-        if ($this->supportsPost()) {
-            $spPostDescriptor = $this->createPostDescriptor()
-                ->addSingleLogoutService(
-                    (new SingleLogoutService())
-                        ->setLocation(static::getLogoutRequestLocation())
-                        ->setResponseLocation(static::getLogoutResponseLocation())
-                        ->setBinding(SamlConstants::BINDING_SAML2_HTTP_POST)
-                );
-            $descriptors[] = $spPostDescriptor;
-        }
-
-        $entityDescriptor = new EntityDescriptor(
-            Saml::getInstance()->getSettings()->getEntityId(),
-            $descriptors
-        );
-
-        $provider = (new ProviderRecord())
-            ->loadDefaultValues();
-
-        $provider->providerType = 'sp';
-
-        if ($withKeyPair) {
-            if ($this->useEncryption($provider)) {
-                if ($this->supportsRedirect()) {
-                    $this->setEncrypt($spRedirectDescriptor, $withKeyPair);
-                }
-                if ($this->supportsPost()) {
-                    $this->setEncrypt($spPostDescriptor, $withKeyPair);
-                }
-            }
-            if ($this->useSigning($provider)) {
-                if ($this->supportsRedirect()) {
-                    $this->setSign($spRedirectDescriptor, $withKeyPair);
-                }
-                if ($this->supportsPost()) {
-                    $this->setSign($spPostDescriptor, $withKeyPair);
-                }
-            }
-        }
-
-        \Craft::configure($provider, [
-            'entityId' => $entityDescriptor->getEntityID(),
-            'metadata' => SerializeHelper::toXml($entityDescriptor),
-        ]);
-
-        if (! $this->saveProvider($provider)) {
-            throw new \Exception($provider->getFirstError());
-        }
-
-        return $provider;
-    }
-
-    /**
-     * @return SpSsoDescriptor
-     * @throws InvalidMetadata
-     */
-    public function createRedirectDescriptor()
-    {
-        return $this->createDescriptor(SamlConstants::BINDING_SAML2_HTTP_REDIRECT);
-    }
-
-    /**
-     * @return SpSsoDescriptor
-     * @throws InvalidMetadata
-     */
-    public function createPostDescriptor()
-    {
-        return $this->createDescriptor(SamlConstants::BINDING_SAML2_HTTP_POST);
-    }
-
-    /**
-     * @param $binding
-     * @return SpSsoDescriptor
-     * @throws InvalidMetadata
-     */
-    public function createDescriptor($binding)
-    {
-        if (! in_array($binding, $this->getSupportedBindings())) {
-            throw new InvalidMetadata(
-                sprintf("Binding is not supported: %s", $binding)
-            );
-        }
-
-        $spDescriptor = (new SpSsoDescriptor())
-            ->setWantAssertionsSigned(Saml::getInstance()->getSettings()->signAssertions);
-
-//        $spDescriptor->addNameIDFormat(
-//            SamlConstants::NAME_ID_FORMAT_EMAIL
-//        );
-//        $spDescriptor->addNameIDFormat(
-//            SamlConstants::NAME_ID_FORMAT_X509_SUBJECT_NAME
-//        );
-
-        $acs = new AssertionConsumerService();
-        $acs->setBinding($binding)
-            ->setLocation(static::getLoginLocation());
-        $spDescriptor->addAssertionConsumerService($acs);
-
-        return $spDescriptor;
-
     }
 
     /**

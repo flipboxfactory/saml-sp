@@ -13,7 +13,7 @@
     "yii2"
   ],
   "require": {
-    "craftcms/cms": "~3.0.0-RC1",
+    "craftcms/cms": "^3.0.0-RC15",
     "flipboxfactory/saml-core": "^1.0.0-rc.1",
     "flipboxfactory/keychain": "1.0.0-beta.1"
   },
@@ -40,8 +40,8 @@
   },
   "extra": {
     "name": "SAML SSO Service Provider",
-    "version":"1.0.0-rc.3",
-    "schemaVersion":"1.0.0-rc.3",
+    "version":"1.0.0-rc.4",
+    "schemaVersion":"1.0.0-rc.4",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",

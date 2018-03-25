@@ -9,32 +9,12 @@
 namespace flipbox\saml\sp\models;
 
 
-use craft\base\Model;
-use craft\elements\User;
-use craft\helpers\UrlHelper;
+use flipbox\saml\core\models\AbstractSettings;
 use flipbox\saml\core\models\SettingsInterface;
-use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\Metadata;
 use LightSaml\ClaimTypes;
-use LightSaml\Model\Assertion\Assertion;
-use LightSaml\Model\Assertion\Attribute;
-use LightSaml\SamlConstants;
-use yii\base\InvalidConfigException;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
-use LightSaml\Credential\X509Certificate;
 
-class Settings extends Model implements SettingsInterface
+class Settings extends AbstractSettings implements SettingsInterface
 {
-    /**
-     * File system path to the rsa key used to sign and encrypt assertions
-     * @var string
-     */
-    public $keyPath;
-    /**
-     * File system path to the cert used to sign and encrypt assertions
-     * @var string
-     */
-    public $certPath;
     /**
      * @var bool
      */
@@ -52,12 +32,6 @@ class Settings extends Model implements SettingsInterface
      * @var bool
      */
     public $enableHttpPostBinding = true;
-
-    /**
-     * @var string
-     * The local entity id
-     */
-    protected $entityId;
 
     /**
      * @var bool
@@ -165,46 +139,4 @@ class Settings extends Model implements SettingsInterface
 
 
     ];
-
-    /**
-     * @param $entityId
-     * @return $this
-     */
-    public function setEntityId($entityId)
-    {
-        $this->entityId = $entityId;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEntityId()
-    {
-        if (! $this->entityId) {
-            $this->entityId = UrlHelper::baseUrl();
-        }
-
-
-        return $this->entityId;
-    }
-
-
-    public function getKey(): XMLSecurityKey
-    {
-        return \LightSaml\Credential\KeyHelper::createPrivateKey(
-            $this->keyPath,
-            '',
-            true
-        );
-    }
-
-    public function getCertificate(): X509Certificate
-    {
-        return X509Certificate::fromFile(
-            $this->certPath
-        );
-    }
-
 }
