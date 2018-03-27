@@ -10,7 +10,6 @@ namespace flipbox\saml\sp;
 
 
 use Craft;
-use craft\base\Plugin;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterUrlRulesEvent;
 use craft\web\UrlManager;
@@ -83,7 +82,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             'provider'         => Provider::class,
             'providerIdentity' => ProviderIdentity::class,
             'metadata'         => Metadata::class,
-            'response'         => Response::class,
+            'response'     => Response::class,
         ]);
     }
 

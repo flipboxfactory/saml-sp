@@ -33,8 +33,6 @@ use flipbox\saml\sp\Saml;
 class Metadata extends AbstractMetadata implements MetadataServiceInterface
 {
 
-    const DEFAULT_TRANSFORMER = MetadataTransformer::class;
-
     /**
      *
      */

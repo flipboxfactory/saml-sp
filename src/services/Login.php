@@ -12,6 +12,7 @@ namespace flipbox\saml\sp\services;
 use craft\base\Component;
 use craft\elements\User;
 use craft\models\UserGroup;
+use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\sp\events\RegisterAttributesTransformer;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
@@ -20,13 +21,14 @@ use flipbox\saml\sp\transformers\Response;
 use Flipbox\Transform\Factory;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Protocol\Response as SamlResponse;
+use yii\base\Event;
 use yii\base\UserException;
 use craft\db\Query;
 
 class Login extends Component
 {
-    const EVENT_ATTRIBUTE_TRANSFORMER = 'attributeTransformer';
-    const DEFAULT_ATTRIBUTE_TRANSFORMER = Response::class;
+
+    const EVENT_RESPONSE_TO_USER = 'eventResponseToUser';
 
     /**
      * @param SamlResponse $response
@@ -70,6 +72,14 @@ class Login extends Component
 
     }
 
+    protected function decryptAssertions(KeyChainRecord $keyChainRecord, \LightSaml\Model\Protocol\Response $response)
+    {
+        Saml::getInstance()->getResponse()->decryptAssertions(
+            $response,
+            $keyChainRecord
+        );
+    }
+
     /**
      * @param SamlResponse $response
      * @return Assertion
@@ -77,12 +87,17 @@ class Login extends Component
      */
     public function getFirstAssertion(\LightSaml\Model\Protocol\Response $response)
     {
-        /** todo make this work!! */
-//        if (Saml::getInstance()->getSettings()->encryptAssertions) {
-//            $assertions = $this->decryptAssertions($response);
-//        } else {
-            $assertions = $response->getAllAssertions();
-//        }
+
+        $ownProvider = Saml::getInstance()->getProvider()->findOwn();
+
+        if ($ownProvider->keychain && $response->getFirstEncryptedAssertion()) {
+            $this->decryptAssertions(
+                $ownProvider->keychain,
+                $response
+            );
+        }
+
+        $assertions = $response->getAllAssertions();
 
         if (! isset($assertions[0])) {
             throw new InvalidMessage("Invalid message. No assertions found in response.");
@@ -152,21 +167,19 @@ class Login extends Component
             ]);
         }
 
-        /**
-         * Run event to fetch registered transformers.
-         */
-        $event = new RegisterAttributesTransformer();
-
-        $this->trigger(static::EVENT_ATTRIBUTE_TRANSFORMER, $event);
-
-        if (! $transformer = $event->getTransformer($idpProvider->getEntityId())) {
-            $transformer = static::DEFAULT_ATTRIBUTE_TRANSFORMER;
-        }
+        $this->transformToUser($response, $user);
 
         /**
-         * The transformer takes precedent due to it being more flexible and elegant
+         * After event for Metadata creation
          */
-        Factory::item(new $transformer($user), $response);
+        $event = new Event();
+        $event->sender = $response;
+        $event->data = $user;
+
+        $this->trigger(
+            static::EVENT_RESPONSE_TO_USER,
+            $event
+        );
 
         if (! \Craft::$app->getElements()->saveElement($user)) {
             throw new UserException("User save failed.");
@@ -230,7 +243,7 @@ class Login extends Component
                  */
 
                 foreach ($attribute->getAllAttributeValues() as $value) {
-                    if($group = $this->findOrCreateUserGroup($value)) {
+                    if ($group = $this->findOrCreateUserGroup($value)) {
                         $groups[] = $group->id;
                     }
                 }
@@ -239,6 +252,34 @@ class Login extends Component
         }
 
         return \Craft::$app->getUsers()->assignUserToGroups($user->getId(), $groups);
+
+    }
+
+
+    protected function transformToUser(\LightSaml\Model\Protocol\Response $response, User $user)
+    {
+        $assertion = $response->getFirstAssertion();
+
+        $attributeMap = Saml::getInstance()->getSettings()->responseAttributeMap;
+        /**
+         * Loop thru attributes and set to the user
+         */
+        foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
+            if (isset($attributeMap[$attribute->getName()])) {
+                $craftProperty = $attributeMap[$attribute->getName()];
+
+                //check if it exists as a property first
+                if (property_exists($user, $craftProperty)) {
+                    $user->{$craftProperty} = $attribute->getFirstAttributeValue();
+                } else {
+                    if (is_callable($craftProperty)) {
+                        call_user_func($craftProperty, $user, $attribute);
+                    }
+                }
+            }
+        }
+
+        return $user;
 
     }
 
