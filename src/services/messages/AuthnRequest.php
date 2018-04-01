@@ -13,6 +13,8 @@ use craft\base\Component;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\helpers\SecurityHelper;
 use flipbox\saml\core\records\AbstractProvider;
+use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\core\services\messages\SamlRequestInterface;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
@@ -20,21 +22,21 @@ use flipbox\saml\core\services\traits\Security;
 use LightSaml\Credential\X509Certificate;
 use LightSaml\Helper;
 use LightSaml\Model\Assertion\Issuer;
+use LightSaml\Model\Protocol\AbstractRequest;
 use LightSaml\Model\Protocol\SamlMessage;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 
-class AuthnRequest extends Component
+class AuthnRequest extends Component implements SamlRequestInterface
 {
 
     const REQUEST_SESSION_KEY = 'authnrequest.requestId';
 
     /**
-     * @param AbstractProvider $idp
-     * @return \LightSaml\Model\Protocol\AuthnRequest
+     * @inheritdoc
      */
-    public function create(AbstractProvider $idp)
+    public function create(ProviderInterface $provider, array $config = []): AbstractRequest
     {
-        $location = $idp->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getLocation();
+        $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getLocation();
 
         /**
          * @var $samlSettings Settings
@@ -45,7 +47,7 @@ class AuthnRequest extends Component
         $authnRequest->setAssertionConsumerServiceURL(
             Metadata::getLoginLocation()
         )->setProtocolBinding(
-            $idp->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getBinding()
+            $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getBinding()
         )->setID(Helper::generateID())
             ->setIssueInstant(new \DateTime())
             ->setDestination($location)
@@ -57,9 +59,9 @@ class AuthnRequest extends Component
             Saml::getInstance()->getSettings()->getEntityId()
         );
         /** @var KeyChainRecord $pair */
-        $pair = $thisSp->getKeychain()->one();
+        $pair = $thisSp->keychain;
 
-        if (($pair) && $samlSettings->signAssertions) {
+        if ($pair && $samlSettings->signAssertions) {
             SecurityHelper::signMessage($authnRequest, $pair);
         }
 

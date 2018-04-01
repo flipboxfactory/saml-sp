@@ -9,9 +9,7 @@
 namespace flipbox\saml\sp\records;
 
 
-use flipbox\ember\records\ActiveRecord;
 use flipbox\ember\helpers\ModelHelper;
-use craft\validators\DateTimeValidator;
 use flipbox\saml\core\records\AbstractProviderIdentity;
 
 class ProviderIdentityRecord extends AbstractProviderIdentity

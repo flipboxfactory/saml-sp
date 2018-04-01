@@ -9,122 +9,56 @@
 namespace flipbox\saml\sp\controllers;
 
 
-use craft\web\Controller;
-use craft\web\Response;
-use flipbox\saml\sp\models\Settings;
+use craft\web\Request;
+use flipbox\saml\core\controllers\messages\AbstractLogoutController;
+use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\Saml;
-use Craft;
-use flipbox\saml\sp\helpers\SerializeHelper;
-use LightSaml\Model\Protocol\AuthnRequest;
-use LightSaml\Model\XmlDSig\SignatureWriter;
-use LightSaml\SamlConstants;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
+use flipbox\saml\sp\services\bindings\Factory;
+use LightSaml\Model\Protocol\AbstractRequest;
+use LightSaml\Model\Protocol\SamlMessage;
+use LightSaml\Model\Protocol\StatusResponse;
 
-class LogoutController extends Controller
+/**
+ * Class LogoutController
+ * @package flipbox\saml\sp\controllers
+ */
+class LogoutController extends AbstractLogoutController
 {
-
-    protected $allowAnonymous = [
-        'actionIndex',
-    ];
-
-    public $enableCsrfValidation = false;
+    /**
+     * @return SamlPluginInterface
+     */
+    protected function getSamlPlugin(): SamlPluginInterface
+    {
+        return Saml::getInstance();
+    }
 
     /**
-     * @param \yii\base\Action $action
-     * @return bool
+     * @return ProviderInterface
      */
-    public function beforeAction($action)
+    protected function getRemoteProvider(): ProviderInterface
     {
-        if ($action->actionMethod === 'actionIndex') {
-            return true;
-        }
-        return parent::beforeAction($action);
+        return $this->getSamlPlugin()->getProvider()->findByIdp();
     }
-
-    public function actionIndex()
-    {
-        /**
-         * @var $response \flipbox\saml\sp\services\Response
-         */
-        $response = Saml::getInstance()->getResponse();
-
-        $res = Saml::getInstance()->getResponse()->parseByRequest(Craft::$app->request);
-        exit($res->getID());
-
-    }
-
 
     /**
-     * @param array $parameters
-     * @param SignatureWriter|null $signature
-     * @return array
-     * @todo move to AbstractHttpRedirect
+     * @param SamlMessage $samlMessage
+     * @param ProviderInterface $provider
+     * @throws \flipbox\saml\core\exceptions\InvalidMetadata
      */
-    protected function addSignatureToUrl(array $parameters, SignatureWriter $signature = null)
+    protected function send(SamlMessage $samlMessage, ProviderInterface $provider)
     {
-        /** @var $key XMLSecurityKey */
-        $key = $signature ? $signature->getXmlSecurityKey() : null;
-
-        if (null != $key) {
-            $parameters['SigAlg'] = urlencode($key->type);
-            $signature = $key->signData(http_build_query($parameters));
-            $parameters['Signature'] = base64_encode($signature);
-        }
-
-        return $parameters;
-
+        Factory::send($samlMessage, $provider);
+        exit;
     }
 
-    public function actionRequest()
+    /**
+     * @param Request $request
+     * @return StatusResponse
+     * @throws \flipbox\saml\core\exceptions\InvalidSignature
+     */
+    protected function receive(Request $request): StatusResponse
     {
-
-        /**
-         * @var $authnRequest AuthnRequest
-         */
-        $authnRequest = Saml::getInstance()->getAuthnRequest()->create();
-
-        $parameters['RelayState'] = SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl());
-
-        /**
-         * @var $settings Settings
-         */
-        $settings = Saml::getInstance()->getSettings();
-
-        if ($authnRequest->getProtocolBinding() === SamlConstants::BINDING_SAML2_HTTP_REDIRECT) {
-            $parameters['SAMLRequest'] = SerializeHelper::base64Message(
-                $authnRequest,
-                true
-            );
-            if ($signature = $authnRequest->getSignature()) {
-                $authnRequest->setSignature(null);
-                $dest = $authnRequest->getDestination() . '?' . http_build_query($this->addSignatureToUrl($parameters, $signature));
-            } else {
-                $dest = $authnRequest->getDestination() . '?' . http_build_query($parameters);
-            }
-
-            return $this->redirect($dest);
-        }
-        //else POST Binding
-        $parameters['SAMLRequest'] = SerializeHelper::base64Message(
-            $authnRequest
-        );
-
-        $parameters['destination'] = $authnRequest->getDestination();
-
-        $view = Craft::$app->getView();
-        $mode = $view->getTemplateMode();
-
-        // Switch to admin
-        $view->setTemplateMode($view::TEMPLATE_MODE_CP);
-
-        $response = $this->renderTemplate('saml-sp/_components/post-binding-submit.twig', $parameters);
-
-        // Revert mode
-        $view->setTemplateMode($mode);
-
-
-        return $response;
-
+        return Factory::receive($request);
     }
-
 }

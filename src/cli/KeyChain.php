@@ -9,16 +9,16 @@
 namespace flipbox\saml\sp\cli;
 
 
-use flipbox\keychain\keypair\traits\OpenSSLCliUtil;
+use flipbox\keychain\cli\AbstractOpenSSL;
 use flipbox\saml\sp\Saml;
-use yii\console\Controller;
-use flipbox\keychain\keypair\traits\OpenSSL as OpenSSLTrait;
-use flipbox\keychain\keypair\traits\OpenSSLCli as OpenSSLCliTrait;
 
-class KeyChain extends Controller
+/**
+ * Class KeyChain
+ * @package flipbox\saml\sp\cli
+ */
+class KeyChain extends AbstractOpenSSL
 {
 
-    use OpenSSLTrait, OpenSSLCliTrait, OpenSSLCliUtil;
     /**
      * @var bool $force
      * Force save the metadata. If one already exists, it'll be overwritten.

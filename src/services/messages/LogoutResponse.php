@@ -10,14 +10,21 @@ namespace flipbox\saml\sp\services\messages;
 
 
 use craft\base\Component;
+use flipbox\saml\core\SamlPluginInterface;
+use flipbox\saml\core\services\messages\AbstractLogoutResponse;
+use flipbox\saml\core\services\messages\SamlResponseInterface;
+use flipbox\saml\sp\Saml;
+use LightSaml\Model\Protocol\AbstractRequest;
 use LightSaml\Model\Protocol\LogoutRequest as LogoutResponseModel;
 
-class LogoutResponse extends Component
+class LogoutResponse extends AbstractLogoutResponse implements SamlResponseInterface
 {
-    public function create()
+    /**
+     * @return SamlPluginInterface
+     */
+    protected function getSamlPlugin(): SamlPluginInterface
     {
-        $logout = new LogoutResponseModel();
-//        $logout->
+        return Saml::getInstance();
     }
 
 }

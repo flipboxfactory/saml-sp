@@ -9,21 +9,13 @@
 namespace flipbox\saml\sp\controllers;
 
 
-use craft\helpers\UrlHelper;
-use craft\web\assets\selectize\SelectizeAsset;
 use craft\web\Controller;
-use craft\web\Response;
-use flipbox\saml\core\models\Transport;
-use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use Craft;
 use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\sp\services\bindings\Factory;
 use LightSaml\Model\Protocol\AuthnRequest;
-use LightSaml\Model\XmlDSig\SignatureWriter;
-use LightSaml\SamlConstants;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
 use yii\web\HttpException;
 
 class LoginController extends Controller
@@ -82,8 +74,7 @@ class LoginController extends Controller
 
 
     /**
-     * @return \yii\web\Response
-     * @throws \yii\base\Exception
+     * @throws \flipbox\saml\core\exceptions\InvalidMetadata
      */
     public function actionRequest()
     {
@@ -105,7 +96,7 @@ class LoginController extends Controller
         );
 
 
-        Factory::send($authnRequest,$idp);
+        Factory::send($authnRequest, $idp);
 
         exit;
     }

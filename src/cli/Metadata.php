@@ -1,9 +1,7 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 1/12/18
- * Time: 11:59 PM
+ * @copyright  Copyright (c) Flipbox Digital Limited
  */
 
 namespace flipbox\saml\sp\cli;

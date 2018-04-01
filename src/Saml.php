@@ -16,6 +16,7 @@ use craft\web\UrlManager;
 use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\MetadataServiceInterface;
+use flipbox\saml\core\services\ProviderIdentityServiceInterface;
 use flipbox\saml\core\services\ProviderServiceInterface;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\sp\models\Settings;
@@ -82,7 +83,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             'provider'         => Provider::class,
             'providerIdentity' => ProviderIdentity::class,
             'metadata'         => Metadata::class,
-            'response'     => Response::class,
+            'response'         => Response::class,
         ]);
     }
 
@@ -136,14 +137,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
 
     /**
-     * @return Metadata
-     */
-    public function getMetadata(): MetadataServiceInterface
-    {
-        return $this->get('metadata');
-    }
-
-    /**
      * @return AuthnRequest
      */
     public function getAuthnRequest()
@@ -167,51 +160,4 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         return $this->get('login');
     }
 
-    /**
-     * @return LogoutRequest
-     */
-    public function getLogoutRequest()
-    {
-        return $this->get('logoutRequest');
-    }
-
-    /**
-     * @return LogoutResponse
-     */
-    public function getLogoutResponse()
-    {
-        return $this->get('logoutResponse');
-    }
-
-    /**
-     * @return HttpPost
-     */
-    public function getHttpPost()
-    {
-        return $this->get('httpPost');
-    }
-
-    /**
-     * @return HttpRedirect
-     */
-    public function getHttpRedirect()
-    {
-        return $this->get('httpRedirect');
-    }
-
-    /**
-     * @returns Provider
-     */
-    public function getProvider(): ProviderServiceInterface
-    {
-        return $this->get('provider');
-    }
-
-    /**
-     * @returns ProviderIdentity
-     */
-    public function getProviderIdentity()
-    {
-        return $this->get('providerIdentity');
-    }
 }

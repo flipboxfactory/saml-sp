@@ -1,22 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 1/11/18
- * Time: 8:30 PM
- */
 
 namespace flipbox\saml\sp\services\messages;
 
 
-use craft\base\Component;
-use LightSaml\Model\Protocol\LogoutRequest as LogoutRequestModel;
+use flipbox\saml\core\SamlPluginInterface;
+use flipbox\saml\core\services\messages\AbstractLogoutRequest;
+use flipbox\saml\sp\Saml;
 
-class LogoutRequest extends Component
+class LogoutRequest extends AbstractLogoutRequest
 {
-    public function create()
+
+    /**
+     * @inheritdoc
+     */
+    public function getSamlPlugin(): SamlPluginInterface
     {
-        $logout = new LogoutRequestModel();
+        return Saml::getInstance();
     }
 
 }
