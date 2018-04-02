@@ -55,12 +55,26 @@ class LoginController extends Controller
 
         $response = Factory::receive(Craft::$app->request);
 
-        if (! Saml::getInstance()->getAuthnRequest()->isResponseValidWithSession($response)) {
+        if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()){
             throw new HttpException(400, "Invalid request");
+        }
+
+        /**
+         * Really don't know how we'd get here but just shutting things down now.
+         * If you fail login at the idp I'd hope they'd just make you continue to try on their end
+         * but just incase.
+         *
+         * In this case, you may want to have a good custom 403 error page to reach out to someone
+         * to figure out why the person is having issues logging in.
+         */
+        if (! $response->getStatus() || ! $response->getStatus()->isSuccess()) {
+            throw new HttpException(403, "Login failed!");
         }
 
         Saml::getInstance()->getLogin()->login($response);
 
+//        SerializeHelper::xmlContentType();
+//        exit(base64_decode($_POST['SAMLResponse']));
         //get relay state but don't error!
         $relayState = \Craft::$app->request->getQueryParam('RelayState') ?: \Craft::$app->request->getBodyParam('RelayState');
         try {
@@ -89,7 +103,9 @@ class LoginController extends Controller
         /**
          * Extra layer of security, save the id and check it on the return.
          */
-        Saml::getInstance()->getAuthnRequest()->saveToSession($authnRequest);
+        Saml::getInstance()->getSession()->setRequestId(
+            $authnRequest->getID()
+        );
 
         $authnRequest->setRelayState(
             SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl())

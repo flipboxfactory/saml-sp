@@ -15,7 +15,6 @@ use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\bindings\Factory;
-use LightSaml\Model\Protocol\AbstractRequest;
 use LightSaml\Model\Protocol\SamlMessage;
 use LightSaml\Model\Protocol\StatusResponse;
 

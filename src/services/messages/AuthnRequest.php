@@ -24,19 +24,26 @@ use LightSaml\Helper;
 use LightSaml\Model\Assertion\Issuer;
 use LightSaml\Model\Protocol\AbstractRequest;
 use LightSaml\Model\Protocol\SamlMessage;
+use LightSaml\SamlConstants;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
+use yii\base\Event;
 
 class AuthnRequest extends Component implements SamlRequestInterface
 {
 
-    const REQUEST_SESSION_KEY = 'authnrequest.requestId';
+    const EVENT_AFTER_MESSAGE_CREATED = 'eventAfterMessageCreated';
 
     /**
      * @inheritdoc
      */
     public function create(ProviderInterface $provider, array $config = []): AbstractRequest
     {
-        $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getLocation();
+        $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService(
+        /**
+         * Just doing post for now
+         */
+            SamlConstants::BINDING_SAML2_HTTP_POST
+        )->getLocation();
 
         /**
          * @var $samlSettings Settings
@@ -48,7 +55,7 @@ class AuthnRequest extends Component implements SamlRequestInterface
             Metadata::getLoginLocation()
         )->setProtocolBinding(
             $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getBinding()
-        )->setID(Helper::generateID())
+        )->setID($requestId = Helper::generateID())
             ->setIssueInstant(new \DateTime())
             ->setDestination($location)
             ->setRelayState(\Craft::$app->getUser()->getReturnUrl())
@@ -65,24 +72,14 @@ class AuthnRequest extends Component implements SamlRequestInterface
             SecurityHelper::signMessage($authnRequest, $pair);
         }
 
+        /**
+         * Kick off event here so people can manipulate this object if needed
+         */
+        $event = new Event();
+        $event->data = $authnRequest;
+        $this->trigger(static::EVENT_AFTER_MESSAGE_CREATED, $event);
+
         return $authnRequest;
     }
 
-    /**
-     * @param \LightSaml\Model\Protocol\AuthnRequest $authnRequest
-     */
-    public function saveToSession(\LightSaml\Model\Protocol\AuthnRequest $authnRequest)
-    {
-        \Craft::$app->getSession()->set(static::REQUEST_SESSION_KEY, $authnRequest->getID());
-    }
-
-    /**
-     * Requires $this->saveToSession called before request is sent
-     * @param \LightSaml\Model\Protocol\Response $response
-     * @return bool
-     */
-    public function isResponseValidWithSession(\LightSaml\Model\Protocol\Response $response)
-    {
-        return $response->getInResponseTo() === \Craft::$app->getSession()->get(static::REQUEST_SESSION_KEY);
-    }
 }

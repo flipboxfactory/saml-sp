@@ -15,9 +15,6 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\web\UrlManager;
 use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\SamlPluginInterface;
-use flipbox\saml\core\services\messages\MetadataServiceInterface;
-use flipbox\saml\core\services\ProviderIdentityServiceInterface;
-use flipbox\saml\core\services\ProviderServiceInterface;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\services\messages\AuthnRequest;
@@ -30,6 +27,7 @@ use flipbox\saml\sp\services\bindings\HttpRedirect;
 use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
+use flipbox\saml\core\services\Session;
 use yii\base\Event;
 
 class Saml extends AbstractPlugin implements SamlPluginInterface
@@ -84,6 +82,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             'providerIdentity' => ProviderIdentity::class,
             'metadata'         => Metadata::class,
             'response'         => Response::class,
+            'session'          => Session::class,
         ]);
     }
 
@@ -160,4 +159,12 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         return $this->get('login');
     }
 
+    /**
+     * @return Session
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getSession()
+    {
+        return $this->get('session');
+    }
 }
