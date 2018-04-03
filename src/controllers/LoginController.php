@@ -10,6 +10,7 @@ namespace flipbox\saml\sp\controllers;
 
 
 use craft\web\Controller;
+use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use Craft;
@@ -55,7 +56,7 @@ class LoginController extends Controller
 
         $response = Factory::receive(Craft::$app->request);
 
-        if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()){
+        if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()) {
             throw new HttpException(400, "Invalid request");
         }
 
@@ -73,8 +74,6 @@ class LoginController extends Controller
 
         Saml::getInstance()->getLogin()->login($response);
 
-//        SerializeHelper::xmlContentType();
-//        exit(base64_decode($_POST['SAMLResponse']));
         //get relay state but don't error!
         $relayState = \Craft::$app->request->getQueryParam('RelayState') ?: \Craft::$app->request->getBodyParam('RelayState');
         try {
@@ -93,7 +92,9 @@ class LoginController extends Controller
     public function actionRequest()
     {
         /** @var ProviderRecord $idp */
-        $idp = Saml::getInstance()->getProvider()->findByIdp();
+        if (! $idp = Saml::getInstance()->getProvider()->findByIdp()) {
+            throw new InvalidMetadata('IDP Metadata Not found!');
+        }
 
         /**
          * @var $authnRequest AuthnRequest

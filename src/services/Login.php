@@ -13,17 +13,13 @@ use craft\base\Component;
 use craft\elements\User;
 use craft\models\UserGroup;
 use flipbox\keychain\records\KeyChainRecord;
-use flipbox\saml\sp\events\RegisterAttributesTransformer;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\transformers\Response;
-use Flipbox\Transform\Factory;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Protocol\Response as SamlResponse;
 use yii\base\Event;
 use yii\base\UserException;
-use craft\db\Query;
 
 class Login extends Component
 {
