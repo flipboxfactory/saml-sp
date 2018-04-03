@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML SSO Service Provider",
-  "version": "1.0.0-rc.4",
+  "version": "1.0.0-beta.1",
   "type": "craft-plugin",
   "keywords": [
     "cms",
@@ -14,7 +14,7 @@
   ],
   "require": {
     "craftcms/cms": "^3.0.0-RC15",
-    "flipboxfactory/saml-core": "^1.0.0-rc.1",
+    "flipboxfactory/saml-core": "^1.0.0-beta.1",
     "flipboxfactory/keychain": "1.0.0-beta.1"
   },
   "require-dev": {
@@ -40,8 +40,8 @@
   },
   "extra": {
     "name": "SAML SSO Service Provider",
-    "version":"1.0.0-rc.4",
-    "schemaVersion":"1.0.0-rc.4",
+    "version":"1.0.0-beta.1",
+    "schemaVersion":"1.0.0-beta.1",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",
