@@ -64,6 +64,26 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             [self::class, 'onRegisterCpUrlRules']
         );
+
+
+        /**
+         * Clean Frontend Endpoints
+         */
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules = array_merge(
+                    $event->rules,
+                    [
+                        'POST,GET /sso/login'     => 'saml-sp/login',
+                        'GET /sso/login/request'  => 'saml-sp/login/request',
+                        'POST,GET /sso/logout'    => 'saml-sp/logout',
+                        'GET /sso/logout/request' => 'saml-sp/logout/request',
+                    ]
+                );
+            }
+        );
     }
 
     /**

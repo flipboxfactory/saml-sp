@@ -36,9 +36,9 @@ class Metadata extends AbstractMetadata implements MetadataServiceInterface
     /**
      *
      */
-    const LOGIN_LOCATION = 'saml-sp/login';
-    const LOGOUT_RESPONSE_LOCATION = 'saml-sp/logout';
-    const LOGOUT_REQUEST_LOCATION = 'saml-sp/logout/request';
+    const LOGIN_LOCATION = 'sso/login';
+    const LOGOUT_RESPONSE_LOCATION = 'sso/logout';
+    const LOGOUT_REQUEST_LOCATION = 'sso/logout/request';
 
     /**
      * @return array
