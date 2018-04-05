@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Saml SP - SSO for CraftCMS v3</title>
+    <title>Getting Started - Saml SP</title>
     
     
     <meta name="description" content="A Saml 2.0 Service Provider Plugin for CraftCMS v3.">
@@ -94,20 +94,45 @@
     <div class="container mx-auto lg:flex flex-row-reverse">
         <section class="min-h-screen w-full lg:w-3/4 xl:w-4/5 lg:py-12">
             <div class="copy">
-                <h1 id="overview">Overview</h1>
+                <h1 id="getting-started">Getting Started</h1>
 
-<p>Saml Service Provider (SP) gives Single Sign On (SSO) and Single Logout Out (SLO) to CraftCMS (version 3)</p>
+<h2 id="key-configuration">Key Configuration</h2>
 
-<h2 id="features-include">Features include:</h2>
-<ul>
-  <li>Single Sign On (SSO) with Identity Providers such as <a href="https://www.okta.com/">OKTA</a></li>
-  <li>SSO using SAML 2.0 over POST Bindings</li>
-  <li>Consume signed messages assertions and encrypted user attributes from the 
-Identity Provider (IDP)</li>
-  <li>User field attribute sync on login</li>
-  <li>User group sync on login</li>
-  <li>Single Log Out (SLO)</li>
-</ul>
+<p>First thing to do is create a key pair.</p>
+
+<p>It is highly recommended that you create a key pair for your provider. 
+Saml protocol has the ability to sign and encrypt messages between the 
+Identity Provider (IDP) and the Service Provider (SP). This makes the 
+communication and transmission of the data more secure and any good IDP
+will support signing and encrypting message data. This requires a key pair.</p>
+
+<p>Saml SP installs and uses the <a href="https://github.com/flipboxfactory/keychain">KeyChain Plugin</a>
+to manage key pairs which includes a way to create them using OpenSSL or 
+import them.</p>
+
+<h3 id="create-a-key-pair-with-openssl">Create a Key Pair with OpenSSL</h3>
+<p>From the Saml SP main plugin page in the admin, you can goto Create 
+a new key pair with OpenSSL. This form contains the same fields you 
+may be familiar with when running the command via openssl cli. Use 
+the description to name and identify the key pair so you can 
+choose it later and match it to your provider.</p>
+
+<h3 id="bring-your-own-key-pair-byok">Bring your Own Key Pair (BYOK)</h3>
+<p>Create a key on your computer and import it.</p>
+
+<pre><code class="language-bash">openssl req -new -x509 -days 365 -nodes -sha256 -out saml-sp.crt -keyout saml-sp.pem
+</code></pre>
+
+<p>Copy the contents and import them at “Create new key pair”.</p>
+
+<h2 id="provider-configuration">Provider Configuration</h2>
+
+<h3 id="your-provider-the-service-provider">Your Provider (The Service Provider)</h3>
+<p>Once you have your key pair created, you can create your 
+provider (the Service Provider or SP).</p>
+
+<h3 id="the-remote-provider-the-identity-provider">The Remote Provider (The Identity Provider)</h3>
+
 
             </div>
         </section>
@@ -124,7 +149,7 @@ Identity Provider (IDP)</li>
 				<ul>
 				
 					<li class="mb-5 lg:mb-3">
-						<a class="hover:underline text-grey-darkest text-brand font-semibold" href="/">Introduction</a>
+						<a class="hover:underline text-grey-darkest" href="/">Introduction</a>
 					</li>
 				
 					<li class="mb-5 lg:mb-3">

@@ -1,0 +1,36 @@
+- text: Getting Started
+  url: /
+  expandable: true
+  items:
+  - text: Introduction
+    url: /
+  - text: Installation / Upgrading
+    url: /install/
+  - text: Configure
+    url: /configure/
+  - text: Support
+    url: https://github.com/flipboxfactory/saml-sp/issues
+  - text: Changelog
+    url: https://github.com/flipboxfactory/saml-sp/blob/master/CHANGELOG.md
+- text: Field Type
+  url: /field/
+  expandable: true
+  items:
+    - text: Overview
+      url: /field/
+    - text: Types
+      url: /field/types
+      items:
+      - text: Asset
+        url: /field/types#asset
+      - text: Entry
+        url: /field/types#entry
+      - text: External
+        url: /field/types#external
+
+- text: Developers
+  url: /developers/
+  expandable: true
+  items:
+    - text: Overview
+      url: /developers/

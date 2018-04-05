@@ -1,0 +1,17 @@
+<ul{% if include.id %} id="{{ include.id }}"{% endif %}{% if include.ulClass %} class="{{ include.ulClass }}"{% endif %}>
+    {% if include.removeFirst %}
+        {% assign offsetCount = 1 %}
+    {% else %}
+        {% assign offsetCount = 0 %}
+    {% endif %}
+    {% for item in include.items offset:offsetCount %}
+        <li class="{% if include.liClass %}{{ include.liClass }}{% endif %}{% if item.url == url %} selected{% endif %}">
+            <a href="{{ item.url }}"{% if include.aClass %} class="{{ include.aClass }}"{% endif %}>
+                {{ item.text }}
+            </a>
+            {% if item.items and include.recursive %}
+                {% include _nav/sub.html items=item.items recursive=include.recursive class=include.class %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

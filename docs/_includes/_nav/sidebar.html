@@ -1,0 +1,20 @@
+<div class="lg:block lg:relative lg:sticky lg:top-16">
+	<nav id="nav" class="px-6 pt-6 overflow-y-auto text-base lg:text-sm lg:py-12 lg:pl-6 lg:pr-8 sticky?lg:h-(screen-16)">
+	{% assign url = page.url | remove: 'index.html' %}
+	{% assign urlSegments = url | remove_first: "/" | split: '/' %}
+	{% for item in include.items %}
+		<div class="mb-8">
+			<p class="mb-5 lg:mb-3 text-grey uppercase tracking-wide font-bold text-sm lg:text-xs">{{ item.text }}</p>
+			{% if item.items %}
+				<ul>
+				{% for item in item.items %}
+					<li class="mb-5 lg:mb-3">
+						<a class="hover:underline text-grey-darkest{% if item.url == url %} text-brand font-semibold{% endif %}" href="{{ item.url }}">{{ item.text }}</a>
+					</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
+		</div>
+	{% endfor %}
+	</nav>
+</div>

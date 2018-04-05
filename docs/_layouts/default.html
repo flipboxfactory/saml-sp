@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if page.url == '/' %}
+    <title>{{ site.data.project.title }} - {{ site.data.project.tagline }}</title>
+    {% else %}
+    <title>{{ page.title }} - {{ site.data.project.title }}</title>
+    {% endif %}
+    {% if site.data.project.description %}
+    <meta name="description" content="{{ site.data.project.description }}">
+    {% endif %}
+    {% if site.data.project.favicon %}
+    <link rel="icon" type="image/x-icon" href="{{ site.data.project.favicon }}"/>
+    {% else %}
+    <link rel="icon" type="image/x-icon" href="{{ site.data.project.theme }}/favicon.ico"/>
+    {% endif %}
+    {% if site.data.project.apple_touch %}
+    <link rel="apple-touch-icon-precomposed" href="{{ site.data.project.apple_touch }}">
+    {% else %}
+    <link rel="apple-touch-icon-precomposed" href="{{ site.data.project.theme }}/apple-touch-icon-144.png">
+    {% endif %}
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:300,400|Roboto:100,300,700" rel="stylesheet">
+    <link href="https://s3.amazonaws.com/cdn.flipbox/assets/css/docs.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.13.0/themes/prism-okaidia.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="flex justify-between items-center px-4">
+    <a href="{{ site.data.flipbox.url }}" class="logo" title="{{ site.data.flipbox.name }}">
+            <span>
+                {% include _logos/icon.svg %}
+                {% include _logos/text.svg %}
+            </span>
+    </a>
+    {% include _nav/main.html items=site.data.nav %}
+</nav>
+<header class="py-12" style="background-image: linear-gradient(to right bottom, rgb(240, 70, 29) 0%, rgb(255, 32, 153) 100%);">
+    <div class="container mx-auto w-3/4 flex items-center">
+        <figure class="h-16 w-16 mr-4">
+            <img src="{{ site.data.project.logo }}" alt="{{ site.data.project.title }}"/>
+        </figure>
+        <div>
+            <h1 class="text-2xl text-white font-thin">
+                {{ site.data.project.title }}
+            </h1>
+            <h4 class="text text-white font-hairline opacity-75">{{ site.data.project.tagline }}</h4>
+        </div>
+
+    </div>
+</header>
+<main class="w-full max-w-screen-xl mx-auto px-6 pt-16">
+    <div class="container mx-auto lg:flex flex-row-reverse">
+        <section class="min-h-screen w-full lg:w-3/4 xl:w-4/5 lg:py-12">
+            <div class="copy">
+                {{ content }}
+            </div>
+        </section>
+
+        <aside class="absolute z-90 top-16 bg-white w-full border-b -mb-16 lg:-mb-0 lg:static lg:bg-transparent lg:border-b-0 lg:pt-0 lg:w-1/4 lg:block lg:border-0 xl:w-1/5 hidden">
+            {% include _nav/sidebar.html items=site.data.menu %}
+        </aside>
+    </div>
+</main>
+
+<footer class="mx-4 py-4 text-grey-dark border-solid border-t border-grey-light">
+    <div class="legal text-xs">Copyright © 2016 Flipbox Digital</div>
+    <ul class="list-reset"></ul>
+</footer>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.13.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.13.0/components/prism-php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.13.0/components/prism-php-extras.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.13.0/components/prism-twig.min.js"></script>
+<!--<script src="{{ site.data.project.theme }}/js/docs.min.js"></script>-->
+{% if site.data.project.google_analytics_tracking_id %}
+<script>
+    (function (b, o, i, l, e, r) {
+        b.GoogleAnalyticsObject = l;
+        b[l] || (b[l] =
+            function () {
+                (b[l].q = b[l].q || []).push(arguments)
+            });
+        b[l].l = +new Date;
+        e = o.createElement(i);
+        r = o.getElementsByTagName(i)[0];
+        e.src = '//www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e, r)
+    }(window, document, 'script', 'ga'));
+    ga('create', '{{  site.data.project.google_analytics_tracking_id }}');
+    ga('send', 'pageview');
+</script>
+{% endif %}
+</body>
+</html>

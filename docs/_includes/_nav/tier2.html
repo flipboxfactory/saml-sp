@@ -1,0 +1,9 @@
+{% for item in site.data.menu %}
+{% if include.url == item.url %}
+{% if item.items %}
+<nav>
+{% include _nav/sub.html items=item.items recursive=include.recursive removeFirst=include.removeFirst %}
+</nav>
+{% endif %}
+{% endif %}
+{% endfor %}

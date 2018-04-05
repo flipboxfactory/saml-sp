@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Saml SP - SSO for CraftCMS v3</title>
+    <title>Field Type - Saml SP</title>
     
     
     <meta name="description" content="A Saml 2.0 Service Provider Plugin for CraftCMS v3.">
@@ -94,20 +94,63 @@
     <div class="container mx-auto lg:flex flex-row-reverse">
         <section class="min-h-screen w-full lg:w-3/4 xl:w-4/5 lg:py-12">
             <div class="copy">
-                <h1 id="overview">Overview</h1>
+                <h1 id="field-type">Field Type</h1>
 
-<p>Saml Service Provider (SP) gives Single Sign On (SSO) and Single Logout Out (SLO) to CraftCMS (version 3)</p>
+<p>The Link <a href="https://craftcms.com/docs/fields">field type</a> is very flexible and supports multiple link <a href="/field/types">link types</a>.  One can configure one or many 
+<a href="/field/types">link types</a> per field.  We provide many first party <a href="/field/types">link types</a>, 
+but if you have some <a href="https://craftcms.com/docs/plugins/introduction">plugin development</a> experience you can also <a href="/developers">register and use your own</a>.</p>
 
-<h2 id="features-include">Features include:</h2>
+<p>By default, the following first party link types are available:</p>
+
+<nav>
 <ul>
-  <li>Single Sign On (SSO) with Identity Providers such as <a href="https://www.okta.com/">OKTA</a></li>
-  <li>SSO using SAML 2.0 over POST Bindings</li>
-  <li>Consume signed messages assertions and encrypted user attributes from the 
-Identity Provider (IDP)</li>
-  <li>User field attribute sync on login</li>
-  <li>User group sync on login</li>
-  <li>Single Log Out (SLO)</li>
+    
+    
+        <li class="">
+            <a href="/field/types#asset">
+                Asset
+            </a>
+            
+        </li>
+    
+        <li class="">
+            <a href="/field/types#entry">
+                Entry
+            </a>
+            
+        </li>
+    
+        <li class="">
+            <a href="/field/types#external">
+                External
+            </a>
+            
+        </li>
+    
 </ul>
+</nav>
+
+<h3 id="creating-a-new-field">Creating a new field</h3>
+<p>To get started, review the <a href="https://craftcms.com/docs/fields">Craft CMS field documentation</a> for understanding field basics.</p>
+
+<h4 id="settings">Settings</h4>
+<p>Coming soon.</p>
+
+<h4 id="input">Input</h4>
+<p>Coming soon.</p>
+
+<h4 id="rendering">Rendering</h4>
+<p>Calling a Link field in your templates will return a link type object.  You can access values on the link type like:</p>
+
+<pre><code class="language-twig">{% if entry.linkFieldHandle %}
+    &lt;a href="{{ entry.linkFieldHandle.getUrl() }}"&gt;
+       {{ entry.linkFieldHandle.getText() }}
+    &lt;/a&gt;
+{% endif %}
+</code></pre>
+
+<p><em>Note: the <a href="/twig">templating section</a> has additional references to rendering options</em></p>
+
 
             </div>
         </section>
@@ -124,7 +167,7 @@ Identity Provider (IDP)</li>
 				<ul>
 				
 					<li class="mb-5 lg:mb-3">
-						<a class="hover:underline text-grey-darkest text-brand font-semibold" href="/">Introduction</a>
+						<a class="hover:underline text-grey-darkest" href="/">Introduction</a>
 					</li>
 				
 					<li class="mb-5 lg:mb-3">
@@ -153,7 +196,7 @@ Identity Provider (IDP)</li>
 				<ul>
 				
 					<li class="mb-5 lg:mb-3">
-						<a class="hover:underline text-grey-darkest" href="/field/">Overview</a>
+						<a class="hover:underline text-grey-darkest text-brand font-semibold" href="/field/">Overview</a>
 					</li>
 				
 					<li class="mb-5 lg:mb-3">

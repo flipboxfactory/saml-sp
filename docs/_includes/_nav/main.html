@@ -1,0 +1,9 @@
+<ul class="list-reset w-full block lg:flex lg:items-center lg:w-auto">
+    {% for item in include.items %}
+    <li>
+        <a class="block px-6 py-4 lg:inline-block no-underline text-black hover:text-brand{% if item.text == 'Documentation' %} text-brand font-semibold{% endif %}" href="{{ item.url }}">
+            {{ item.text }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
