@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Saml SP - SSO for CraftCMS v3</title>
+    <title>Installation / Upgrading - Saml SP</title>
     
     
     <meta name="description" content="A Saml 2.0 Service Provider Plugin for CraftCMS v3.">
@@ -94,20 +94,16 @@
     <div class="container mx-auto lg:flex flex-row-reverse">
         <section class="min-h-screen w-full lg:w-3/4 xl:w-4/5 lg:py-12">
             <div class="copy">
-                <h1 id="overview">Overview</h1>
+                <h1 id="installation--upgrading">Installation / Upgrading</h1>
 
-<p>Saml Service Provider (SP) gives Single Sign On (SSO) and Single Logout Out (SLO) to CraftCMS (version 3)</p>
+<p>It is highly recommended to use composer to install Saml SP. Saml SP require 
+multiple dependencies which makes installing via composer needed.</p>
 
-<h2 id="features-include">Features include:</h2>
-<ul>
-  <li>Single Sign On (SSO) with Identity Providers such as <a href="https://www.okta.com/">OKTA</a></li>
-  <li>SSO using SAML 2.0 over POST Bindings</li>
-  <li>Consume signed messages assertions and encrypted user attributes from the 
-Identity Provider (IDP)</li>
-  <li>User field attribute sync on login</li>
-  <li>User group sync on login</li>
-  <li>Single Log Out (SLO)</li>
-</ul>
+<pre><code class="language-bash">composer require flipboxfactory/saml-sp
+</code></pre>
+
+<p>Once the plugin is installed, head over to <a href="/getting-started">Getting Started</a> to 
+see how to configure the plugin.</p>
 
             </div>
         </section>
@@ -124,11 +120,11 @@ Identity Provider (IDP)</li>
 				<ul>
 				
 					<li class="mb-5 lg:mb-3">
-						<a class="hover:underline text-grey-darkest text-brand font-semibold" href="/">Introduction</a>
+						<a class="hover:underline text-grey-darkest" href="/">Introduction</a>
 					</li>
 				
 					<li class="mb-5 lg:mb-3">
-						<a class="hover:underline text-grey-darkest" href="/install/">Installation / Upgrading</a>
+						<a class="hover:underline text-grey-darkest text-brand font-semibold" href="/install/">Installation / Upgrading</a>
 					</li>
 				
 					<li class="mb-5 lg:mb-3">
