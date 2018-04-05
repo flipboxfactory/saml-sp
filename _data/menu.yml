@@ -1,21 +1,21 @@
 - text: Getting Started
-  url: /
+  url: /saml-sp/
   expandable: true
   items:
   - text: Introduction
-    url: /
+    url: /saml-sp/
   - text: Installation / Upgrading
-    url: /install/
+    url: /saml-sp/install/
   - text: Configure
-    url: /configure/
+    url: /saml-sp/configure/
   - text: Support
     url: https://github.com/flipboxfactory/saml-sp/issues
   - text: Changelog
     url: https://github.com/flipboxfactory/saml-sp/blob/master/CHANGELOG.md
 
 - text: Developers
-  url: /developers/
+  url: /saml-sp/developers/
   expandable: true
   items:
     - text: Overview
-      url: /developers/
+      url: /saml-sp/developers/
