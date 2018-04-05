@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Developers - Saml SP</title>
+    <title>Configure Login - Saml SP</title>
     
     
     <meta name="description" content="A Saml 2.0 Service Provider Plugin for CraftCMS v3.">
@@ -94,9 +94,25 @@
     <div class="container mx-auto lg:flex flex-row-reverse">
         <section class="min-h-screen w-full lg:w-3/4 xl:w-4/5 lg:py-12">
             <div class="copy">
-                <h1 id="developers">Developers</h1>
+                <h1 id="configure-login">Configure Login</h1>
 
-<p>Coming soon..</p>
+<h2 id="single-sign-on-sso">Single Sign On (SSO)</h2>
+
+<p>Now that the plugin is configured, point login within the General Config in CraftCMS to 
+<code>/sso/login/request</code>.</p>
+
+<pre><code class="language-php">...
+#example general config
+
+  'loginPath' =&gt; '/sso/login/request',
+...
+</code></pre>
+
+<h2 id="optional-single-log-out-slo">OPTIONAL: Single Log Out (SLO)</h2>
+<p>If you want to implement SLO, point your logout button to <code>/sso/logout/request</code>.
+This endpoint initiates the Single Log Out process with the IDP. This must be 
+configured with the IDP (and the IDP must support this feature) if you are 
+planning on using it.</p>
 
             </div>
         </section>

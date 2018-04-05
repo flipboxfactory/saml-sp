@@ -6,12 +6,19 @@
     url: /saml-sp/
   - text: Installation / Upgrading
     url: /saml-sp/install/
-  - text: Configure
-    url: /saml-sp/configure/
   - text: Support
     url: https://github.com/flipboxfactory/saml-sp/issues
   - text: Changelog
     url: https://github.com/flipboxfactory/saml-sp/blob/master/CHANGELOG.md
+
+- text: Configure
+  url: /saml-sp/configure/
+  expandable: true
+  items:
+    - text: Overview
+      url: /saml-sp/configure/
+    - text: Configure Login
+      url: /saml-sp/configure/login/
 
 - text: Developers
   url: /saml-sp/developers/

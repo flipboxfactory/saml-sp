@@ -12,5 +12,5 @@ multiple dependencies which makes installing via composer needed.
 composer require flipboxfactory/saml-sp
 ```
 
-Once the plugin is installed, head over to [Getting Started](/getting-started) to 
+Once the plugin is installed, head over to [Configure](/saml-sp/configure) to 
 see how to configure the plugin. 
