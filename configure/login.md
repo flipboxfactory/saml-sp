@@ -38,15 +38,6 @@ at `flipbox\saml\sp\models\Settings`.
      
 * Default: `true`
 
-### `enableUser`
-
-* Description:
- 
-    * When a user logs in successfully and is found in Craft and is not enabled, that user will be 
-    enabled. If this is false and an user exception will be thrown.
-     
-* Default: `true`
-
 ### `syncGroups`
 
 * Description:
@@ -76,4 +67,21 @@ at `flipbox\saml\sp\models\Settings`.
     * When a group is found that doesn't exist in Craft, it will be automatically created.
      
 * Default: `true`
+
+### `responseAttributeMap`
+* Description: 
+    * An array map with the Response attribute names as the array keys and the
+    array values as the user element field. The array value can also be a callable. 
+* Default:
+```php
+[
+        ClaimTypes::EMAIL_ADDRESS => 'email',
+        ClaimTypes::GIVEN_NAME    => 'firstName',
+        ClaimTypes::SURNAME       => 'lastName',
+
+        'email'     => 'email',
+        'firstName' => 'firstName',
+        'lastName'  => 'lastName',
+]
+```
 

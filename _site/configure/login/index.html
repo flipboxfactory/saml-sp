@@ -142,22 +142,6 @@ at <code>flipbox\saml\sp\models\Settings</code>.</p>
   </li>
 </ul>
 
-<h3 id="enableuser"><code>enableUser</code></h3>
-
-<ul>
-  <li>
-    <p>Description:</p>
-
-    <ul>
-      <li>When a user logs in successfully and is found in Craft and is not enabled, that user will be 
-  enabled. If this is false and an user exception will be thrown.</li>
-    </ul>
-  </li>
-  <li>
-    <p>Default: <code>true</code></p>
-  </li>
-</ul>
-
 <h3 id="syncgroups"><code>syncGroups</code></h3>
 
 <ul>
@@ -205,6 +189,28 @@ at <code>flipbox\saml\sp\models\Settings</code>.</p>
   </li>
   <li>
     <p>Default: <code>true</code></p>
+  </li>
+</ul>
+
+<h3 id="responseattributemap"><code>responseAttributeMap</code></h3>
+<ul>
+  <li>Description:
+    <ul>
+      <li>An array map with the Response attribute names as the array keys and the
+  array values as the user element field. The array value can also be a callable.</li>
+    </ul>
+  </li>
+  <li>Default:
+    <pre><code class="language-php">[
+      ClaimTypes::EMAIL_ADDRESS =&gt; 'email',
+      ClaimTypes::GIVEN_NAME    =&gt; 'firstName',
+      ClaimTypes::SURNAME       =&gt; 'lastName',
+
+      'email'     =&gt; 'email',
+      'firstName' =&gt; 'firstName',
+      'lastName'  =&gt; 'lastName',
+]
+</code></pre>
   </li>
 </ul>
 
