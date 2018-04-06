@@ -35,11 +35,6 @@ class Settings extends AbstractSettings implements SettingsInterface
     /**
      * @var bool
      */
-    public $enableUser = true;
-
-    /**
-     * @var bool
-     */
     public $syncGroups = true;
 
     /**
