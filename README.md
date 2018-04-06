@@ -7,6 +7,10 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/flipboxfactory/saml-sp.svg?style=flat-square)](https://scrutinizer-ci.com/g/flipboxfactory/saml-sp)
 [![Total Downloads](https://img.shields.io/packagist/dt/flipboxfactory/saml-sp.svg?style=flat-square)](https://packagist.org/packages/flipboxfactory/saml-sp)
 
+## Docs
+
+[Read the docs](https://flipboxfactory.github.io/saml-sp/)
+
 ## Installation
 
 To install, use composer:

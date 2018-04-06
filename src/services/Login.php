@@ -141,7 +141,7 @@ class Login extends Component
         /**
          * Is there a user that exists already?
          */
-        if ($user = \Craft::$app->getUsers()->getUserByUsernameOrEmail($username)) {
+        if ($user = $this->getUserByUsernameOrEmail($username)) {
             /**
              * System check for whether we are allowed merge with this this user
              */
@@ -156,12 +156,40 @@ class Login extends Component
             }
         } else {
             /**
-             * New User
+             *
              */
-            $user = new User([
-                'username' => $username
-            ]);
+            if ($user = $this->getUserByUsernameOrEmail($username, true)) {
+
+                /**
+                 * System check for whether we are allowed merge with this this user
+                 */
+                if (! Saml::getInstance()->getSettings()->mergeLocalUsers) {
+                    //don't continue
+                    throw new UserException(
+                        sprintf(
+                            "User (%s) already exists.",
+                            $username
+                        )
+                    );
+                }
+            } else {
+                /**
+                 * New User
+                 */
+                $user = new User([
+                    'username' => $username
+                ]);
+
+            }
         }
+
+        if (! $this->isUserActive($user)) {
+            if (! Saml::getInstance()->getSettings()->enableUsers) {
+                throw new UserException('User access denied.');
+            }
+            $this->enableUser($user);
+        }
+
 
         $this->transformToUser($response, $user);
 
@@ -212,6 +240,101 @@ class Login extends Component
     }
 
     /**
+     * @param $emailOrUsername
+     * @return array|\craft\base\ElementInterface|User|null
+     */
+    protected function getUserByUsernameOrEmail($usernameOrEmail, bool $archived = false)
+    {
+
+        return User::find()
+            ->where([
+                'or',
+                ['username' => $usernameOrEmail],
+                ['email' => $usernameOrEmail]
+            ])
+            ->addSelect(['users.password', 'users.passwordResetRequired'])
+            ->status(null)
+            ->archived($archived)
+            ->one();
+    }
+
+    /**
+     * @param User $user
+     * @throws \Throwable
+     */
+    protected function enableUser(User $user)
+    {
+        if ($this->isUserSuspended($user)) {
+            \Craft::$app->getUsers()->unsuspendUser($user);
+        }
+
+        if ($this->isUserLocked($user)) {
+            \Craft::$app->getUsers()->unlockUser($user);
+        }
+
+        if (! $user->enabled) {
+            $user->enabled = true;
+        }
+
+        if ($user->archived) {
+            $user->archived = false;
+        }
+
+        if (! $this->isUserActive($user)) {
+            \Craft::$app->getUsers()->activateUser($user);
+        }
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    protected function isUserPending(User $user)
+    {
+        return false === $this->isUserActive($user) &&
+            $user->getStatus() === User::STATUS_PENDING;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    protected function isUserArchived(User $user)
+    {
+        return false === $this->isUserActive($user) &&
+            $user->getStatus() === User::STATUS_ARCHIVED;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    protected function isUserLocked(User $user)
+    {
+        return false === $this->isUserActive($user) &&
+            $user->getStatus() === User::STATUS_LOCKED;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    protected function isUserSuspended(User $user)
+    {
+        return false === $this->isUserActive($user) &&
+            $user->getStatus() === User::STATUS_SUSPENDED;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    protected function isUserActive(User $user)
+    {
+        return $user->getStatus() === User::STATUS_ACTIVE;
+    }
+
+    /**
      * @param User $user
      * @param Assertion $assertion
      * @return bool
@@ -246,8 +369,14 @@ class Login extends Component
 
             }
         }
+        /**
+         * just return if this is empty
+         */
+        if (empty($groups)) {
+            return true;
+        }
 
-        return \Craft::$app->getUsers()->assignUserToGroups($user->getId(), $groups);
+        return \Craft::$app->getUsers()->assignUserToGroups($user->id, $groups);
 
     }
 
