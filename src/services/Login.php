@@ -252,6 +252,11 @@ class Login extends Component
     }
 
 
+    /**
+     * @param SamlResponse $response
+     * @param User $user
+     * @return User
+     */
     protected function transformToUser(\LightSaml\Model\Protocol\Response $response, User $user)
     {
         $assertion = $response->getFirstAssertion();
