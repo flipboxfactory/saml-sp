@@ -15,10 +15,12 @@
   url: /saml-sp/configure/
   expandable: true
   items:
-    - text: Overview
-      url: /saml-sp/configure/
-    - text: Configure Login
-      url: /saml-sp/configure/login/
+  - text: Overview
+    url: /saml-sp/configure/
+  - text: Login
+    url: /saml-sp/configure/login/
+  - text: Logout
+    url: /saml-sp/configure/logout/
 
 - text: Developers
   url: /saml-sp/developers/

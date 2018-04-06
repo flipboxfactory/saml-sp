@@ -11,3 +11,4 @@ Saml Service Provider (SP) gives Single Sign On (SSO) and Single Logout Out (SLO
 events your customize process
 * User group sync on login 
 * Single Log Out (SLO)
+* Supports both MySQL and PostgreSQL drivers

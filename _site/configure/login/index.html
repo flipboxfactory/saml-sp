@@ -96,8 +96,7 @@
             <div class="copy">
                 <h1 id="configure-login">Configure Login</h1>
 
-<h2 id="single-sign-on-sso">Single Sign On (SSO)</h2>
-
+<h2 id="intiate-login-with-the-idp">Intiate Login with the IDP</h2>
 <p>Now that the plugin is configured, point login within the General Config in CraftCMS to 
 <code>/sso/login/request</code>.</p>
 
@@ -108,11 +107,107 @@
 ...
 </code></pre>
 
-<h2 id="optional-single-log-out-slo">OPTIONAL: Single Log Out (SLO)</h2>
-<p>If you want to implement SLO, point your logout button to <code>/sso/logout/request</code>.
-This endpoint initiates the Single Log Out process with the IDP. This must be 
-configured with the IDP (and the IDP must support this feature) if you are 
-planning on using it.</p>
+<h2 id="user-sync-configurations">User Sync Configurations</h2>
+
+<p>These configuration options can be found in the Settings model within the plugin
+at <code>flipbox\saml\sp\models\Settings</code>.</p>
+
+<h3 id="createuser"><code>createUser</code></h3>
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>When a user logs in successfully <em>BUT IS NOT FOUND</em> in Craft, that user will be 
+  created. If this is false an user exception will be thrown.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default: <code>true</code></p>
+  </li>
+</ul>
+
+<h3 id="mergelocalusers"><code>mergeLocalUsers</code></h3>
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>When a user logs in successfully and <em>IS FOUND</em> in Craft, that user will be 
+  created. If this is false an user exception will be thrown.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default: <code>true</code></p>
+  </li>
+</ul>
+
+<h3 id="enableuser"><code>enableUser</code></h3>
+
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>When a user logs in successfully and is found in Craft and is not enabled, that user will be 
+  enabled. If this is false and an user exception will be thrown.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default: <code>true</code></p>
+  </li>
+</ul>
+
+<h3 id="syncgroups"><code>syncGroups</code></h3>
+
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>Gives the green light to attempt to sync groups via the 
+  groups array map (<a href="#groupattributenames"><code>groupAttributeNames</code></a>).</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default: <code>true</code></p>
+  </li>
+</ul>
+
+<h3 id="groupattributenames"><code>groupAttributeNames</code></h3>
+
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>A list of strings that will be used to look through the attributes xml nodes
+  sent by the IDP to be identified as a group. This is a key to the group name value(s).</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default:</p>
+    <pre><code class="language-php">[
+'groups'
+]
+</code></pre>
+  </li>
+</ul>
+
+<h3 id="autocreategroups"><code>autoCreateGroups</code></h3>
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>When a group is found that doesn’t exist in Craft, it will be automatically created.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default: <code>true</code></p>
+  </li>
+</ul>
+
 
             </div>
         </section>
@@ -158,7 +253,11 @@ planning on using it.</p>
 					</li>
 				
 					<li class="mb-5 lg:mb-3">
-						<a class="hover:underline text-grey-darkest" href="/saml-sp/configure/login/">Configure Login</a>
+						<a class="hover:underline text-grey-darkest" href="/saml-sp/configure/login/">Login</a>
+					</li>
+				
+					<li class="mb-5 lg:mb-3">
+						<a class="hover:underline text-grey-darkest" href="/saml-sp/configure/logout/">Logout</a>
 					</li>
 				
 				</ul>
