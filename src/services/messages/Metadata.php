@@ -49,24 +49,6 @@ class Metadata extends AbstractMetadata implements MetadataServiceInterface
     }
 
     /**
-     * @param AbstractProvider $provider
-     * @return bool
-     */
-    protected function useEncryption(AbstractProvider $provider)
-    {
-        return Saml::getInstance()->getSettings()->encryptAssertions;
-    }
-
-    /**
-     * @param AbstractProvider $provider
-     * @return bool
-     */
-    protected function useSigning(AbstractProvider $provider)
-    {
-        return Saml::getInstance()->getSettings()->signAssertions;
-    }
-
-    /**
      * Utils
      */
 

@@ -68,7 +68,7 @@ class AuthnRequest extends Component implements SamlRequestInterface
         /** @var KeyChainRecord $pair */
         $pair = $thisSp->keychain;
 
-        if ($pair && $samlSettings->signAssertions) {
+        if ($pair && $samlSettings->signAuthnRequest) {
             SecurityHelper::signMessage($authnRequest, $pair);
         }
 

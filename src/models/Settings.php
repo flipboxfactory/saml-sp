@@ -15,23 +15,12 @@ use LightSaml\ClaimTypes;
 
 class Settings extends AbstractSettings implements SettingsInterface
 {
-    /**
-     * @var bool
-     */
-    public $encryptAssertions = false;
-    /**
-     * @var bool
-     */
-    public $signAssertions = true;
 
     /**
+     *
      * @var bool
      */
-    public $enableHttpRedirectBinding = true;
-    /**
-     * @var bool
-     */
-    public $enableHttpPostBinding = true;
+    public $signAuthnRequest = true;
 
     /**
      * @var bool
@@ -66,19 +55,6 @@ class Settings extends AbstractSettings implements SettingsInterface
         'groups',
     ];
 
-    /**
-     * Please overwrite this
-     * @var array
-     */
-    public $defaultOpenSSLValues = [
-        'countryName'            => 'US',
-        'stateOrProvinceName'    => 'Colorado',
-        'localityName'           => 'Denver',
-        'organizationName'       => 'Flipbox Digital',
-        'organizationalUnitName' => 'IT',
-        'commonName'             => 'flipboxdigital.com',
-        'emailAddress'           => 'it@flipboxdigital.com',
-    ];
     /**
      * Key Value store that maps the Response name (the array key) with
      * the user property.
