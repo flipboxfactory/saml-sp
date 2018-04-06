@@ -25,6 +25,11 @@ class Settings extends AbstractSettings implements SettingsInterface
     /**
      * @var bool
      */
+    public $wantsSignedAssertions = true;
+
+    /**
+     * @var bool
+     */
     public $mergeLocalUsers = true;
 
     /**
