@@ -12,12 +12,11 @@ namespace flipbox\saml\sp\records;
 use flipbox\ember\records\traits\StateAttribute;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
-use flipbox\saml\core\records\traits\ProviderFields;
 
 class ProviderRecord extends AbstractProvider implements ProviderInterface
 {
 
-    use StateAttribute, ProviderFields;
+    use StateAttribute;
 
     /**
      * The table alias

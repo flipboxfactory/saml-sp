@@ -187,4 +187,13 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
     {
         return $this->get('session');
     }
+
+    /**
+     * Util Methods
+     */
+
+    public function getMyType()
+    {
+        return static::SP;
+    }
 }

@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML SSO Service Provider",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "type": "craft-plugin",
   "keywords": [
     "cms",
@@ -10,12 +10,12 @@
     "sso",
     "sp",
     "service provider",
+    "federated authentication",
     "yii2"
   ],
   "require": {
     "craftcms/cms": "^3.0.0",
-    "flipboxfactory/saml-core": "^1.0.0-beta.4",
-    "flipboxfactory/keychain": "1.0.0-beta.4"
+    "flipboxfactory/saml-core": "^1.0.0-beta.5"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.0",
@@ -40,8 +40,8 @@
   },
   "extra": {
     "name": "SAML SSO Service Provider",
-    "version":"1.0.0-beta.4",
-    "schemaVersion":"1.0.0-beta.4",
+    "version":"1.0.0-beta.5",
+    "schemaVersion":"1.0.0-beta.5",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",

@@ -32,7 +32,7 @@ class Install extends AbstractInstall
     /**
      * @inheritdoc
      */
-    protected function getProviderTableName()
+    protected static function getProviderTableName()
     {
         return ProviderRecord::tableName();
     }
@@ -40,7 +40,7 @@ class Install extends AbstractInstall
     /**
      * @inheritdoc
      */
-    protected function getIdentityTableName()
+    protected static function getIdentityTableName()
     {
         return ProviderIdentityRecord::tableName();
     }
