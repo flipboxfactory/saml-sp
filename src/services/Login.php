@@ -14,6 +14,8 @@ use craft\elements\User;
 use craft\models\UserGroup;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
 use LightSaml\Model\Assertion\Assertion;
@@ -122,79 +124,42 @@ class Login extends Component
          * Get username from the NameID
          * @todo Give an option to map another attribute value to $username (like email)
          */
-        $nameId = $username = $assertion->getSubject()->getNameID()->getValue();
+        $username = $assertion->getSubject()->getNameID()->getValue();
 
         $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
             $response->getIssuer()->getValue()
         );
 
-        /** @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity */
-        if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
-            $nameId,
-            $idpProvider
-        )) {
-            if (! Saml::getInstance()->getSettings()->createUser) {
-                throw new UserException("System doesn't have permission to create a new user.");
-            }
+        /**
+         * Get Identity
+         */
+        $identity = $this->forceGetIdentity($username, $idpProvider);
+
+        /**
+         * Ger User
+         */
+        if (! $user = $identity->getUser()) {
+            $user = $this->forceGetUser($username);
         }
 
         /**
-         * Is there a user that exists already?
+         * Is User Active?
          */
-        if ($user = $this->getUserByUsernameOrEmail($username)) {
-            /**
-             * System check for whether we are allowed merge with this this user
-             */
-            if (! Saml::getInstance()->getSettings()->mergeLocalUsers) {
-                //don't continue
-                throw new UserException(
-                    sprintf(
-                        "User (%s) already exists.",
-                        $username
-                    )
-                );
-            }
-        } else {
-            /**
-             *
-             */
-            if ($user = $this->getUserByUsernameOrEmail($username, true)) {
-
-                /**
-                 * System check for whether we are allowed merge with this this user
-                 */
-                if (! Saml::getInstance()->getSettings()->mergeLocalUsers) {
-                    //don't continue
-                    throw new UserException(
-                        sprintf(
-                            "User (%s) already exists.",
-                            $username
-                        )
-                    );
-                }
-            } else {
-                /**
-                 * New User
-                 */
-                $user = new User([
-                    'username' => $username
-                ]);
-
-            }
-        }
-
-        if (! $this->isUserActive($user)) {
+        if (! UserHelper::isUserActive($user)) {
             if (! Saml::getInstance()->getSettings()->enableUsers) {
                 throw new UserException('User access denied.');
             }
-            $this->enableUser($user);
+            UserHelper::enableUser($user);
         }
 
 
+        /**
+         *
+         */
         $this->transformToUser($response, $user);
 
         /**
-         * After event for Metadata creation
+         * Before user save
          */
         $event = new Event();
         $event->sender = $response;
@@ -216,32 +181,94 @@ class Login extends Component
             $this->syncUserGroupsByAssertion($user, $assertion);
         }
 
+        /**
+         * Get Session
+         */
         $sessionIndex = null;
         if ($assertion->hasAnySessionIndex()) {
             $sessionIndex = $assertion->getFirstAuthnStatement()->getSessionIndex();
         }
 
         /**
-         * Create the new identity if one wasn't found above.
-         * Since we now have the user id, and we might not have above,
-         * do this last.
+         * Set Identity Properties
          */
-        if (! $identity) {
-            $identity = new ProviderIdentityRecord([
-                'providerId' => $idpProvider->id,
-                'nameId'     => $username,
-                'userId'     => $user->id,
-            ]);
-        }
-
+        $identity->userId = $user->id;
         $identity->enabled = true;
         $identity->sessionId = $sessionIndex;
         return $identity;
     }
 
     /**
+     * @param $nameId
+     * @param ProviderInterface $provider
+     * @return ProviderIdentityRecord
+     * @throws UserException
+     */
+    protected function forceGetIdentity($nameId, ProviderInterface $provider)
+    {
+
+        /** @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity */
+        if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
+            $nameId,
+            $provider
+        )) {
+            if (! Saml::getInstance()->getSettings()->createUser) {
+                throw new UserException("System doesn't have permission to create a new user.");
+            }
+
+            /**
+             * Create the new identity if one wasn't found above.
+             * Since we now have the user id, and we might not have above,
+             * do this last.
+             */
+            $identity = new ProviderIdentityRecord([
+                'providerId' => $provider->id,
+                'nameId'     => $nameId,
+            ]);
+        }
+
+        return $identity;
+    }
+
+    /**
+     * @param $username
+     * @return User
+     * @throws UserException
+     */
+    protected function forceGetUser($username)
+    {
+
+        /**
+         * Is there a user that exists already?
+         */
+        if ($user = $this->getUserByUsernameOrEmail($username)) {
+            /**
+             * System check for whether we are allowed merge with this this user
+             */
+            if (! Saml::getInstance()->getSettings()->mergeLocalUsers) {
+                //don't continue
+                throw new UserException(
+                    sprintf(
+                        "User (%s) already exists.",
+                        $username
+                    )
+                );
+            }
+        } else {
+            /**
+             * New User
+             */
+            $user = new User([
+                'username' => $username
+            ]);
+        }
+
+        return $user;
+    }
+
+    /**
      * @param $emailOrUsername
-     * @return array|\craft\base\ElementInterface|User|null
+     * @return User|null
      */
     protected function getUserByUsernameOrEmail($usernameOrEmail, bool $archived = false)
     {
@@ -256,82 +283,6 @@ class Login extends Component
             ->status(null)
             ->archived($archived)
             ->one();
-    }
-
-    /**
-     * @param User $user
-     * @throws \Throwable
-     */
-    protected function enableUser(User $user)
-    {
-        if ($this->isUserSuspended($user)) {
-            \Craft::$app->getUsers()->unsuspendUser($user);
-        }
-
-        if ($this->isUserLocked($user)) {
-            \Craft::$app->getUsers()->unlockUser($user);
-        }
-
-        if (! $user->enabled) {
-            $user->enabled = true;
-        }
-
-        if ($user->archived) {
-            $user->archived = false;
-        }
-
-        if (! $this->isUserActive($user)) {
-            \Craft::$app->getUsers()->activateUser($user);
-        }
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    protected function isUserPending(User $user)
-    {
-        return false === $this->isUserActive($user) &&
-            $user->getStatus() === User::STATUS_PENDING;
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    protected function isUserArchived(User $user)
-    {
-        return false === $this->isUserActive($user) &&
-            $user->getStatus() === User::STATUS_ARCHIVED;
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    protected function isUserLocked(User $user)
-    {
-        return false === $this->isUserActive($user) &&
-            $user->getStatus() === User::STATUS_LOCKED;
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    protected function isUserSuspended(User $user)
-    {
-        return false === $this->isUserActive($user) &&
-            $user->getStatus() === User::STATUS_SUSPENDED;
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    protected function isUserActive(User $user)
-    {
-        return $user->getStatus() === User::STATUS_ACTIVE;
     }
 
     /**
@@ -379,7 +330,6 @@ class Login extends Component
         return \Craft::$app->getUsers()->assignUserToGroups($user->id, $groups);
 
     }
-
 
     /**
      * @param SamlResponse $response

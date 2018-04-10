@@ -56,8 +56,8 @@ class Response extends Component
 
 
     /**
-     * @param KeyChainRecord $chainRecord
-     * @param EncryptedAssertionReader $encryptedAssertion
+     * @param \LightSaml\Model\Protocol\Response $response
+     * @param KeyChainRecord $keyChainRecord
      */
     public function decryptAssertions(\LightSaml\Model\Protocol\Response $response, KeyChainRecord $keyChainRecord)
     {
@@ -67,9 +67,11 @@ class Response extends Component
 
         /** @var \LightSaml\Model\Assertion\EncryptedAssertionReader $encryptedAssertion */
         foreach ($response->getAllEncryptedAssertions() as $encryptedAssertion) {
-            $response->addAssertion(
-                $encryptedAssertion->decryptMultiAssertion([$credential], $decryptDeserializeContext)
-            );
+            if ($encryptedAssertion instanceof EncryptedAssertionReader) {
+                $response->addAssertion(
+                    $encryptedAssertion->decryptMultiAssertion([$credential], $decryptDeserializeContext)
+                );
+            }
         }
 
     }
