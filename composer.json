@@ -13,6 +13,7 @@
     "federated authentication",
     "yii2"
   ],
+  "minimum-stability":"beta",
   "require": {
     "craftcms/cms": "^3.0.0",
     "flipboxfactory/saml-core": "^1.0.0-beta.5"
