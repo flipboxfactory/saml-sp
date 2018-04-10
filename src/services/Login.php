@@ -11,6 +11,7 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use craft\elements\User;
+use craft\helpers\StringHelper;
 use craft\models\UserGroup;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\exceptions\InvalidMessage;
@@ -364,17 +365,19 @@ class Login extends Component
     }
 
     /**
-     * @param $groupHandle
+     * @param $groupName
      * @return UserGroup
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */
-    protected function findOrCreateUserGroup($groupHandle): UserGroup
+    protected function findOrCreateUserGroup($groupName): UserGroup
     {
+
+        $groupHandle = StringHelper::camelCase($groupName);
 
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
             if (! \Craft::$app->getUserGroups()->saveGroup($userGroup = new UserGroup([
-                'name'   => $groupHandle,
+                'name'   => $groupName,
                 'handle' => $groupHandle,
             ]))) {
                 throw new UserException("Error saving new group {$groupHandle}");
