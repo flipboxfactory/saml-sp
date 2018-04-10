@@ -44,11 +44,12 @@ class LogoutController extends AbstractLogoutController
      * @param SamlMessage $samlMessage
      * @param ProviderInterface $provider
      * @throws \flipbox\saml\core\exceptions\InvalidMetadata
+     * @throws \yii\base\ExitException
      */
     protected function send(SamlMessage $samlMessage, ProviderInterface $provider)
     {
         Factory::send($samlMessage, $provider);
-        exit;
+        \Craft::$app->end();
     }
 
     /**

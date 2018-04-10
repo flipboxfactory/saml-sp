@@ -87,7 +87,9 @@ class LoginController extends Controller
 
 
     /**
-     * @throws \flipbox\saml\core\exceptions\InvalidMetadata
+     * @throws InvalidMetadata
+     * @throws \yii\base\ExitException
+     * @throws \yii\base\InvalidConfigException
      */
     public function actionRequest()
     {
@@ -115,7 +117,7 @@ class LoginController extends Controller
 
         Factory::send($authnRequest, $idp);
 
-        exit;
+        Craft::$app->end();
     }
 
 }
