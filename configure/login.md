@@ -5,8 +5,8 @@ permalink: configure/login/
 
 # Configure Login
 
-## Intiate Login with the IDP
-Now that the plugin is configured, point login within the General Config in CraftCMS to 
+## Initiate Login with the IDP
+Now that the plugin is configured, point login within the Craft general config (`config/general.php`) to 
 `/sso/login/request`.
 
 ```php
@@ -21,6 +21,16 @@ Now that the plugin is configured, point login within the General Config in Craf
 
 These configuration options can be found in the Settings model within the plugin
 at `flipbox\saml\sp\models\Settings`.
+
+### `enableUsers`
+* Description:
+ 
+    * When a user logs in successfully _BUT IS NOT ACTIVE/ENABLED_ in Craft, that user will be 
+    activated/enabled. This is set to true because, the IDP is the authority on whether the user
+    is active or not. They should be disabled in the IDP if they aren't supposed to have access.
+    If this is false an user exception will be thrown.
+     
+* Default: `true`
 
 ### `createUser`
 * Description:
@@ -72,6 +82,7 @@ at `flipbox\saml\sp\models\Settings`.
 * Description: 
     * An array map with the Response attribute names as the array keys and the
     array values as the user element field. The array value can also be a callable. 
+* Required: A map item needs to exist for email.
 * Default:
 ```php
 [

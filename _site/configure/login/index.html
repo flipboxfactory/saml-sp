@@ -96,8 +96,8 @@
             <div class="copy">
                 <h1 id="configure-login">Configure Login</h1>
 
-<h2 id="intiate-login-with-the-idp">Intiate Login with the IDP</h2>
-<p>Now that the plugin is configured, point login within the General Config in CraftCMS to 
+<h2 id="initiate-login-with-the-idp">Initiate Login with the IDP</h2>
+<p>Now that the plugin is configured, point login within the Craft general config (<code>config/general.php</code>) to 
 <code>/sso/login/request</code>.</p>
 
 <pre><code class="language-php">...
@@ -111,6 +111,23 @@
 
 <p>These configuration options can be found in the Settings model within the plugin
 at <code>flipbox\saml\sp\models\Settings</code>.</p>
+
+<h3 id="enableusers"><code>enableUsers</code></h3>
+<ul>
+  <li>
+    <p>Description:</p>
+
+    <ul>
+      <li>When a user logs in successfully <em>BUT IS NOT ACTIVE/ENABLED</em> in Craft, that user will be 
+  activated/enabled. This is set to true because, the IDP is the authority on whether the user
+  is active or not. They should be disabled in the IDP if they aren’t supposed to have access.
+  If this is false an user exception will be thrown.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Default: <code>true</code></p>
+  </li>
+</ul>
 
 <h3 id="createuser"><code>createUser</code></h3>
 <ul>
@@ -200,6 +217,7 @@ at <code>flipbox\saml\sp\models\Settings</code>.</p>
   array values as the user element field. The array value can also be a callable.</li>
     </ul>
   </li>
+  <li>Required: A map item needs to exist for email.</li>
   <li>Default:
     <pre><code class="language-php">[
       ClaimTypes::EMAIL_ADDRESS =&gt; 'email',
