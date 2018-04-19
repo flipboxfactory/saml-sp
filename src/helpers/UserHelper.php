@@ -10,6 +10,7 @@ use craft\elements\User as UserElement;
 
 /**
  * Class UserHelper
+ *
  * @package flipbox\saml\sp\helpers
  */
 class UserHelper

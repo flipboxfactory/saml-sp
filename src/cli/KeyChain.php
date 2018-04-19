@@ -14,6 +14,7 @@ use flipbox\saml\sp\Saml;
 
 /**
  * Class KeyChain
+ *
  * @package flipbox\saml\sp\cli
  */
 class KeyChain extends AbstractOpenSSL

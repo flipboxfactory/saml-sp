@@ -91,7 +91,8 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
     public function initComponents()
     {
-        $this->setComponents([
+        $this->setComponents(
+            [
             'authnRequest'     => AuthnRequest::class,
             'httpPost'         => HttpPost::class,
             'httpRedirect'     => HttpRedirect::class,
@@ -103,7 +104,8 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             'metadata'         => Metadata::class,
             'response'         => Response::class,
             'session'          => Session::class,
-        ]);
+            ]
+        );
     }
 
     /**

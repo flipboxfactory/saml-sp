@@ -39,9 +39,9 @@ class AuthnRequest extends Component implements SamlRequestInterface
     public function create(ProviderInterface $provider, array $config = []): AbstractRequest
     {
         $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService(
-        /**
-         * Just doing post for now
-         */
+            /**
+            * Just doing post for now
+            */
             SamlConstants::BINDING_SAML2_HTTP_POST
         )->getLocation();
 
@@ -61,11 +61,15 @@ class AuthnRequest extends Component implements SamlRequestInterface
             ->setRelayState(\Craft::$app->getUser()->getReturnUrl())
             ->setIssuer(new Issuer($samlSettings->getEntityId()));
 
-        /** @var ProviderRecord $thisSp */
+        /**
+ * @var ProviderRecord $thisSp 
+*/
         $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
             Saml::getInstance()->getSettings()->getEntityId()
         );
-        /** @var KeyChainRecord $pair */
+        /**
+ * @var KeyChainRecord $pair 
+*/
         $pair = $thisSp->keychain;
 
         if ($pair && $samlSettings->signAuthnRequest) {

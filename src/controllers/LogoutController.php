@@ -20,6 +20,7 @@ use LightSaml\Model\Protocol\StatusResponse;
 
 /**
  * Class LogoutController
+ *
  * @package flipbox\saml\sp\controllers
  */
 class LogoutController extends AbstractLogoutController
@@ -41,7 +42,7 @@ class LogoutController extends AbstractLogoutController
     }
 
     /**
-     * @param SamlMessage $samlMessage
+     * @param SamlMessage       $samlMessage
      * @param ProviderInterface $provider
      * @throws \flipbox\saml\core\exceptions\InvalidMetadata
      * @throws \yii\base\ExitException

@@ -19,6 +19,7 @@ use flipbox\saml\sp\Saml;
 
 /**
  * Class Provider
+ *
  * @package flipbox\saml\sp\services
  */
 class Provider extends AbstractProviderService implements ProviderServiceInterface

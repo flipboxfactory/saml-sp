@@ -15,6 +15,7 @@ use flipbox\saml\sp\Saml;
 
 /**
  * Class AbstractHttpPost
+ *
  * @package flipbox\saml\sp\services\bindings
  */
 class HttpPost extends AbstractHttpPost

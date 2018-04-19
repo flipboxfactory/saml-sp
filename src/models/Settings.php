@@ -49,6 +49,7 @@ class Settings extends AbstractSettings implements SettingsInterface
 
     /**
      * Create groups when they don't exist in craft
+     *
      * @var bool
      */
     public $autoCreateGroups = true;
@@ -106,6 +107,7 @@ class Settings extends AbstractSettings implements SettingsInterface
      *      }
      * ],
      * ```
+     *
      * @var array
      */
 
