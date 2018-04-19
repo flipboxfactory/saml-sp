@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\models;
 
-
 use flipbox\saml\core\models\AbstractSettings;
 use flipbox\saml\core\models\SettingsInterface;
 use LightSaml\ClaimTypes;
@@ -49,6 +48,7 @@ class Settings extends AbstractSettings implements SettingsInterface
 
     /**
      * Create groups when they don't exist in craft
+     *
      * @var bool
      */
     public $autoCreateGroups = true;
@@ -101,11 +101,13 @@ class Settings extends AbstractSettings implements SettingsInterface
      * Here is my responseAttributeMap with a callable from the config/saml-sp.php
      * ```php
      * 'responseAttributeMap' => [
-     *      ClaimTypes::EMAIL_ADDRESS => function(\LightSaml\Model\Assertion\Assertion $attribute, \craft\elements\User $user){
+     *      ClaimTypes::EMAIL_ADDRESS => function(\LightSaml\Model\Assertion\Assertion $attribute, \craft\elements\User
+     *      $user){
      *           $user->email = $attribute->getFirstAttributeValue();
      *      }
      * ],
      * ```
+     *
      * @var array
      */
 

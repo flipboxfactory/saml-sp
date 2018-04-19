@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers;
 
-
 use flipbox\saml\core\controllers\AbstractMetadataController;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\records\ProviderRecord;

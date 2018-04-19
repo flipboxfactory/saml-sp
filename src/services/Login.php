@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services;
 
-
 use craft\base\Component;
 use craft\elements\User;
 use craft\helpers\StringHelper;
@@ -68,7 +67,6 @@ class Login extends Component
         }
 
         return $identity;
-
     }
 
     protected function decryptAssertions(KeyChainRecord $keyChainRecord, \LightSaml\Model\Protocol\Response $response)
@@ -123,6 +121,7 @@ class Login extends Component
 
         /**
          * Get username from the NameID
+         *
          * @todo Give an option to map another attribute value to $username (like email)
          */
         $username = $assertion->getSubject()->getNameID()->getValue();
@@ -208,11 +207,14 @@ class Login extends Component
     protected function forceGetIdentity($nameId, ProviderInterface $provider)
     {
 
-        /** @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity */
+        /**
+ * @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
+*/
         if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
             $nameId,
             $provider
-        )) {
+        )
+        ) {
             if (! Saml::getInstance()->getSettings()->createUser) {
                 throw new UserException("System doesn't have permission to create a new user.");
             }
@@ -222,10 +224,12 @@ class Login extends Component
              * Since we now have the user id, and we might not have above,
              * do this last.
              */
-            $identity = new ProviderIdentityRecord([
+            $identity = new ProviderIdentityRecord(
+                [
                 'providerId' => $provider->id,
                 'nameId'     => $nameId,
-            ]);
+                ]
+            );
         }
 
         return $identity;
@@ -259,9 +263,11 @@ class Login extends Component
             /**
              * New User
              */
-            $user = new User([
+            $user = new User(
+                [
                 'username' => $username
-            ]);
+                ]
+            );
         }
 
         return $user;
@@ -275,11 +281,13 @@ class Login extends Component
     {
 
         return User::find()
-            ->where([
+            ->where(
+                [
                 'or',
                 ['username' => $usernameOrEmail],
                 ['email' => $usernameOrEmail]
-            ])
+                ]
+            )
             ->addSelect(['users.password', 'users.passwordResetRequired'])
             ->status(null)
             ->archived($archived)
@@ -287,7 +295,7 @@ class Login extends Component
     }
 
     /**
-     * @param User $user
+     * @param User      $user
      * @param Assertion $assertion
      * @return bool
      * @throws UserException
@@ -307,9 +315,13 @@ class Login extends Component
                  * Example XML:
                  * <saml2:Attribute Name="groups" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
                  *   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_admin</saml2:AttributeValue>
+                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">
+                 *           craft_admin
+                 *           </saml2:AttributeValue>
                  *   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_member</saml2:AttributeValue>
+                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">
+                 *           craft_member
+                 *           </saml2:AttributeValue>
                  * </saml2:Attribute>
                  */
 
@@ -318,7 +330,6 @@ class Login extends Component
                         $groups[] = $group->id;
                     }
                 }
-
             }
         }
         /**
@@ -329,12 +340,11 @@ class Login extends Component
         }
 
         return \Craft::$app->getUsers()->assignUserToGroups($user->id, $groups);
-
     }
 
     /**
      * @param SamlResponse $response
-     * @param User $user
+     * @param User         $user
      * @return User
      */
     protected function transformToUser(\LightSaml\Model\Protocol\Response $response, User $user)
@@ -361,7 +371,6 @@ class Login extends Component
         }
 
         return $user;
-
     }
 
     /**
@@ -376,16 +385,20 @@ class Login extends Component
         $groupHandle = StringHelper::camelCase($groupName);
 
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
-            if (! \Craft::$app->getUserGroups()->saveGroup($userGroup = new UserGroup([
-                'name'   => $groupName,
-                'handle' => $groupHandle,
-            ]))) {
+            if (! \Craft::$app->getUserGroups()->saveGroup(
+                $userGroup = new UserGroup(
+                    [
+                    'name'   => $groupName,
+                    'handle' => $groupHandle,
+                    ]
+                )
+            )
+            ) {
                 throw new UserException("Error saving new group {$groupHandle}");
             }
         }
 
         return $userGroup;
-
     }
 
     /**
@@ -404,9 +417,12 @@ class Login extends Component
 
         if (\Craft::$app->getUser()->login(
             $identity->getUser(),
-            /** @todo read session duration from the response */
+            /**
+            * @todo read session duration from the response
+            */
             \Craft::$app->getConfig()->getGeneral()->userSessionDuration
-        )) {
+        )
+        ) {
             $identity->lastLoginDate = new \DateTime();
         } else {
             throw new UserException("User login failed.");
@@ -414,5 +430,4 @@ class Login extends Component
 
         return true;
     }
-
 }

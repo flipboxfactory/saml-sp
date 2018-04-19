@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services\messages;
 
-
 use craft\base\Component;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\messages\AbstractLogoutResponse;
@@ -26,5 +25,4 @@ class LogoutResponse extends AbstractLogoutResponse implements SamlResponseInter
     {
         return Saml::getInstance();
     }
-
 }

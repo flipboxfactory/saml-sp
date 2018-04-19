@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\records;
 
-
 use flipbox\ember\helpers\ModelHelper;
 use flipbox\saml\core\records\AbstractProviderIdentity;
 
@@ -22,7 +21,9 @@ class ProviderIdentityRecord extends AbstractProviderIdentity
      */
     public function rules()
     {
-        return array_merge(parent::rules(), [
+        return array_merge(
+            parent::rules(),
+            [
             [
                 [
                     'lastLoginDate',
@@ -33,7 +34,8 @@ class ProviderIdentityRecord extends AbstractProviderIdentity
                     ModelHelper::SCENARIO_DEFAULT
                 ]
             ]
-        ]);
+            ]
+        );
     }
 
     /**

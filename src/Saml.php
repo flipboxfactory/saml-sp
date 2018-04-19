@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp;
 
-
 use Craft;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterUrlRulesEvent;
@@ -50,7 +49,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'keychain' => \flipbox\saml\sp\cli\KeyChain::class,
             ];
         }
-
     }
 
     /**
@@ -91,7 +89,8 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
     public function initComponents()
     {
-        $this->setComponents([
+        $this->setComponents(
+            [
             'authnRequest'     => AuthnRequest::class,
             'httpPost'         => HttpPost::class,
             'httpRedirect'     => HttpRedirect::class,
@@ -103,7 +102,8 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             'metadata'         => Metadata::class,
             'response'         => Response::class,
             'session'          => Session::class,
-        ]);
+            ]
+        );
     }
 
     /**

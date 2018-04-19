@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services\messages;
 
-
 use craft\base\Component;
 use flipbox\saml\core\helpers\UrlHelper;
 use flipbox\keychain\keypair\OpenSSL;
@@ -59,5 +58,4 @@ class Metadata extends AbstractMetadata implements MetadataServiceInterface
     {
         return Saml::getInstance();
     }
-
 }

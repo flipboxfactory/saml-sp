@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers\cp\view\keychain;
 
-
 use craft\base\Plugin;
 use flipbox\keychain\controllers\cp\view\AbstractGeneralController;
 use flipbox\saml\sp\Saml;
@@ -22,5 +21,4 @@ class IndexController extends AbstractGeneralController
     {
         return Saml::getInstance();
     }
-
 }

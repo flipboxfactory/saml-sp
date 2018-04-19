@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers;
 
-
 use craft\web\Controller;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\sp\records\ProviderRecord;
@@ -75,7 +74,8 @@ class LoginController extends Controller
         Saml::getInstance()->getLogin()->login($response);
 
         //get relay state but don't error!
-        $relayState = \Craft::$app->request->getQueryParam('RelayState') ?: \Craft::$app->request->getBodyParam('RelayState');
+        $relayState = \Craft::$app->request->getQueryParam('RelayState') ?:
+            \Craft::$app->request->getBodyParam('RelayState');
         try {
             $redirect = base64_decode($relayState);
         } catch (\Exception $e) {
@@ -93,7 +93,9 @@ class LoginController extends Controller
      */
     public function actionRequest()
     {
-        /** @var ProviderRecord $idp */
+        /**
+ * @var ProviderRecord $idp
+*/
         if (! $idp = Saml::getInstance()->getProvider()->findByIdp()) {
             throw new InvalidMetadata('IDP Metadata Not found!');
         }
@@ -119,5 +121,4 @@ class LoginController extends Controller
 
         Craft::$app->end();
     }
-
 }
