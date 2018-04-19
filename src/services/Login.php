@@ -315,9 +315,13 @@ class Login extends Component
                  * Example XML:
                  * <saml2:Attribute Name="groups" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
                  *   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_admin</saml2:AttributeValue>
+                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">
+                 *           craft_admin
+                 *           </saml2:AttributeValue>
                  *   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">craft_member</saml2:AttributeValue>
+                 *           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">
+                 *           craft_member
+                 *           </saml2:AttributeValue>
                  * </saml2:Attribute>
                  */
 

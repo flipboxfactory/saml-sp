@@ -74,7 +74,8 @@ class LoginController extends Controller
         Saml::getInstance()->getLogin()->login($response);
 
         //get relay state but don't error!
-        $relayState = \Craft::$app->request->getQueryParam('RelayState') ?: \Craft::$app->request->getBodyParam('RelayState');
+        $relayState = \Craft::$app->request->getQueryParam('RelayState') ?:
+            \Craft::$app->request->getBodyParam('RelayState');
         try {
             $redirect = base64_decode($relayState);
         } catch (\Exception $e) {

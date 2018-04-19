@@ -101,7 +101,8 @@ class Settings extends AbstractSettings implements SettingsInterface
      * Here is my responseAttributeMap with a callable from the config/saml-sp.php
      * ```php
      * 'responseAttributeMap' => [
-     *      ClaimTypes::EMAIL_ADDRESS => function(\LightSaml\Model\Assertion\Assertion $attribute, \craft\elements\User $user){
+     *      ClaimTypes::EMAIL_ADDRESS => function(\LightSaml\Model\Assertion\Assertion $attribute, \craft\elements\User
+     *      $user){
      *           $user->email = $attribute->getFirstAttributeValue();
      *      }
      * ],
