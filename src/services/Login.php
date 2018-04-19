@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services;
 
-
 use craft\base\Component;
 use craft\elements\User;
 use craft\helpers\StringHelper;
@@ -68,7 +67,6 @@ class Login extends Component
         }
 
         return $identity;
-
     }
 
     protected function decryptAssertions(KeyChainRecord $keyChainRecord, \LightSaml\Model\Protocol\Response $response)
@@ -210,7 +208,7 @@ class Login extends Component
     {
 
         /**
- * @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity 
+ * @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
 */
         if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
             $nameId,
@@ -328,7 +326,6 @@ class Login extends Component
                         $groups[] = $group->id;
                     }
                 }
-
             }
         }
         /**
@@ -339,7 +336,6 @@ class Login extends Component
         }
 
         return \Craft::$app->getUsers()->assignUserToGroups($user->id, $groups);
-
     }
 
     /**
@@ -371,7 +367,6 @@ class Login extends Component
         }
 
         return $user;
-
     }
 
     /**
@@ -400,7 +395,6 @@ class Login extends Component
         }
 
         return $userGroup;
-
     }
 
     /**
@@ -420,7 +414,7 @@ class Login extends Component
         if (\Craft::$app->getUser()->login(
             $identity->getUser(),
             /**
-            * @todo read session duration from the response 
+            * @todo read session duration from the response
             */
             \Craft::$app->getConfig()->getGeneral()->userSessionDuration
         )
@@ -432,5 +426,4 @@ class Login extends Component
 
         return true;
     }
-
 }

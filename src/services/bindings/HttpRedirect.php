@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services\bindings;
 
-
 use flipbox\saml\core\exceptions\InvalidIssuer;
 use flipbox\saml\core\models\ProviderInterface;
 use flipbox\saml\sp\Saml;
@@ -36,5 +35,4 @@ class HttpRedirect extends AbstractHttpRedirect
         }
         return $provider;
     }
-
 }

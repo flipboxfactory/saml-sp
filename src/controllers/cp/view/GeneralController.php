@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers\cp\view;
 
-
 use Craft;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;

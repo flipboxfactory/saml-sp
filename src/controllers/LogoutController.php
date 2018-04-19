@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers;
 
-
 use craft\web\Request;
 use flipbox\saml\core\controllers\messages\AbstractLogoutController;
 use flipbox\saml\core\records\ProviderInterface;

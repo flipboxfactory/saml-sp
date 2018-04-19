@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\cli;
 
-
 use flipbox\keychain\cli\AbstractOpenSSL;
 use flipbox\saml\sp\Saml;
 
@@ -30,5 +29,4 @@ class KeyChain extends AbstractOpenSSL
     {
         return Saml::getInstance();
     }
-
 }

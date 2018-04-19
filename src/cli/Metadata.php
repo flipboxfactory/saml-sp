@@ -6,7 +6,6 @@
 
 namespace flipbox\saml\sp\cli;
 
-
 use craft\helpers\Console;
 use flipbox\keychain\keypair\traits\OpenSSL;
 use flipbox\keychain\keypair\traits\OpenSSLCliUtil;

@@ -90,5 +90,4 @@ class UserHelper
     {
         return $user->getStatus() === UserElement::STATUS_ACTIVE;
     }
-
 }

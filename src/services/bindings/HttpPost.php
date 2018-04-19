@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services\bindings;
 
-
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\bindings\AbstractHttpPost;
 use flipbox\saml\sp\Saml;

@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services\messages;
 
-
 use craft\base\Component;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\helpers\SecurityHelper;
@@ -62,13 +61,13 @@ class AuthnRequest extends Component implements SamlRequestInterface
             ->setIssuer(new Issuer($samlSettings->getEntityId()));
 
         /**
- * @var ProviderRecord $thisSp 
+ * @var ProviderRecord $thisSp
 */
         $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
             Saml::getInstance()->getSettings()->getEntityId()
         );
         /**
- * @var KeyChainRecord $pair 
+ * @var KeyChainRecord $pair
 */
         $pair = $thisSp->keychain;
 
@@ -85,5 +84,4 @@ class AuthnRequest extends Component implements SamlRequestInterface
 
         return $authnRequest;
     }
-
 }

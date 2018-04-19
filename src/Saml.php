@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp;
 
-
 use Craft;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterUrlRulesEvent;
@@ -50,7 +49,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'keychain' => \flipbox\saml\sp\cli\KeyChain::class,
             ];
         }
-
     }
 
     /**

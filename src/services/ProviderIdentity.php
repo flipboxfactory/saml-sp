@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services;
 
-
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\AbstractProviderIdentityService;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
@@ -37,5 +36,4 @@ class ProviderIdentity extends AbstractProviderIdentityService
     {
         return ProviderIdentityRecord::class;
     }
-
 }

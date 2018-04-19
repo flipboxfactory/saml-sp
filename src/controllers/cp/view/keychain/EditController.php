@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers\cp\view\keychain;
 
-
 use craft\base\Plugin;
 use flipbox\keychain\controllers\cp\view\AbstractEditController;
 use flipbox\saml\sp\Saml;
@@ -19,5 +18,4 @@ class EditController extends AbstractEditController
     {
         return Saml::getInstance();
     }
-
 }

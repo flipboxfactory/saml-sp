@@ -44,5 +44,4 @@ class Install extends AbstractInstall
     {
         return ProviderIdentityRecord::tableName();
     }
-
 }

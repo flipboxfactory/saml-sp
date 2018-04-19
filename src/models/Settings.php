@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\models;
 
-
 use flipbox\saml\core\models\AbstractSettings;
 use flipbox\saml\core\models\SettingsInterface;
 use LightSaml\ClaimTypes;

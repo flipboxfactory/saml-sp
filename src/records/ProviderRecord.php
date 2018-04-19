@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\records;
 
-
 use flipbox\ember\records\traits\StateAttribute;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
@@ -22,5 +21,4 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      * The table alias
      */
     const TABLE_ALIAS = 'saml_sp_providers';
-
 }

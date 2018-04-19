@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\controllers;
 
-
 use craft\web\Controller;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\sp\records\ProviderRecord;
@@ -94,7 +93,7 @@ class LoginController extends Controller
     public function actionRequest()
     {
         /**
- * @var ProviderRecord $idp 
+ * @var ProviderRecord $idp
 */
         if (! $idp = Saml::getInstance()->getProvider()->findByIdp()) {
             throw new InvalidMetadata('IDP Metadata Not found!');
@@ -121,5 +120,4 @@ class LoginController extends Controller
 
         Craft::$app->end();
     }
-
 }
