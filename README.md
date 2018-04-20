@@ -1,7 +1,6 @@
 # SAML Service Provider for Craft CMS
 [![Join the chat at https://gitter.im/flipboxfactory/saml-sp](https://badges.gitter.im/flipboxfactory/saml-sp.svg)](https://gitter.im/flipboxfactory/saml-sp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Latest Version](https://img.shields.io/github/release/flipboxfactory/saml-sp.svg?style=flat-square)](https://github.com/flipboxfactory/saml-sp/releases)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://img.shields.io/travis/flipboxfactory/saml-sp/master.svg?style=flat-square)](https://travis-ci.com/flipboxfactory/saml-sp)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/flipboxfactory/saml-sp.svg?style=flat-square)](https://scrutinizer-ci.com/g/flipboxfactory/saml-sp/code-structure)
 [![Quality Score](https://img.shields.io/scrutinizer/g/flipboxfactory/saml-sp.svg?style=flat-square)](https://scrutinizer-ci.com/g/flipboxfactory/saml-sp)
@@ -36,4 +35,4 @@ Please see [CONTRIBUTING](https://github.com/flipboxfactory/saml-sp/blob/master/
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/flipboxfactory/saml-sp/blob/master/LICENSE) for more information.
+Please see [License File](https://github.com/flipboxfactory/saml-sp/blob/master/LICENSE) for more information.
