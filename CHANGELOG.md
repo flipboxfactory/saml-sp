@@ -1,6 +1,6 @@
 Changelog
 =========
-# Unreleased
+# 1.0.0-beta.9
 
 ### Added 
 - Support for Azure AD as the IDP
