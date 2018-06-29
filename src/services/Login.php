@@ -359,14 +359,17 @@ class Login extends Component
             if (isset($attributeMap[$attribute->getName()])) {
                 $craftProperty = $attributeMap[$attribute->getName()];
 
-                //check if it exists as a property first
-                if (property_exists($user, $craftProperty)) {
-                    $user->{$craftProperty} = $attribute->getFirstAttributeValue();
-                } else {
+                if(is_scalar($craftProperty)) {
+                    //check if it exists as a property first
+                    if (property_exists($user, $craftProperty)) {
+                        $user->{$craftProperty} = $attribute->getFirstAttributeValue();
+                    }
+                }else{
                     if (is_callable($craftProperty)) {
                         call_user_func($craftProperty, $user, $attribute);
                     }
                 }
+
             }
         }
 
