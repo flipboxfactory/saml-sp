@@ -9,12 +9,9 @@
 namespace flipbox\saml\sp\services\bindings;
 
 use flipbox\saml\core\exceptions\InvalidIssuer;
-use flipbox\saml\core\models\ProviderInterface;
+use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\core\services\traits\Security;
 use LightSaml\Model\Assertion\Issuer;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
-use LightSaml\Credential\X509Certificate;
 use flipbox\saml\core\services\bindings\AbstractHttpRedirect;
 
 class HttpRedirect extends AbstractHttpRedirect

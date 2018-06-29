@@ -38,9 +38,9 @@ class AuthnRequest extends Component implements SamlRequestInterface
     public function create(ProviderInterface $provider, array $config = []): AbstractRequest
     {
         $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService(
-            /**
-            * Just doing post for now
-            */
+        /**
+         * Just doing post for now
+         */
             SamlConstants::BINDING_SAML2_HTTP_POST
         )->getLocation();
 
@@ -53,7 +53,15 @@ class AuthnRequest extends Component implements SamlRequestInterface
         $authnRequest->setAssertionConsumerServiceURL(
             Metadata::getLoginLocation()
         )->setProtocolBinding(
-            $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService()->getBinding()
+            $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->
+            getFirstSingleSignOnService(
+                /**
+                 * Just going to hard code this for now.
+                 * Post binding is really the only thing most
+                 * people support so we are defaulting to this.
+                 */
+                SamlConstants::BINDING_SAML2_HTTP_POST
+            )->getBinding()
         )->setID($requestId = Helper::generateID())
             ->setIssueInstant(new \DateTime())
             ->setDestination($location)
@@ -61,14 +69,14 @@ class AuthnRequest extends Component implements SamlRequestInterface
             ->setIssuer(new Issuer($samlSettings->getEntityId()));
 
         /**
- * @var ProviderRecord $thisSp
-*/
+         * @var ProviderRecord $thisSp
+         */
         $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
             Saml::getInstance()->getSettings()->getEntityId()
         );
         /**
- * @var KeyChainRecord $pair
-*/
+         * @var KeyChainRecord $pair
+         */
         $pair = $thisSp->keychain;
 
         if ($pair && $samlSettings->signAuthnRequest) {
