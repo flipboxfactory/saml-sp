@@ -1,5 +1,5 @@
 filter:
-    excluded_paths: [tests/*]
+    excluded_paths: [tests/*, src/web/assets/*/dist/*]
 checks:
     php:
         code_rating: true
@@ -18,8 +18,8 @@ checks:
         fix_doc_comments: true
 tools:
     external_code_coverage:
-        timeout: 600
-        runs: 2
+        timeout: 300
+        runs: 3
     php_analyzer: true
     php_code_coverage: false
     php_code_sniffer:
