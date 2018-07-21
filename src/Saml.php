@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 1/9/18
- * Time: 9:11 AM
+ * @copyright  Copyright (c) Flipbox Digital Limited
+ * @license    https://flipboxfactory.com/software/saml-sp/license
+ * @link       https://www.flipboxfactory.com/software/saml-sp/
  */
 
 namespace flipbox\saml\sp;
@@ -16,6 +15,7 @@ use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\sp\models\Settings;
+use flipbox\saml\sp\services\Cp;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
 use flipbox\saml\sp\services\messages\LogoutResponse;
@@ -29,11 +29,15 @@ use flipbox\saml\sp\services\ProviderIdentity;
 use flipbox\saml\core\services\Session;
 use yii\base\Event;
 
+/**
+ * Class Saml
+ * @package flipbox\saml\sp
+ */
 class Saml extends AbstractPlugin implements SamlPluginInterface
 {
-
-    public $hasCpSection = true;
-
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         parent::init();
@@ -56,7 +60,9 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
     protected function initEvents()
     {
-        // CP routes
+        /**
+         * CP routes
+         */
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
@@ -70,18 +76,9 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $event->rules = array_merge(
-                    $event->rules,
-                    [
-                        'POST,GET /sso/login'     => 'saml-sp/login',
-                        'GET /sso/login/request'  => 'saml-sp/login/request',
-                        'POST,GET /sso/logout'    => 'saml-sp/logout',
-                        'GET /sso/logout/request' => 'saml-sp/logout/request',
-                    ]
-                );
-            }
+            [static::class, 'onRegisterSiteUrlRules']
         );
+
     }
 
     /**
@@ -91,17 +88,18 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
     {
         $this->setComponents(
             [
-            'authnRequest'     => AuthnRequest::class,
-            'httpPost'         => HttpPost::class,
-            'httpRedirect'     => HttpRedirect::class,
-            'login'            => Login::class,
-            'logoutRequest'    => LogoutRequest::class,
-            'logoutResponse'   => LogoutResponse::class,
-            'provider'         => Provider::class,
-            'providerIdentity' => ProviderIdentity::class,
-            'metadata'         => Metadata::class,
-            'response'         => Response::class,
-            'session'          => Session::class,
+                'authnRequest'     => AuthnRequest::class,
+                'httpPost'         => HttpPost::class,
+                'httpRedirect'     => HttpRedirect::class,
+                'login'            => Login::class,
+                'logoutRequest'    => LogoutRequest::class,
+                'logoutResponse'   => LogoutResponse::class,
+                'provider'         => Provider::class,
+                'providerIdentity' => ProviderIdentity::class,
+                'metadata'         => Metadata::class,
+                'response'         => Response::class,
+                'session'          => Session::class,
+                'cp'               => Cp::class,
             ]
         );
     }
@@ -115,6 +113,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             $event->rules,
             [
                 'saml-sp/'                          => 'saml-sp/cp/view/general/setup',
+                'saml-sp/settings'                  => 'saml-sp/cp/view/general/settings',
 
                 /**
                  * Keychain
@@ -131,6 +130,34 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
                 'saml-sp/metadata/my-provider'      => 'saml-sp/cp/view/metadata/edit/my-provider',
                 'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
+            ]
+        );
+    }
+
+    /**
+     * @param RegisterUrlRulesEvent $event
+     */
+    public static function onRegisterSiteUrlRules(RegisterUrlRulesEvent $event)
+    {
+        $event->rules = array_merge(
+            $event->rules,
+            [
+                /**
+                 * LOGIN
+                 */
+                'POST,GET /sso/login'  => 'saml-sp/login',
+                sprintf(
+                    'GET %s',
+                    (string)static::getInstance()->getSettings()->loginRequestEndpoint
+                )                      => 'saml-sp/login/request',
+                /**
+                 * LOGOUT
+                 */
+                'POST,GET /sso/logout' => 'saml-sp/logout',
+                sprintf(
+                    'GET %s',
+                    (string)static::getInstance()->getSettings()->logoutRequestEndpoint
+                )                      => 'saml-sp/logout/request',
             ]
         );
     }
@@ -156,35 +183,47 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
      * @return AuthnRequest
      */
     public function getAuthnRequest()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get('authnRequest');
     }
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
      * @return Response
      */
     public function getResponse()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get('response');
     }
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
      * @return Login
      */
     public function getLogin()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get('login');
     }
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
      * @return Session
      * @throws \yii\base\InvalidConfigException
      */
     public function getSession()
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get('session');
     }
 

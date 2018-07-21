@@ -94,8 +94,8 @@ class LoginController extends Controller
     public function actionRequest()
     {
         /**
- * @var ProviderRecord $idp
-*/
+         * @var ProviderRecord $idp
+         */
         if (! $idp = Saml::getInstance()->getProvider()->findByIdp()) {
             throw new InvalidMetadata('IDP Metadata Not found!');
         }
