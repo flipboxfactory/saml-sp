@@ -21,4 +21,12 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      * The table alias
      */
     const TABLE_ALIAS = 'saml_sp_providers';
+
+    /**
+     * @inheritdoc
+     */
+    public function getEnvironmentRecordClass()
+    {
+        return ProviderEnvironmentRecord::class;
+    }
 }
