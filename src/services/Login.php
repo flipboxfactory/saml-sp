@@ -171,7 +171,10 @@ class Login extends Component
         );
 
         if (! \Craft::$app->getElements()->saveElement($user)) {
-            throw new UserException("User save failed.");
+            Saml::error(
+                'User save failed: ' . json_encode($user->getErrors())
+            );
+            throw new UserException("User save failed: " . json_encode($user->getErrors()));
         }
 
         /**
@@ -208,8 +211,8 @@ class Login extends Component
     {
 
         /**
- * @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
-*/
+         * @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
+         */
         if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
             $nameId,
             $provider
@@ -226,8 +229,8 @@ class Login extends Component
              */
             $identity = new ProviderIdentityRecord(
                 [
-                'providerId' => $provider->id,
-                'nameId'     => $nameId,
+                    'providerId' => $provider->id,
+                    'nameId'     => $nameId,
                 ]
             );
         }
@@ -265,7 +268,7 @@ class Login extends Component
              */
             $user = new User(
                 [
-                'username' => $username
+                    'username' => $username
                 ]
             );
         }
@@ -283,9 +286,9 @@ class Login extends Component
         return User::find()
             ->where(
                 [
-                'or',
-                ['username' => $usernameOrEmail],
-                ['email' => $usernameOrEmail]
+                    'or',
+                    ['username' => $usernameOrEmail],
+                    ['email' => $usernameOrEmail]
                 ]
             )
             ->addSelect(['users.password', 'users.passwordResetRequired'])
@@ -295,7 +298,7 @@ class Login extends Component
     }
 
     /**
-     * @param User      $user
+     * @param User $user
      * @param Assertion $assertion
      * @return bool
      * @throws UserException
@@ -344,7 +347,7 @@ class Login extends Component
 
     /**
      * @param SamlResponse $response
-     * @param User         $user
+     * @param User $user
      * @return User
      */
     protected function transformToUser(\LightSaml\Model\Protocol\Response $response, User $user)
@@ -352,6 +355,7 @@ class Login extends Component
         $assertion = $response->getFirstAssertion();
 
         $attributeMap = Saml::getInstance()->getSettings()->responseAttributeMap;
+
         /**
          * Loop thru attributes and set to the user
          */
@@ -359,13 +363,28 @@ class Login extends Component
             if (isset($attributeMap[$attribute->getName()])) {
                 $craftProperty = $attributeMap[$attribute->getName()];
 
-                if(is_scalar($craftProperty)) {
+                if (is_scalar($craftProperty)) {
                     //check if it exists as a property first
                     if (property_exists($user, $craftProperty)) {
+
+                        Saml::debug(
+                            sprintf(
+                                'Attribute %s is scalar and should set value "%s" to user->%s',
+                                $attribute->getName(),
+                                $attribute->getFirstAttributeValue(),
+                                $craftProperty
+                            )
+                        );
                         $user->{$craftProperty} = $attribute->getFirstAttributeValue();
                     }
-                }else{
+                } else {
                     if (is_callable($craftProperty)) {
+                        Saml::debug(
+                            sprintf(
+                                'Attribute %s is handled with a callable.',
+                                $attribute->getName()
+                            )
+                        );
                         call_user_func($craftProperty, $user, $attribute);
                     }
                 }
@@ -391,8 +410,8 @@ class Login extends Component
             if (! \Craft::$app->getUserGroups()->saveGroup(
                 $userGroup = new UserGroup(
                     [
-                    'name'   => $groupName,
-                    'handle' => $groupHandle,
+                        'name'   => $groupName,
+                        'handle' => $groupHandle,
                     ]
                 )
             )
@@ -421,8 +440,8 @@ class Login extends Component
         if (\Craft::$app->getUser()->login(
             $identity->getUser(),
             /**
-            * @todo read session duration from the response
-            */
+             * @todo read session duration from the response
+             */
             \Craft::$app->getConfig()->getGeneral()->userSessionDuration
         )
         ) {

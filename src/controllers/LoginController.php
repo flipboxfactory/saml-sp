@@ -74,14 +74,14 @@ class LoginController extends Controller
         Saml::getInstance()->getLogin()->login($response);
 
         //get relay state but don't error!
-        $relayState = \Craft::$app->request->getQueryParam('RelayState') ?:
-            \Craft::$app->request->getBodyParam('RelayState');
+        $relayState = \Craft::$app->request->getParam('RelayState');
         try {
             $redirect = base64_decode($relayState);
         } catch (\Exception $e) {
             $redirect = \Craft::$app->getUser()->getReturnUrl();
         }
 
+        Craft::$app->user->removeReturnUrl();
         return $this->redirect($redirect);
     }
 
@@ -94,8 +94,8 @@ class LoginController extends Controller
     public function actionRequest()
     {
         /**
- * @var ProviderRecord $idp
-*/
+         * @var ProviderRecord $idp
+         */
         if (! $idp = Saml::getInstance()->getProvider()->findByIdp()) {
             throw new InvalidMetadata('IDP Metadata Not found!');
         }
@@ -112,8 +112,25 @@ class LoginController extends Controller
             $authnRequest->getID()
         );
 
+        $relayState = null;
+        if(isset($_SERVER['HTTP_REFERER'])) {
+            $site = parse_url(Craft::$app->config->general->siteUrl);
+            $refer = parse_url($_SERVER['HTTP_REFERER']);
+            if($site && $refer && isset($site['host']) && isset($refer['host'])
+            && $site['host'] == $refer['host']) {
+                $relayState = $_SERVER['HTTP_REFERER'];
+            }
+        }
+
         $authnRequest->setRelayState(
-            SerializeHelper::toBase64(Craft::$app->getUser()->getReturnUrl())
+            SerializeHelper::toBase64(
+                Craft::$app->getUser()->getReturnUrl(
+                /**
+                 * use refer here
+                 */
+                $relayState
+                )
+            )
         );
 
 
