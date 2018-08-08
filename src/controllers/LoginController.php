@@ -113,11 +113,11 @@ class LoginController extends Controller
         );
 
         $relayState = null;
-        if(isset($_SERVER['HTTP_REFERER'])) {
+        if (isset($_SERVER['HTTP_REFERER'])) {
             $site = parse_url(Craft::$app->config->general->siteUrl);
             $refer = parse_url($_SERVER['HTTP_REFERER']);
-            if($site && $refer && isset($site['host']) && isset($refer['host'])
-            && $site['host'] == $refer['host']) {
+            if ($site && $refer && isset($site['host']) && isset($refer['host'])
+                && $site['host'] == $refer['host']) {
                 $relayState = $_SERVER['HTTP_REFERER'];
             }
         }
@@ -125,10 +125,10 @@ class LoginController extends Controller
         $authnRequest->setRelayState(
             SerializeHelper::toBase64(
                 Craft::$app->getUser()->getReturnUrl(
-                /**
-                 * use refer here
-                 */
-                $relayState
+                    /**
+                    * use refer here
+                    */
+                    $relayState
                 )
             )
         );

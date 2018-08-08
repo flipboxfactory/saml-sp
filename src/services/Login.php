@@ -366,7 +366,6 @@ class Login extends Component
                 if (is_scalar($craftProperty)) {
                     //check if it exists as a property first
                     if (property_exists($user, $craftProperty)) {
-
                         Saml::debug(
                             sprintf(
                                 'Attribute %s is scalar and should set value "%s" to user->%s',
@@ -388,7 +387,6 @@ class Login extends Component
                         call_user_func($craftProperty, $user, $attribute);
                     }
                 }
-
             }
         }
 
