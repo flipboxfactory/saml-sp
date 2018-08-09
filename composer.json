@@ -16,7 +16,7 @@
   "minimum-stability":"beta",
   "require": {
     "craftcms/cms": "^3.0.0",
-    "flipboxfactory/saml-core": "^1.0.0-beta.8"
+    "flipboxfactory/saml-core": "^1.0.0-beta.10"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.0",
@@ -41,8 +41,13 @@
   },
   "extra": {
     "name": "SAML SSO Service Provider",
+<<<<<<< HEAD
     "version":"1.0.0-RC2",
     "schemaVersion":"1.0.0-RC2",
+=======
+    "version":"1.0.0-beta.10",
+    "schemaVersion":"1.0.0-beta.8",
+>>>>>>> master
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",
