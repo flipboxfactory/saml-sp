@@ -46,7 +46,7 @@ class ProviderIdentityRecord extends AbstractProviderIdentity
         return $this->hasOne(
             ProviderRecord::class,
             [
-                'providerId' => 'id',
+                'id' => 'providerId',
             ]
         );
     }
