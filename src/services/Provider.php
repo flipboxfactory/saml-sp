@@ -36,7 +36,7 @@ class Provider extends AbstractProviderService implements ProviderServiceInterfa
      */
     public function findOwn()
     {
-        return $this->findByEntityId(Saml::getInstance()->getSettings()->getEntityId());
+        return $this->findByEntityId(Saml::getInstance()->getSettings()->getEntityId())->one();
     }
 
     /**

@@ -96,7 +96,7 @@ class LoginController extends Controller
         /**
          * @var ProviderRecord $idp
          */
-        if (! $idp = Saml::getInstance()->getProvider()->findByIdp()) {
+        if (! $idp = Saml::getInstance()->getProvider()->findByIdp()->one()) {
             throw new InvalidMetadata('IDP Metadata Not found!');
         }
 
@@ -138,4 +138,5 @@ class LoginController extends Controller
 
         Craft::$app->end();
     }
+
 }

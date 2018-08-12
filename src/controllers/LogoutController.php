@@ -37,7 +37,7 @@ class LogoutController extends AbstractLogoutController
      */
     protected function getRemoteProvider(): ProviderInterface
     {
-        return $this->getSamlPlugin()->getProvider()->findByIdp();
+        return $this->getSamlPlugin()->getProvider()->findByIdp()->one();
     }
 
     /**

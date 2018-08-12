@@ -24,7 +24,7 @@ class HttpRedirect extends AbstractHttpRedirect
     {
         $provider = Saml::getInstance()->getProvider()->findByIssuer(
             $issuer
-        );
+        )->one();
         if (! $provider) {
             throw new InvalidIssuer(
                 sprintf("Invalid issuer: %s", $issuer->getValue())

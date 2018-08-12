@@ -216,7 +216,7 @@ class Login extends Component
         if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
             $nameId,
             $provider
-        )
+        )->one()
         ) {
             if (! Saml::getInstance()->getSettings()->createUser) {
                 throw new UserException("System doesn't have permission to create a new user.");

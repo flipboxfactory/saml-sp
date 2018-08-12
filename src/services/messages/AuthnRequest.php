@@ -73,7 +73,7 @@ class AuthnRequest extends Component implements SamlRequestInterface
          */
         $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
             Saml::getInstance()->getSettings()->getEntityId()
-        );
+        )->one();
         /**
          * @var KeyChainRecord $pair
          */

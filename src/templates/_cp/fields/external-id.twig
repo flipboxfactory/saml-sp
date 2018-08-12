@@ -1,0 +1,32 @@
+<table class="data fullwidth collapsible">
+    <thead>
+    <tr>
+        <th>
+            NameId
+        </th>
+        <th>
+            Issuer
+        </th>
+        <th>
+            Last Login
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for identity in identities.all() %}
+        <tr>
+            <td>
+                {{ identity.nameId }}
+            </td>
+            <td>
+                <a href="{{ baseProviderUrl }}/{{ identity.provider.id }}" class="go">
+                    {{ identity.provider.entityId }}
+                </a>
+            </td>
+            <td>
+                {{ identity.lastLoginDate }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -9,11 +9,14 @@ namespace flipbox\saml\sp;
 
 use Craft;
 use craft\console\Application as ConsoleApplication;
+use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\services\Fields;
 use craft\web\UrlManager;
 use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\AbstractPlugin;
+use flipbox\saml\sp\fields\ExternalIdentity;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\services\Cp;
 use flipbox\saml\sp\services\messages\AuthnRequest;
@@ -53,6 +56,14 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'keychain' => \flipbox\saml\sp\cli\KeyChain::class,
             ];
         }
+
+        Event::on(Fields::class,
+
+            Fields::EVENT_REGISTER_FIELD_TYPES,
+            function (RegisterComponentTypesEvent $event) {
+                $event->types[] = ExternalIdentity::class;
+            }
+        );
     }
 
     /**
