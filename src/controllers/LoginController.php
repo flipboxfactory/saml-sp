@@ -91,12 +91,23 @@ class LoginController extends Controller
      * @throws \yii\base\ExitException
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionRequest()
+    public function actionRequest($uid = null)
     {
+        //build uid condition
+        $uidCondition = [];
+        if ($uid) {
+            $uidCondition = [
+                'uid' => $uid,
+            ];
+        }
+
         /**
          * @var ProviderRecord $idp
          */
-        if (! $idp = Saml::getInstance()->getProvider()->findByIdp()->one()) {
+        if (! $idp = Saml::getInstance()->getProvider()->findByIdp(
+            $uidCondition
+        )->one()
+        ) {
             throw new InvalidMetadata('IDP Metadata Not found!');
         }
 
@@ -125,9 +136,9 @@ class LoginController extends Controller
         $authnRequest->setRelayState(
             SerializeHelper::toBase64(
                 Craft::$app->getUser()->getReturnUrl(
-                    /**
-                    * use refer here
-                    */
+                /**
+                 * use refer here
+                 */
                     $relayState
                 )
             )

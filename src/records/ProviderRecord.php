@@ -24,4 +24,19 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     const TABLE_ALIAS = 'saml_sp_providers';
 
+    /**
+     * @inheritdoc
+     */
+    public function getLoginPath()
+    {
+        if ($this->type !== Saml::IDP) {
+            return null;
+        }
+        return implode(DIRECTORY_SEPARATOR,
+            [
+                Saml::getInstance()->getSettings()->loginRequestEndpoint,
+                $this->uid,
+            ]
+        );
+    }
 }

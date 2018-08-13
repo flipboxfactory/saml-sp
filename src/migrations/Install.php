@@ -2,13 +2,7 @@
 
 namespace flipbox\saml\sp\migrations;
 
-use craft\db\Migration;
-use craft\records\User as UserRecord;
-use flipbox\keychain\records\KeyChainRecord;
-use flipbox\keychain\traits\MigrateKeyChain;
 use flipbox\saml\core\migrations\AbstractInstall;
-use flipbox\saml\core\records\ProviderIdentityInterface;
-use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;

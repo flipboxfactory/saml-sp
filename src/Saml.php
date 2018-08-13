@@ -123,6 +123,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         $event->rules = array_merge(
             $event->rules,
             [
+                'login' => 'saml-sp/cp/view/login',
                 'saml-sp/'                          => 'saml-sp/cp/view/general/setup',
                 'saml-sp/settings'                  => 'saml-sp/cp/view/general/settings',
 
@@ -159,6 +160,10 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'POST,GET /sso/login'  => 'saml-sp/login',
                 sprintf(
                     'GET %s',
+                    (string)static::getInstance()->getSettings()->loginRequestEndpoint
+                )                      => 'saml-sp/login/request',
+                sprintf(
+                    'GET %s/<uid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}>',
                     (string)static::getInstance()->getSettings()->loginRequestEndpoint
                 )                      => 'saml-sp/login/request',
                 /**

@@ -128,7 +128,7 @@ class Login extends Component
 
         $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
             $response->getIssuer()->getValue()
-        );
+        )->one();
 
         /**
          * Get Identity
