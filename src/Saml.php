@@ -138,7 +138,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 /**
                  * Metadata
                  */
-                'saml-sp/metadata'                  => 'saml-sp/cp/view/metadata/default/list',
+                'saml-sp/metadata'                  => 'saml-sp/cp/view/metadata/default',
                 'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
                 'saml-sp/metadata/new-idp'          => 'saml-sp/cp/view/metadata/edit/new-idp',
                 'saml-sp/metadata/new-sp'           => 'saml-sp/cp/view/metadata/edit/new-sp',
