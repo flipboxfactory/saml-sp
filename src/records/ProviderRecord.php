@@ -39,4 +39,20 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
             ]
         );
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLogoutPath()
+    {
+        if ($this->type !== Saml::IDP) {
+            return null;
+        }
+        return implode(DIRECTORY_SEPARATOR,
+            [
+                Saml::getInstance()->getSettings()->logoutRequestEndpoint,
+                $this->uid,
+            ]
+        );
+    }
 }

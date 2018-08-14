@@ -35,13 +35,19 @@ class LogoutController extends AbstractLogoutController
     /**
      * @return ProviderInterface
      */
-    protected function getRemoteProvider(): ProviderInterface
+    protected function getRemoteProvider($uid = null): ProviderInterface
     {
-        return $this->getSamlPlugin()->getProvider()->findByIdp()->one();
+        $condition = [];
+        if ($uid) {
+            $condition = [
+                'uid' => $uid,
+            ],
+        }
+        return $this->getSamlPlugin()->getProvider()->findByIdp($condition)->one();
     }
 
     /**
-     * @param SamlMessage       $samlMessage
+     * @param SamlMessage $samlMessage
      * @param ProviderInterface $provider
      * @throws \flipbox\saml\core\exceptions\InvalidMetadata
      * @throws \yii\base\ExitException

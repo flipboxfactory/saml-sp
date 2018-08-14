@@ -56,14 +56,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'keychain' => \flipbox\saml\sp\cli\KeyChain::class,
             ];
         }
-
-        Event::on(Fields::class,
-
-            Fields::EVENT_REGISTER_FIELD_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = ExternalIdentity::class;
-            }
-        );
     }
 
     /**
@@ -88,6 +80,14 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             [static::class, 'onRegisterSiteUrlRules']
+        );
+
+        Event::on(Fields::class,
+
+            Fields::EVENT_REGISTER_FIELD_TYPES,
+            function (RegisterComponentTypesEvent $event) {
+                $event->types[] = ExternalIdentity::class;
+            }
         );
 
     }
@@ -123,7 +123,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         $event->rules = array_merge(
             $event->rules,
             [
-                'login' => 'saml-sp/cp/view/login',
+                'login'                             => 'saml-sp/cp/view/login',
                 'saml-sp/'                          => 'saml-sp/cp/view/general/setup',
                 'saml-sp/settings'                  => 'saml-sp/cp/view/general/settings',
 
@@ -138,8 +138,10 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 /**
                  * Metadata
                  */
-                'saml-sp/metadata'                  => 'saml-sp/cp/view/metadata/default',
+                'saml-sp/metadata'                  => 'saml-sp/cp/view/metadata/default/list',
                 'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
+                'saml-sp/metadata/new-idp'          => 'saml-sp/cp/view/metadata/edit/new-idp',
+                'saml-sp/metadata/new-sp'           => 'saml-sp/cp/view/metadata/edit/new-sp',
                 'saml-sp/metadata/my-provider'      => 'saml-sp/cp/view/metadata/edit/my-provider',
                 'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
             ]
@@ -177,6 +179,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             ]
         );
     }
+
 
     /**
      * @return Settings

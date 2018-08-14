@@ -18,4 +18,28 @@ class EditController extends AbstractEditController
     {
         return Saml::getInstance();
     }
+
+    /**
+     * @param array $variables
+     * @return array
+     */
+    protected function beforeRender(array $variables = [])
+    {
+        $request = \Craft::$app->request;
+
+        $key = null;
+        $path = implode('/',
+            [
+                $request->getSegment(2),
+                $request->getSegment(3),
+                $request->getSegment(4),
+            ]);
+
+        if (preg_match('#keychain/#', $path)) {
+            $key = 'saml.keychain';
+        }
+
+        $variables['selectedSubnavItem'] = $key;
+        return parent::beforeRender($variables);
+    }
 }
