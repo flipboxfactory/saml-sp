@@ -17,10 +17,11 @@ Now that the plugin is configured, point login within the Craft general config (
 ...
 ```
 
-## User Sync Configurations
+## Plugin Settings | `config/saml-sp.php`
 
 These configuration options can be found in the Settings model within the plugin
-at `flipbox\saml\sp\models\Settings`.
+at `flipbox\saml\sp\models\Settings` and you can override these options by adding 
+a config file within your repo at `config/saml-sp.php`.
 
 ### `enableUsers`
 * Description:
@@ -86,6 +87,7 @@ at `flipbox\saml\sp\models\Settings`.
 * Default:
 ```php
 [
+        # "IDP Attribute Name" => "Craft Property Name"
         ClaimTypes::EMAIL_ADDRESS => 'email',
         ClaimTypes::GIVEN_NAME    => 'firstName',
         ClaimTypes::SURNAME       => 'lastName',
@@ -96,3 +98,20 @@ at `flipbox\saml\sp\models\Settings`.
 ]
 ```
 
+## Example `config/saml-sp.php`
+
+```php
+<?php
+return [
+    'responseAttributeMap' => [
+        # "IDP Attribute Name" => "Craft Property Name"
+        ClaimTypes::EMAIL_ADDRESS => 'email',
+        ClaimTypes::GIVEN_NAME    => 'firstName',
+        ClaimTypes::SURNAME       => 'lastName',
+
+        'email'     => 'email',
+        'firstName' => 'firstName',
+        'lastName'  => 'lastName',
+    ]
+];
+```

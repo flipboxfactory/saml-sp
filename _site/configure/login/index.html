@@ -107,10 +107,11 @@
 ...
 </code></pre>
 
-<h2 id="user-sync-configurations">User Sync Configurations</h2>
+<h2 id="plugin-settings--configsaml-spphp">Plugin Settings | <code>config/saml-sp.php</code></h2>
 
 <p>These configuration options can be found in the Settings model within the plugin
-at <code>flipbox\saml\sp\models\Settings</code>.</p>
+at <code>flipbox\saml\sp\models\Settings</code> and you can override these options by adding 
+a config file within your repo at <code>config/saml-sp.php</code>.</p>
 
 <h3 id="enableusers"><code>enableUsers</code></h3>
 <ul>
@@ -220,6 +221,7 @@ at <code>flipbox\saml\sp\models\Settings</code>.</p>
   <li>Required: A map item needs to exist for email.</li>
   <li>Default:
     <pre><code class="language-php">[
+      # "IDP Attribute Name" =&gt; "Craft Property Name"
       ClaimTypes::EMAIL_ADDRESS =&gt; 'email',
       ClaimTypes::GIVEN_NAME    =&gt; 'firstName',
       ClaimTypes::SURNAME       =&gt; 'lastName',
@@ -232,6 +234,22 @@ at <code>flipbox\saml\sp\models\Settings</code>.</p>
   </li>
 </ul>
 
+<h2 id="example-configsaml-spphp">Example <code>config/saml-sp.php</code></h2>
+
+<pre><code class="language-php">&lt;?php
+return [
+    'responseAttributeMap' =&gt; [
+        # "IDP Attribute Name" =&gt; "Craft Property Name"
+        ClaimTypes::EMAIL_ADDRESS =&gt; 'email',
+        ClaimTypes::GIVEN_NAME    =&gt; 'firstName',
+        ClaimTypes::SURNAME       =&gt; 'lastName',
+
+        'email'     =&gt; 'email',
+        'firstName' =&gt; 'firstName',
+        'lastName'  =&gt; 'lastName',
+    ]
+];
+</code></pre>
 
             </div>
         </section>
