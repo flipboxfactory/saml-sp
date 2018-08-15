@@ -41,7 +41,7 @@ class LogoutController extends AbstractLogoutController
         if ($uid) {
             $condition = [
                 'uid' => $uid,
-            ],
+            ];
         }
         return $this->getSamlPlugin()->getProvider()->findByIdp($condition)->one();
     }

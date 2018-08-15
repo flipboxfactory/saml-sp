@@ -19,6 +19,7 @@ use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
 use LightSaml\Model\Assertion\Assertion;
+use LightSaml\Model\Assertion\Attribute;
 use LightSaml\Model\Protocol\Response as SamlResponse;
 use yii\base\Event;
 use yii\base\UserException;
@@ -156,7 +157,7 @@ class Login extends Component
         /**
          *
          */
-        $this->transformToUser($response, $user);
+        $this->transformToUser($response, $user, $idpProvider);
 
         /**
          * Before user save
@@ -350,11 +351,20 @@ class Login extends Component
      * @param User $user
      * @return User
      */
-    protected function transformToUser(\LightSaml\Model\Protocol\Response $response, User $user)
+    protected function transformToUser(
+        SamlResponse $response,
+        User $user,
+        ProviderInterface $provider
+    )
     {
         $assertion = $response->getFirstAssertion();
 
-        $attributeMap = Saml::getInstance()->getSettings()->responseAttributeMap;
+        /**
+         * Check the provider first
+         */
+        $attributeMap = Provider::providerMappingToKeyValue(
+            $provider
+        ) ?: Saml::getInstance()->getSettings()->responseAttributeMap;
 
         /**
          * Loop thru attributes and set to the user
@@ -362,35 +372,49 @@ class Login extends Component
         foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
             if (isset($attributeMap[$attribute->getName()])) {
                 $craftProperty = $attributeMap[$attribute->getName()];
-
-                if (is_scalar($craftProperty)) {
-                    //check if it exists as a property first
-                    if (property_exists($user, $craftProperty)) {
-                        Saml::debug(
-                            sprintf(
-                                'Attribute %s is scalar and should set value "%s" to user->%s',
-                                $attribute->getName(),
-                                $attribute->getFirstAttributeValue(),
-                                $craftProperty
-                            )
-                        );
-                        $user->{$craftProperty} = $attribute->getFirstAttributeValue();
-                    }
-                } else {
-                    if (is_callable($craftProperty)) {
-                        Saml::debug(
-                            sprintf(
-                                'Attribute %s is handled with a callable.',
-                                $attribute->getName()
-                            )
-                        );
-                        call_user_func($craftProperty, $user, $attribute);
-                    }
-                }
+                $this->assignUserProperty(
+                    $user,
+                    $attribute,
+                    $craftProperty
+                );
             }
         }
 
         return $user;
+    }
+
+    /**
+     * @param User $user
+     * @param Attribute $attribute
+     * @param string $craftProperty
+     */
+    protected function assignUserProperty(
+        User $user,
+        Attribute $attribute,
+        string $craftProperty
+    )
+    {
+
+        if (is_string($craftProperty) && property_exists($user, $craftProperty)) {
+            Saml::debug(
+                sprintf(
+                    'Attribute %s is scalar and should set value "%s" to user->%s',
+                    $attribute->getName(),
+                    $attribute->getFirstAttributeValue(),
+                    $craftProperty
+                )
+            );
+            $user->{$craftProperty} = $attribute->getFirstAttributeValue();
+        } elseif (is_callable($craftProperty)) {
+            Saml::debug(
+                sprintf(
+                    'Attribute %s is handled with a callable.',
+                    $attribute->getName()
+                )
+            );
+            call_user_func($craftProperty, $user, $attribute);
+        }
+
     }
 
     /**
