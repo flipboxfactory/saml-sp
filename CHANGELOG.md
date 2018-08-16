@@ -1,5 +1,8 @@
 Changelog
 =========
+# 1.0.0-beta.11
+### Fixed
+- Saml core fix: Changing default rsa1 to rsa256
 
 # 1.0.0-beta.11
 ### Fixed
