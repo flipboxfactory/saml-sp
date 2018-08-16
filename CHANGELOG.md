@@ -1,6 +1,10 @@
 Changelog
 =========
-# 1.0.0-beta.11
+# 1.0.0-beta.13
+### Fixed
+- Login: if there aren't any attribute statements, try and use the NameID as the email and continue.
+
+# 1.0.0-beta.12
 ### Fixed
 - Saml core fix: Changing default rsa1 to rsa256
 

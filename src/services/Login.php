@@ -152,11 +152,24 @@ class Login extends Component
             UserHelper::enableUser($user);
         }
 
+        if ($assertion->getFirstAttributeStatement()) {
+            /**
+             *
+             */
+            $this->transformToUser($response, $user);
 
-        /**
-         *
-         */
-        $this->transformToUser($response, $user);
+        } else {
+
+            /**
+             * There doesn't seem to be any attribute statements.
+             * Try and use username for the email and move on.
+             */
+            \Craft::warning(
+                'No attribute statements found! Trying to assign username as the email.',
+                Saml::getInstance()->getHandle()
+            );
+            $user->email = $user->username;
+        }
 
         /**
          * Before user save
@@ -307,6 +320,12 @@ class Login extends Component
     {
         $groupNames = Saml::getInstance()->getSettings()->groupAttributeNames;
         $groups = [];
+        /**
+         * Make sure there is an attribute statement
+         */
+        if(!$assertion->getFirstAttributeStatement()) {
+            return true;
+        }
         foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
             /**
              * Is there a group name match?
