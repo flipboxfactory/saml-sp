@@ -1,5 +1,9 @@
 Changelog
 =========
+# 1.0.0-beta.14
+### Added 
+- Adding `relayStateOverrideParam` to the settings model.
+
 # 1.0.0-beta.13
 ### Fixed
 - Login: if there aren't any attribute statements, try and use the NameID as the email and continue.
