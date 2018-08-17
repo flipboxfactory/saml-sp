@@ -16,7 +16,7 @@
   "minimum-stability":"beta",
   "require": {
     "craftcms/cms": "^3.0.0",
-    "flipboxfactory/saml-core": "^1.0.0-RC1"
+    "flipboxfactory/saml-core": "dev-develop as 1.0.0.RC1"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.0",
