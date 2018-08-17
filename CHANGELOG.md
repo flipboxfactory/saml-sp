@@ -1,5 +1,22 @@
 Changelog
 =========
+# 1.0.0-beta.14
+### Added 
+- Adding `relayStateOverrideParam` to the settings model.
+
+# 1.0.0-beta.13
+### Fixed
+- Login: if there aren't any attribute statements, try and use the NameID as the email and continue.
+
+# 1.0.0-beta.12
+### Fixed
+- Saml core fix: Changing default rsa1 to rsa256
+
+# 1.0.0-beta.11
+### Fixed
+- Fixed a bug where during the verification of a signature, we were pulling the first key from the metadata
+which could be the wrong one. Now specify the signing key.
+
 # 1.0.0-beta.10
 
 ### Added

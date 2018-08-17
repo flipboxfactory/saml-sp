@@ -27,7 +27,15 @@ use yii\base\UserException;
 class Login extends Component
 {
 
+    /**
+     * Use before or after now
+     * @deprecated
+     */
     const EVENT_RESPONSE_TO_USER = 'eventResponseToUser';
+    const EVENT_BEFORE_RESPONSE_TO_USER = 'eventBeforeResponseToUser';
+    const EVENT_AFTER_RESPONSE_TO_USER = 'eventAfterResponseToUser';
+
+    protected $isAssertionDecrypted = false;
 
     /**
      * @param SamlResponse $response
@@ -47,9 +55,19 @@ class Login extends Component
         Saml::getInstance()->getResponse()->isValidAssertion($assertion);
 
         /**
+         * Get User
+         */
+        $user = $this->getUserByResponse($response);
+
+        /**
          * Sync User
          */
-        $identity = $this->syncUser($response);
+        $this->syncUser($user, $response);
+
+        /**
+         * Get Identity
+         */
+        $identity = $this->getIdentityByUserAndResponse($user, $response);
 
         /**
          * Log user in
@@ -70,6 +88,10 @@ class Login extends Component
         return $identity;
     }
 
+    /**
+     * @param KeyChainRecord $keyChainRecord
+     * @param SamlResponse $response
+     */
     protected function decryptAssertions(KeyChainRecord $keyChainRecord, \LightSaml\Model\Protocol\Response $response)
     {
         Saml::getInstance()->getResponse()->decryptAssertions(
@@ -88,11 +110,18 @@ class Login extends Component
 
         $ownProvider = Saml::getInstance()->getProvider()->findOwn();
 
-        if ($ownProvider->keychain && $response->getFirstEncryptedAssertion()) {
+        if ($ownProvider->keychain &&
+            $response->getFirstEncryptedAssertion() &&
+            $this->isAssertionDecrypted === false
+        ) {
             $this->decryptAssertions(
                 $ownProvider->keychain,
                 $response
             );
+            /**
+             * try to only do this once
+             */
+            $this->isAssertionDecrypted = true;
         }
 
         $assertions = $response->getAllAssertions();
@@ -108,14 +137,12 @@ class Login extends Component
 
     /**
      * @param SamlResponse $response
-     * @return \flipbox\saml\sp\records\ProviderIdentityRecord
+     * @return User
      * @throws InvalidMessage
      * @throws UserException
      * @throws \Throwable
-     * @throws \craft\errors\ElementNotFoundException
-     * @throws \yii\base\Exception
      */
-    protected function syncUser(\LightSaml\Model\Protocol\Response $response)
+    protected function getUserByResponse(\LightSaml\Model\Protocol\Response $response)
     {
 
         $assertion = $this->getFirstAssertion($response);
@@ -127,38 +154,19 @@ class Login extends Component
          */
         $username = $assertion->getSubject()->getNameID()->getValue();
 
-        $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-            $response->getIssuer()->getValue()
-        )->one();
+        return $this->getUser($username);
+    }
 
-        /**
-         * Get Identity
-         */
-        $identity = $this->forceGetIdentity($username, $idpProvider);
-
-        /**
-         * Ger User
-         */
-        if (! $user = $identity->getUser()) {
-            $user = $this->forceGetUser($username);
-        }
-
-        /**
-         * Is User Active?
-         */
-        if (! UserHelper::isUserActive($user)) {
-            if (! Saml::getInstance()->getSettings()->enableUsers) {
-                throw new UserException('User access denied.');
-            }
-            UserHelper::enableUser($user);
-        }
-
-
-        /**
-         *
-         */
-        $this->transformToUser($response, $user, $idpProvider);
-
+    /**
+     * @param User $user
+     * @param SamlResponse $response
+     * @throws UserException
+     * @throws \Throwable
+     * @throws \craft\errors\ElementNotFoundException
+     * @throws \yii\base\Exception
+     */
+    protected function syncUser(User $user, \LightSaml\Model\Protocol\Response $response)
+    {
         /**
          * Before user save
          */
@@ -167,30 +175,61 @@ class Login extends Component
         $event->data = $user;
 
         $this->trigger(
-            static::EVENT_RESPONSE_TO_USER,
+            static::EVENT_BEFORE_RESPONSE_TO_USER,
             $event
         );
 
-        if (! \Craft::$app->getElements()->saveElement($user)) {
-            Saml::error(
-                'User save failed: ' . json_encode($user->getErrors())
-            );
-            throw new UserException("User save failed: " . json_encode($user->getErrors()));
-        }
+        /**
+         * enable and transform the user
+         */
+        $this->constructUser($user, $response);
+
+        /**
+         * Save
+         */
+        $this->saveUser($user);
 
         /**
          * Sync groups depending on the plugin setting.
          */
-        if (Saml::getInstance()->getSettings()->syncGroups) {
-            $this->syncUserGroupsByAssertion($user, $assertion);
-        }
+        $this->syncUserGroupsByAssertion($user, $this->getFirstAssertion($response));
+
+        /**
+         * after user save
+         */
+        $event = new Event();
+        $event->sender = $response;
+        $event->data = $user;
+
+        $this->trigger(
+            static::EVENT_AFTER_RESPONSE_TO_USER,
+            $event
+        );
+    }
+
+    /**
+     * @param User $user
+     * @param SamlResponse $response
+     * @return ProviderIdentityRecord
+     * @throws UserException
+     */
+    protected function getIdentityByUserAndResponse(User $user, \LightSaml\Model\Protocol\Response $response)
+    {
+
+        $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
+            $response->getIssuer()->getValue()
+        );
+        /**
+         * Get Identity
+         */
+        $identity = $this->forceGetIdentity($user->username, $idpProvider);
 
         /**
          * Get Session
          */
         $sessionIndex = null;
-        if ($assertion->hasAnySessionIndex()) {
-            $sessionIndex = $assertion->getFirstAuthnStatement()->getSessionIndex();
+        if ($response->getFirstAssertion()->hasAnySessionIndex()) {
+            $sessionIndex = $response->getFirstAssertion()->getFirstAuthnStatement()->getSessionIndex();
         }
 
         /**
@@ -203,7 +242,76 @@ class Login extends Component
     }
 
     /**
-     * @param $nameId
+     * @param User $user
+     * @return bool
+     * @throws UserException
+     * @throws \Throwable
+     * @throws \craft\errors\ElementNotFoundException
+     * @throws \yii\base\Exception
+     */
+    protected function saveUser(User $user)
+    {
+        if (! \Craft::$app->getElements()->saveElement($user)) {
+            Saml::error(
+                'User save failed: ' . json_encode($user->getErrors())
+            );
+            throw new UserException("User save failed: " . json_encode($user->getErrors()));
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $username
+     * @return User
+     * @throws UserException
+     */
+    protected function getUser($username)
+    {
+        return $this->forceGetUser($username);
+    }
+
+    /**
+     * @param User $user
+     * @param SamlResponse $response
+     * @throws UserException
+     * @throws \Throwable
+     */
+    protected function constructUser(User $user, \LightSaml\Model\Protocol\Response $response)
+    {
+        /**
+         * Is User Active?
+         */
+        if (! UserHelper::isUserActive($user)) {
+            if (! Saml::getInstance()->getSettings()->enableUsers) {
+                throw new UserException('User access denied.');
+            }
+            UserHelper::enableUser($user);
+        }
+
+        $assertion = $this->getFirstAssertion($response);
+
+        if ($assertion->getFirstAttributeStatement()) {
+            /**
+             *
+             */
+            $this->transformToUser($response, $user);
+        } else {
+
+            /**
+             * There doesn't seem to be any attribute statements.
+             * Try and use username for the email and move on.
+             */
+            \Craft::warning(
+                'No attribute statements found! Trying to assign username as the email.',
+                Saml::getInstance()->getHandle()
+            );
+            $user->email = $user->username;
+        }
+    }
+
+    /**
+     * @param string $nameId
      * @param ProviderInterface $provider
      * @return ProviderIdentityRecord
      * @throws UserException
@@ -306,9 +414,33 @@ class Login extends Component
      */
     protected function syncUserGroupsByAssertion(User $user, Assertion $assertion)
     {
+        /**
+         * Nothing to do, move on
+         */
+        if (false === Saml::getInstance()->getSettings()->syncGroups) {
+            return true;
+        }
+
         $groupNames = Saml::getInstance()->getSettings()->groupAttributeNames;
         $groups = [];
+        /**
+         * Make sure there is an attribute statement
+         */
+        if (! $assertion->getFirstAttributeStatement()) {
+            Saml::debug(
+                'No attribute statement found, moving on.'
+            );
+            return true;
+        }
+
         foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
+            Saml::debug(
+                sprintf(
+                    'Is attribute group? "%s" in %s',
+                    $attribute->getName(),
+                    json_encode($groupNames)
+                )
+            );
             /**
              * Is there a group name match?
              * Match the attribute name to the specified name in the plugin settings
@@ -328,9 +460,14 @@ class Login extends Component
                  *           </saml2:AttributeValue>
                  * </saml2:Attribute>
                  */
-
                 foreach ($attribute->getAllAttributeValues() as $value) {
                     if ($group = $this->findOrCreateUserGroup($value)) {
+                        Saml::debug(
+                            sprintf(
+                                'Assigning group: %s',
+                                $group->name
+                            )
+                        );
                         $groups[] = $group->id;
                     }
                 }
@@ -418,7 +555,7 @@ class Login extends Component
     }
 
     /**
-     * @param $groupName
+     * @param string $groupName
      * @return UserGroup
      * @throws UserException
      * @throws \craft\errors\WrongEditionException

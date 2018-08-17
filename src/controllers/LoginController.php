@@ -37,6 +37,7 @@ class LoginController extends Controller
         if ($action->actionMethod === 'actionIndex') {
             return true;
         }
+
         return parent::beforeAction($action);
     }
 
@@ -123,23 +124,13 @@ class LoginController extends Controller
             $authnRequest->getID()
         );
 
-        $relayState = null;
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $site = parse_url(Craft::$app->config->general->siteUrl);
-            $refer = parse_url($_SERVER['HTTP_REFERER']);
-            if ($site && $refer && isset($site['host']) && isset($refer['host'])
-                && $site['host'] == $refer['host']) {
-                $relayState = $_SERVER['HTTP_REFERER'];
-            }
-        }
-
         $authnRequest->setRelayState(
             SerializeHelper::toBase64(
                 Craft::$app->getUser()->getReturnUrl(
-                /**
-                 * use refer here
-                 */
-                    $relayState
+                    Craft::$app->request->getParam(
+                        Saml::getInstance()->getSettings()->relayStateOverrideParam,
+                        null
+                    )
                 )
             )
         );
