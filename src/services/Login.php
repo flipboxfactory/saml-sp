@@ -218,7 +218,7 @@ class Login extends Component
 
         $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
             $response->getIssuer()->getValue()
-        );
+        )->one();
         /**
          * Get Identity
          */
@@ -490,18 +490,20 @@ class Login extends Component
      */
     protected function transformToUser(
         SamlResponse $response,
-        User $user,
-        ProviderInterface $provider
-    )
-    {
+        User $user
+    ) {
+
         $assertion = $response->getFirstAssertion();
 
         /**
          * Check the provider first
          */
         $attributeMap = Provider::providerMappingToKeyValue(
-            $provider
-        ) ?: Saml::getInstance()->getSettings()->responseAttributeMap;
+            $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
+                $response->getIssuer()->getValue()
+            )->one()
+        ) ?:
+            Saml::getInstance()->getSettings()->responseAttributeMap;
 
         /**
          * Loop thru attributes and set to the user
@@ -529,8 +531,7 @@ class Login extends Component
         User $user,
         Attribute $attribute,
         string $craftProperty
-    )
-    {
+    ) {
 
         if (is_string($craftProperty) && property_exists($user, $craftProperty)) {
             Saml::debug(
@@ -551,7 +552,6 @@ class Login extends Component
             );
             call_user_func($craftProperty, $user, $attribute);
         }
-
     }
 
     /**

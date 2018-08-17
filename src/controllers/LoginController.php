@@ -140,5 +140,4 @@ class LoginController extends Controller
 
         Craft::$app->end();
     }
-
 }

@@ -6,7 +6,6 @@
 
 namespace flipbox\saml\sp\services;
 
-
 use flipbox\saml\core\migrations\AbstractAlterEnvironments;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\AbstractCp;
@@ -34,5 +33,4 @@ class Cp extends AbstractCp
     {
         return new AlterEnvironments();
     }
-
 }

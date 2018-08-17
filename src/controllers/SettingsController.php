@@ -6,7 +6,6 @@
 
 namespace flipbox\saml\sp\controllers;
 
-
 use flipbox\saml\core\controllers\AbstractSettingsController;
 use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\actions\Update;

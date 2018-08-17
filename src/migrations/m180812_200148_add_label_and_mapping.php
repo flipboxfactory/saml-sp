@@ -33,5 +33,4 @@ class m180812_200148_add_label_and_mapping extends \flipbox\saml\core\migrations
     {
         return ProviderRecord::tableName();
     }
-
 }

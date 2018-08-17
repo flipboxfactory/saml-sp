@@ -6,7 +6,6 @@
 
 namespace flipbox\saml\sp\controllers\cp\view;
 
-
 use flipbox\saml\sp\controllers\cp\view\GeneralController;
 use flipbox\saml\sp\Saml;
 
@@ -24,9 +23,8 @@ class LoginController extends GeneralController
         $variables['providers'] = Saml::getInstance()->getProvider()->findByIdp();
         return $this->renderTemplate(
             'saml-sp/_cp/login',
-//            $this->getTemplateIndex() . static::TEMPLATE_INDEX . DIRECTORY_SEPARATOR . '',
+            //            $this->getTemplateIndex() . static::TEMPLATE_INDEX . DIRECTORY_SEPARATOR . '',
             $variables
         );
     }
-
 }

@@ -32,7 +32,8 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
         if ($this->type !== Saml::IDP) {
             return null;
         }
-        return implode(DIRECTORY_SEPARATOR,
+        return implode(
+            DIRECTORY_SEPARATOR,
             [
                 Saml::getInstance()->getSettings()->loginRequestEndpoint,
                 $this->uid,
@@ -48,7 +49,8 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
         if ($this->type !== Saml::IDP) {
             return null;
         }
-        return implode(DIRECTORY_SEPARATOR,
+        return implode(
+            DIRECTORY_SEPARATOR,
             [
                 Saml::getInstance()->getSettings()->logoutRequestEndpoint,
                 $this->uid,

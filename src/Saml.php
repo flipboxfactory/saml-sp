@@ -82,14 +82,13 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
             [static::class, 'onRegisterSiteUrlRules']
         );
 
-        Event::on(Fields::class,
-
+        Event::on(
+            Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
             function (RegisterComponentTypesEvent $event) {
                 $event->types[] = ExternalIdentity::class;
             }
         );
-
     }
 
     /**

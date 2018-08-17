@@ -31,12 +31,14 @@ class IndexController extends AbstractGeneralController
         $request = \Craft::$app->request;
 
         $key = null;
-        $path = implode('/',
+        $path = implode(
+            '/',
             [
                 $request->getSegment(2),
                 $request->getSegment(3),
                 $request->getSegment(4),
-            ]);
+            ]
+        );
 
         if (preg_match('#keychain/+$#', $path)) {
             $key = 'saml.keychain';
