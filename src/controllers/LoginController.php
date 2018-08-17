@@ -112,6 +112,34 @@ class LoginController extends Controller
             $authnRequest->getID()
         );
 
+        $relayState = $this->getDefaultRequestRelayState();
+
+        $authnRequest->setRelayState(
+            SerializeHelper::toBase64(
+                Craft::$app->request->getParam(
+                    Saml::getInstance()->getSettings()->relayStateOverrideParam,
+                    null
+                ) ?:
+                    Craft::$app->getUser()->getReturnUrl(
+                        /**
+                        * use refer here
+                        */
+                        $relayState
+                    )
+            )
+        );
+
+
+        Factory::send($authnRequest, $idp);
+
+        Craft::$app->end();
+    }
+
+    /**
+     * @return null
+     */
+    protected function getDefaultRequestRelayState()
+    {
         $relayState = null;
         if (isset($_SERVER['HTTP_REFERER'])) {
             $site = parse_url(Craft::$app->config->general->siteUrl);
@@ -122,20 +150,6 @@ class LoginController extends Controller
             }
         }
 
-        $authnRequest->setRelayState(
-            SerializeHelper::toBase64(
-                Craft::$app->getUser()->getReturnUrl(
-                    /**
-                    * use refer here
-                    */
-                    $relayState
-                )
-            )
-        );
-
-
-        Factory::send($authnRequest, $idp);
-
-        Craft::$app->end();
+        return $relayState;
     }
 }

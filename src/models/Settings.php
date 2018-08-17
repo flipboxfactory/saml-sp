@@ -122,4 +122,6 @@ class Settings extends AbstractSettings implements SettingsInterface
 
 
     ];
+
+    public $relayStateOverrideParam = 'RelayState';
 }
