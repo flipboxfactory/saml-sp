@@ -10,9 +10,7 @@ namespace flipbox\saml\sp\services\messages;
 
 use craft\base\Component;
 use flipbox\keychain\records\KeyChainRecord;
-use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\SecurityHelper;
-use flipbox\saml\sp\Saml;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Assertion\EncryptedAssertionReader;
 use LightSaml\Validator\Model\Assertion\AssertionTimeValidator;

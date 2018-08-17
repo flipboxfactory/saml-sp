@@ -310,7 +310,7 @@ class Login extends Component
     }
 
     /**
-     * @param $nameId
+     * @param string $nameId
      * @param ProviderInterface $provider
      * @return ProviderIdentityRecord
      * @throws UserException
@@ -531,7 +531,7 @@ class Login extends Component
     }
 
     /**
-     * @param $groupName
+     * @param string $groupName
      * @return UserGroup
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
