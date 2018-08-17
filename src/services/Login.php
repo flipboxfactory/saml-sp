@@ -306,7 +306,7 @@ class Login extends Component
                 'No attribute statements found! Trying to assign username as the email.',
                 Saml::getInstance()->getHandle()
             );
-            $user->email = $user->username;
+            $user->email = $user->email ?: $user->username;
         }
     }
 
