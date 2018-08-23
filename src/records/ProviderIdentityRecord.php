@@ -11,6 +11,13 @@ namespace flipbox\saml\sp\records;
 use flipbox\ember\helpers\ModelHelper;
 use flipbox\saml\core\records\AbstractProviderIdentity;
 
+/**
+ * Class ProviderIdentityRecord
+ * @package flipbox\saml\sp\records
+ * @property int $userId
+ * @property bool $enabled
+ * @property string $sessionId
+ */
 class ProviderIdentityRecord extends AbstractProviderIdentity
 {
 

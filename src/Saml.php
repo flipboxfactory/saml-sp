@@ -122,7 +122,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         $event->rules = array_merge(
             $event->rules,
             [
-                'login'                             => 'saml-sp/cp/view/login',
                 'saml-sp/'                          => 'saml-sp/cp/view/general/setup',
                 'saml-sp/settings'                  => 'saml-sp/cp/view/general/settings',
 
@@ -143,7 +142,11 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'saml-sp/metadata/new-sp'           => 'saml-sp/cp/view/metadata/edit/new-sp',
                 'saml-sp/metadata/my-provider'      => 'saml-sp/cp/view/metadata/edit/my-provider',
                 'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
-            ]
+            ],
+            static::getInstance()->getSettings()->enableCpLoginButtons ?
+                [
+                    'login' => 'saml-sp/cp/view/login',
+                ] : []
         );
     }
 

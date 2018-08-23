@@ -16,6 +16,14 @@ use LightSaml\ClaimTypes;
 class Settings extends AbstractSettings implements SettingsInterface
 {
 
+
+    /**
+     * When this is enabled, the cp will show the idp provider buttons, so
+     * you can login from the admin/login.
+     * @var bool
+     */
+    public $enableCpLoginButtons = true;
+
     /**
      * @var bool
      */
