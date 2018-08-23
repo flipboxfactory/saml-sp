@@ -210,6 +210,7 @@ class Login extends Component
      * @param User $user
      * @param SamlResponse $response
      * @return ProviderIdentityRecord
+     * @throws InvalidMessage
      * @throws UserException
      */
     protected function getIdentityByUserAndResponse(User $user, \LightSaml\Model\Protocol\Response $response)
@@ -218,10 +219,14 @@ class Login extends Component
         $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
             $response->getIssuer()->getValue()
         );
+
         /**
          * Get Identity
          */
-        $identity = $this->forceGetIdentity($user->username, $idpProvider);
+        $identity = $this->forceGetIdentity(
+            $this->getFirstAssertion($response)->getSubject()->getNameID()->getValue(),
+            $idpProvider
+        );
 
         /**
          * Get Session

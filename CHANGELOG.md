@@ -1,7 +1,11 @@
 Changelog
 =========
+# 1.0.0-beta.15
+### Fixed
+- Issue with provider identity being saved with username instead of NameId
+
 # 1.0.0-beta.14
-### Added 
+### Added
 - Adding `relayStateOverrideParam` to the settings model.
 
 # 1.0.0-beta.13
