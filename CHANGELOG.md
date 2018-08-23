@@ -1,5 +1,13 @@
 Changelog
 =========
+# 1.0.0-RC1
+### Added
+- Improved Control Panel UI
+- Login via Control Panel with IDPs listed
+- Labels for Providers
+- Auto generate OpenSSL key pairs with Keychain
+- Mapping attributes based on provider
+
 # 1.0.0-beta.15
 ### Fixed
 - Issue with provider identity being saved with username instead of NameId
