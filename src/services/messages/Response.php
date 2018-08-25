@@ -29,7 +29,7 @@ class Response extends Component
     public function isValidTimeAssertion(Assertion $assertion)
     {
         $validator = new AssertionTimeValidator();
-        $validator->validateTimeRestrictions($assertion, (new \DateTime())->getTimestamp(), 0);
+        $validator->validateTimeRestrictions($assertion, (new \DateTime())->getTimestamp(), 60);
         return true;
     }
 
@@ -54,7 +54,7 @@ class Response extends Component
 
     /**
      * @param \LightSaml\Model\Protocol\Response $response
-     * @param KeyChainRecord                     $keyChainRecord
+     * @param KeyChainRecord $keyChainRecord
      */
     public function decryptAssertions(\LightSaml\Model\Protocol\Response $response, KeyChainRecord $keyChainRecord)
     {
@@ -63,8 +63,8 @@ class Response extends Component
         $decryptDeserializeContext = new \LightSaml\Model\Context\DeserializationContext();
 
         /**
- * @var \LightSaml\Model\Assertion\EncryptedAssertionReader $encryptedAssertion
-*/
+         * @var \LightSaml\Model\Assertion\EncryptedAssertionReader $encryptedAssertion
+         */
         foreach ($response->getAllEncryptedAssertions() as $encryptedAssertion) {
             if ($encryptedAssertion instanceof EncryptedAssertionReader) {
                 $response->addAssertion(

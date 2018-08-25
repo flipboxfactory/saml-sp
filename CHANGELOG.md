@@ -1,5 +1,10 @@
 Changelog
 =========
+# 1.0.0-RC2
+### Added
+- Throwing exception when the Response has no NameID in it.
+- Adding some buffer to the conditional time validation
+
 # 1.0.0-RC1
 ### Added
 - Improved Control Panel UI

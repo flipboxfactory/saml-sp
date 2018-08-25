@@ -18,6 +18,7 @@ use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
+use LightSaml\Error\LightSamlException;
 use LightSaml\Model\Assertion\Assertion;
 use LightSaml\Model\Assertion\Attribute;
 use LightSaml\Model\Protocol\Response as SamlResponse;
@@ -140,12 +141,15 @@ class Login extends Component
      * @return User
      * @throws InvalidMessage
      * @throws UserException
-     * @throws \Throwable
      */
     protected function getUserByResponse(\LightSaml\Model\Protocol\Response $response)
     {
 
         $assertion = $this->getFirstAssertion($response);
+
+        if (! $assertion->getSubject()->getNameID()) {
+            throw new LightSamlException('Name ID is missing.');
+        }
 
         /**
          * Get username from the NameID
