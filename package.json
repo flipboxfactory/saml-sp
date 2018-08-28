@@ -1,0 +1,14 @@
+{
+  "name": "saml-sp",
+  "version": "1.0.0",
+  "description": "SAML SP SSO",
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "author": "Flipbox Digital",
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^0.10.2"
+  }
+}

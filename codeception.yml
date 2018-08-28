@@ -1,0 +1,34 @@
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+actor_suffix: Tester
+params:
+  - tests/_craft/config/params.php
+  - env
+settings:
+  bootstrap: _bootstrap.php
+coverage:
+    enabled: true
+    include:
+        - src/*
+    exclude:
+        - src/icon.svg
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+modules:
+  config:
+      Yii2:
+          configFile: 'tests/_craft/config/test.php'
+  enabled:
+      - Db:
+          dsn: 'mysql:host=%TEST_DB_SERVER%;dbname=%TEST_DB_DATABASE%;'
+          user: '%TEST_DB_USER%'
+          password: '%TEST_DB_PASSWORD%'
+          dump: 'tests/_data/dump.sql'
+          populate: true
+          cleanup: true
+          reconnect: true
