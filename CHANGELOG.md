@@ -1,5 +1,9 @@
 Changelog
 =========
+# 1.0.0-RC3
+### Fixed
+- Fixed issue added in RC update where the attribute map forces the craft property to be a string. Callables are allowed as well.
+
 # 1.0.0-RC2
 ### Added
 - Throwing exception when the Response has no NameID in it.

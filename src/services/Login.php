@@ -534,12 +534,12 @@ class Login extends Component
     /**
      * @param User $user
      * @param Attribute $attribute
-     * @param string $craftProperty
+     * @param mixed $craftProperty
      */
     protected function assignUserProperty(
         User $user,
         Attribute $attribute,
-        string $craftProperty
+        $craftProperty
     ) {
 
         if (is_string($craftProperty) && property_exists($user, $craftProperty)) {

@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML SSO Service Provider",
-  "version": "1.0.0-RC2",
+  "version": "1.0.0-RC3",
   "type": "craft-plugin",
   "keywords": [
     "cms",
@@ -41,7 +41,7 @@
   },
   "extra": {
     "name": "SAML SSO Service Provider",
-    "version":"1.0.0-RC2",
+    "version":"1.0.0-RC3",
     "schemaVersion":"1.0.0-RC1",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
