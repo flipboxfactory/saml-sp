@@ -15,6 +15,7 @@ use craft\models\UserGroup;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\sp\events\UserLogin;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
@@ -174,9 +175,9 @@ class Login extends Component
         /**
          * Before user save
          */
-        $event = new Event();
-        $event->sender = $response;
-        $event->data = $user;
+        $event = new UserLogin();
+        $event->response = $response;
+        $event->user = $user;
 
         $this->trigger(
             static::EVENT_BEFORE_RESPONSE_TO_USER,
@@ -201,9 +202,9 @@ class Login extends Component
         /**
          * after user save
          */
-        $event = new Event();
-        $event->sender = $response;
-        $event->data = $user;
+        $event = new UserLogin();
+        $event->response = $response;
+        $event->user = $user;
 
         $this->trigger(
             static::EVENT_AFTER_RESPONSE_TO_USER,

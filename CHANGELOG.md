@@ -1,5 +1,9 @@
 Changelog
 =========
+# 1.0.0-RC4
+### Changed
+- Changed the Before and after events to use a custom event `flipbox\saml\sp\events\UserLogin`. This event has a resposne and a user property on it.
+
 # 1.0.0-RC3
 ### Fixed
 - Fixed issue added in RC update where the attribute map forces the craft property to be a string. Callables are allowed as well.
