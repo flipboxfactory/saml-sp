@@ -4,13 +4,13 @@
 Composer is a simple, straight forward installation.  Simple run the following command in your project root:
 
 ```bash
-composer require flipboxfactory/organizations
+composer require flipboxfactory/saml-sp
 ```
 
 &nbsp;
 
 ### Option 2: Plugin Store
-Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and search for `Organizations`.  Installation
+Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and search for `SAML Service Provider (SSO)`.  Installation
 is a button click away.
 
 

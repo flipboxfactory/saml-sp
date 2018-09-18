@@ -1,6 +1,6 @@
 module.exports = {
-    title: 'SAML SSO Service Provider',
-    description: 'SAML SSO Service Provider for CraftCMS',
+    title: 'SAML Service Provider (SSO)',
+    description: 'Single sign-on and single logout for Craft CMS',
     base: '/',
     //theme: 'flipbox',
     themeConfig: {
@@ -38,47 +38,17 @@ module.exports = {
                     collapsable: true,
                     children: [
                         ['/configure/', 'Overview'],
+                        ['/configure/login', 'Login'],
+                        ['/configure/logout', 'Logout'],
                     ]
                 },
                 {
-                    title: 'Templating',
+                    title: 'Provider Examples',
                     collapsable: true,
                     children: [
-                        ['/templating/', 'Overview']
+                        ['/providers/', 'Overview']
                     ]
                 },
-                // {
-                //     title: 'Services',
-                //     collapsable: true,
-                //     children: [
-                //         ['/services/elements', 'Organization Elements'],
-                //         ['/services/organization-types', 'Organization Types'],
-                //         ['/services/users', 'User Elements'],
-                //         ['/services/user-types', 'User Types']
-                //     ]
-                // },
-                // {
-                //     title: 'Objects',
-                //     collapsable: true,
-                //     children: [
-                //         ['/objects/organization', 'Organization'],
-                //         ['/objects/organization-type', 'Organization Type'],
-                //         ['/objects/organization-type-site-settings', 'Organization Type Site Settings'],
-                //         ['/objects/settings', 'Settings'],
-                //         ['/objects/user-type', 'User Type'],
-                //         ['/objects/user', 'User']
-                //     ]
-                // },
-                // {
-                //     title: 'Queries',
-                //     collapsable: true,
-                //     children: [
-                //         ['/queries/organization', 'Organization Query'],
-                //         ['/queries/organization-type', 'Organization Type Query'],
-                //         ['/queries/user', 'User Query'],
-                //         ['/queries/user-type', 'User Type Query']
-                //     ]
-                // }
             ]
         }
     },

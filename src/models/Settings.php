@@ -15,16 +15,19 @@ use LightSaml\ClaimTypes;
 
 class Settings extends AbstractSettings implements SettingsInterface
 {
-
-
     /**
-     * When this is enabled, the cp will show the idp provider buttons, so
-     * you can login from the admin/login.
+     * Craft will show the IDP login buttons on the /admin/login page.
+     *
      * @var bool
      */
     public $enableCpLoginButtons = true;
 
     /**
+     * When a user logs in but is not enabled by Craft, the user will be enabled.
+     * The IDP should be the authority on whether the user is active or not.
+     * Users should be disabled from the IDP if they shouldn't be enabled. If this
+     * setting is false, a user exception will be thrown.
+     *
      * @var bool
      */
     public $enableUsers = true;
@@ -36,33 +39,46 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $signAuthnRequest = true;
 
     /**
+     *
      * @var bool
      */
     public $wantsSignedAssertions = true;
 
     /**
+     * When a user logs into the IDP successfully and is in Craft, that user will
+     * be created. If this is false, a user exception will be thrown.
+     *
      * @var bool
      */
     public $mergeLocalUsers = true;
 
     /**
+     * When a user logs in successfully but is not found in Craft, that user
+     * will be created. If this is false, a user exception will be thrown.
+     *
      * @var bool
      */
     public $createUser = true;
 
     /**
-     * @var bool
-     */
-    public $syncGroups = true;
-
-    /**
-     * Create groups when they don't exist in craft
+     * When a group is found that does not exist in Craft, it will be created.
      *
      * @var bool
      */
     public $autoCreateGroups = true;
 
     /**
+     * Attempt to sync groups via the groups array map in $groupAttributeNames.
+     *
+     * @var bool
+     */
+    public $syncGroups = true;
+
+    /**
+     * A list of strings that will be used to look through the attributes xml
+     * nodes sent by the IDP to be identified as a group. This is a key to the
+     * group name value(s).
+     *
      * @var array
      */
     public $groupAttributeNames = [
@@ -70,8 +86,8 @@ class Settings extends AbstractSettings implements SettingsInterface
     ];
 
     /**
-     * Key Value store that maps the Response name (the array key) with
-     * the user property.
+     * An array map with the Response attribute names as the array keys and the
+     * array values as the user element field. The array value can also be a callable.
      *
      * Simple mapping works by matching the Response name in the array with the user's
      * property, and setting what is found in the Response's value to the user element.
@@ -104,33 +120,37 @@ class Settings extends AbstractSettings implements SettingsInterface
      * $user->email = 'damien@example.com';
      * ```
      *
-     * With more complex user fields, you can set the array value to a callable. For
-     * more on callables http://php.net/manual/en/language.types.callable.php.
+     * With more complex user fields, you can set the array value to a callable.
+     * For more on callables: http://php.net/manual/en/language.types.callable.php.
      *
      * Here is my responseAttributeMap with a callable from the config/saml-sp.php
      * ```php
      * 'responseAttributeMap' => [
-     *      ClaimTypes::EMAIL_ADDRESS => function(\LightSaml\Model\Assertion\Assertion $attribute, \craft\elements\User
-     *      $user){
-     *           $user->email = $attribute->getFirstAttributeValue();
-     *      }
+     *     ClaimTypes::EMAIL_ADDRESS => function(
+     *         \LightSaml\Model\Assertion\Assertion $attribute,
+     *         \craft\elements\User $user
+     *     ) {
+     *         $user->email = $attribute->getFirstAttributeValue();
+     *     }
      * ],
      * ```
      *
      * @var array
      */
-
     public $responseAttributeMap = [
+        // "IDP Attribute Name" => "Craft Property Name"
         ClaimTypes::EMAIL_ADDRESS => 'email',
-        ClaimTypes::GIVEN_NAME    => 'firstName',
-        ClaimTypes::SURNAME       => 'lastName',
+        ClaimTypes::GIVEN_NAME => 'firstName',
+        ClaimTypes::SURNAME => 'lastName',
 
-        'email'     => 'email',
+        'email' => 'email',
         'firstName' => 'firstName',
-        'lastName'  => 'lastName',
-
-
+        'lastName' => 'lastName',
     ];
 
+    /**
+     *
+     * @var string
+     */
     public $relayStateOverrideParam = 'RelayState';
 }
