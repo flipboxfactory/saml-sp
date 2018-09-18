@@ -23,10 +23,10 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $enableCpLoginButtons = true;
 
     /**
-     * When a user logs in but is not enabled by Craft, the user will be enabled.
-     * The IDP should be the authority on whether the user is active or not.
-     * Users should be disabled from the IDP if they shouldn't be enabled. If this
-     * setting is false, a user exception will be thrown.
+     * When a user logs into the IDP but is not enabled in Craft, the user will
+     * be enabled. The IDP should be the authority on whether the user is active
+     * or not. Users should be disabled from the IDP if they shouldn't be
+     * enabled. If this setting is false, a user exception will be thrown.
      *
      * @var bool
      */
@@ -45,8 +45,8 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $wantsSignedAssertions = true;
 
     /**
-     * When a user logs into the IDP successfully and is in Craft, that user will
-     * be created. If this is false, a user exception will be thrown.
+     * When a user logs into the IDP and is in Craft, that user will be created.
+     * If this is false, a user exception will be thrown.
      *
      * @var bool
      */
@@ -77,7 +77,7 @@ class Settings extends AbstractSettings implements SettingsInterface
     /**
      * A list of strings that will be used to look through the attributes xml
      * nodes sent by the IDP to be identified as a group. This is a key to the
-     * group name value(s).
+     * group name values.
      *
      * @var array
      */

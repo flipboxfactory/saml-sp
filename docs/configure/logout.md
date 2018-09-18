@@ -1,6 +1,9 @@
 # Configure Logout (SLO)
-::: Optional
+
+::: tip Optional
+This feature is optional and your IDP must support it and be configured.
 :::
+
 If you want to implement Single Logout, point your site's logout button to `/sso/logout/request`.
 
-This endpoint initiates the single logout process with the IDP. If you plan to use Single Logout, verify your IDP supports this feature and is configured.
+This endpoint initiates the Single Logout process with the IDP.

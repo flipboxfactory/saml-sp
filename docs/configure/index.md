@@ -20,7 +20,7 @@ openssl req -new -x509 -days 365 -nodes -sha256 -out saml-sp.crt -keyout saml-sp
 From the SAML plugin in the Craft admin, import the key pair at 'Create new key pair'.
 
 ### Step 2: Create your Service Provider
-Create your Service Provider TODO
+Create your Service Provider.
 
 ### Step 3: Import your Identity Provider's metadata
 Retrieve your IDP's metadata and import it into Craft. Sometimes the IDP metadata can be difficult to find but they do give access to this information. The metadata has everything needed to communicate with the remote provider.

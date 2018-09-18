@@ -9,5 +9,5 @@ SAML Service Provider (SSO) provides an easy way to do Single Sign-On (SSO) and 
 * Consuming encrypted attributes/assertions from Identity Provider
 * User field attribute sync on login (Via config options and Yii2 events)
 * User group sync on login
-* Single Log Out (SLO)
+* Single Logout (SLO)
 * Supports both MySQL and PostgreSQL drivers

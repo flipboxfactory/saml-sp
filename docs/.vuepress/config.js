@@ -25,7 +25,7 @@ module.exports = {
             '/': [
                 {
                     title: 'Getting Started',
-                    collapsable: true,
+                    collapsable: false,
                     children: [
                         ['/', 'Introduction'],
                         ['/requirements', 'Requirements'],
@@ -35,16 +35,18 @@ module.exports = {
                 },
                 {
                     title: 'Configure',
-                    collapsable: true,
+                    collapsable: false,
                     children: [
                         ['/configure/', 'Overview'],
+                        ['/configure/keychain', 'KeyChain'],
                         ['/configure/login', 'Login'],
                         ['/configure/logout', 'Logout'],
+                        ['/configure/settings', 'Settings'],
                     ]
                 },
                 {
                     title: 'Providers',
-                    collapsable: true,
+                    collapsable: false,
                     children: [
                         ['/providers/', 'Overview'],
                     ]
