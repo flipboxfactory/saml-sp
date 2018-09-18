@@ -1,3 +1,3 @@
-# Provider Examples
+# Providers
 
-Okta, Google, etc coming soon!
+Setup walkthroughs coming soon!

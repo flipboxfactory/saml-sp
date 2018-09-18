@@ -43,10 +43,10 @@ module.exports = {
                     ]
                 },
                 {
-                    title: 'Provider Examples',
+                    title: 'Providers',
                     collapsable: true,
                     children: [
-                        ['/providers/', 'Overview']
+                        ['/providers/', 'Overview'],
                     ]
                 },
             ]
