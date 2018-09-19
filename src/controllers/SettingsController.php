@@ -11,7 +11,6 @@ use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\actions\Update;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use craft\helpers\ArrayHelper;
 
 /**
  * Class SettingsController
