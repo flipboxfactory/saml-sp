@@ -8,7 +8,6 @@ namespace flipbox\saml\sp\controllers;
 
 use flipbox\saml\core\controllers\AbstractSettingsController;
 use flipbox\saml\core\SamlPluginInterface;
-use flipbox\saml\sp\actions\Update;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 
@@ -24,14 +23,6 @@ class SettingsController extends AbstractSettingsController
     protected function getSamlPlugin(): SamlPluginInterface
     {
         return Saml::getInstance();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getUpdateClass()
-    {
-        return Update::class;
     }
 
     /**
