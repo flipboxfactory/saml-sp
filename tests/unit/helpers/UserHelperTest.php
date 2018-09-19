@@ -9,6 +9,78 @@ use flipbox\saml\sp\helpers\UserHelper;
 
 class UserHelperTest extends Unit
 {
+    public function testEnablingSuspendedUser()
+    {
+        \Craft::$app->elements->saveElement(
+            $user = new User([
+                'suspended' => 1,
+            ])
+        );
+
+        UserHelper::enableUser($user);
+
+        // TODO lookup $user->id again
+        $this->assertFalse($user->suspended);
+    }
+
+    public function testEnablingLockedUser()
+    {
+        \Craft::$app->elements->saveElement(
+            $user = new User([
+                'locked' => 1,
+            ])
+        );
+
+        UserHelper::enableUser($user);
+
+        // TODO lookup $user->id again
+        $this->assertFalse($user->locked);
+    }
+
+    // Not enabled
+    public function testEnablingDisabledUser()
+    {
+        \Craft::$app->elements->saveElement(
+            $user = new User([
+                'enabled' => 0,
+            ])
+        );
+
+        UserHelper::enableUser($user);
+
+        // TODO lookup $user->id again
+        $this->assertTrue($user->enabled);
+    }
+
+    public function testEnablingArchived()
+    {
+        \Craft::$app->elements->saveElement(
+            $user = new User([
+                'archived' => 1,
+            ])
+        );
+
+        UserHelper::enableUser($user);
+
+        // TODO lookup $user->id again
+        $this->assertFalse($user->archived);
+    }
+
+    // Not active
+    public function testEnablingInactiveUser()
+    {
+        \Craft::$app->elements->saveElement(
+            $user = new User([
+                'pending' => 1,
+            ])
+        );
+
+        UserHelper::enableUser($user);
+
+        // TODO lookup $user->id again
+        $this->assertTrue($user->pending);
+    }
+
     public function testIsUserPending()
     {
         \Craft::$app->elements->saveElement(

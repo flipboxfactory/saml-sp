@@ -301,12 +301,9 @@ class Login extends Component
         $assertion = $this->getFirstAssertion($response);
 
         if ($assertion->getFirstAttributeStatement()) {
-            /**
-             *
-             */
             $this->transformToUser($response, $user);
-        } else {
-
+        }
+        else {
             /**
              * There doesn't seem to be any attribute statements.
              * Try and use username for the email and move on.
@@ -327,10 +324,7 @@ class Login extends Component
      */
     protected function forceGetIdentity($nameId, ProviderInterface $provider)
     {
-
-        /**
-         * @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
-         */
+        // @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
         if (! $identity = Saml::getInstance()->getProviderIdentity()->findByNameId(
             $nameId,
             $provider

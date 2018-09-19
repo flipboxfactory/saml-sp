@@ -36,6 +36,7 @@ class ExternalIdentity extends AbstractExternalIdentity
         if (! ($value instanceof Query)) {
             return '';
         }
+
         return \Craft::$app->getView()->renderTemplate(
             'saml-sp/_cp/fields/external-id',
             [

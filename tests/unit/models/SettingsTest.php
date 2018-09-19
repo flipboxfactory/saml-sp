@@ -8,10 +8,7 @@ use flipbox\saml\sp\Saml;
 
 class SettingsTest extends Unit
 {
-    /**
-     * Test settings configured
-     */
-    public function testSettingsClass()
+    public function testVariables()
     {
         $settings = new Settings();
 

@@ -33,7 +33,7 @@ class SamlTest extends Unit
         $this->module = Saml::getInstance();
     }
 
-    public function testComponentConfiguration()
+    public function testComponents()
     {
         $this->assertInstanceOf(AuthnRequest::class, $this->module->getAuthnRequest());
         $this->assertInstanceOf(HttpPost::class, $this->module->getHttpPost());
