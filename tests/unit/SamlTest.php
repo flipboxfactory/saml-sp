@@ -6,7 +6,7 @@ use Codeception\Test\Unit;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\Login;
 
-class SamlSpTest extends Unit
+class SamlTest extends Unit
 {
     /**
      * @var Saml

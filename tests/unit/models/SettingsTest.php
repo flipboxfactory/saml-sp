@@ -1,23 +1,32 @@
 <?php
 
-namespace flipbox\organizations\tests\models;
+namespace flipbox\saml\sp\tests\models;
 
 use Codeception\Test\Unit;
-use flipbox\organizations\models\Settings;
-use flipbox\organizations\models\SiteSettings;
+use flipbox\saml\sp\models\Settings;
+use flipbox\saml\sp\Saml;
 
 class SettingsTest extends Unit
 {
     /**
-     * Set a state as a string and result in an array
+     * Test settings configured
      */
-    public function testSiteSettingsClass()
+    public function testSettingsClass()
     {
         $settings = new Settings();
 
-        $this->assertEquals(
-            $settings::siteSettingsClass(),
-            SiteSettings::class
-        );
+        $this->assertInternalType('bool', $settings->enableCpLoginButtons);
+        $this->assertInternalType('bool', $settings->enableUsers);
+        $this->assertInternalType('bool', $settings->signAuthnRequest);
+        $this->assertInternalType('bool', $settings->wantsSignedAssertions);
+        $this->assertInternalType('bool', $settings->mergeLocalUsers);
+        $this->assertInternalType('bool', $settings->createUser);
+        $this->assertInternalType('bool', $settings->autoCreateGroups);
+        $this->assertInternalType('bool', $settings->syncGroups);
+
+        $this->assertInternalType('array', $settings->groupAttributeNames);
+        $this->assertInternalType('array', $settings->responseAttributeMap);
+
+        $this->assertInternalType('string', $settings->relayStateOverrideParam);
     }
 }
