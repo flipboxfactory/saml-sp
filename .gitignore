@@ -1,5 +1,6 @@
 /build
 /vendor
+/storage
 composer.phar
 composer.lock
 .DS_Store
