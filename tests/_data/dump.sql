@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 127.0.0.1 (MySQL 5.6.39)
-# Database: craft
-# Generation Time: 2018-06-14 16:22:10 +0000
+# Host: 127.0.0.1 (MySQL 5.6.41)
+# Database: test
+# Generation Time: 2018-09-20 16:29:45 +0000
 # ************************************************************
 
 
@@ -221,7 +221,7 @@ LOCK TABLES `content` WRITE;
 
 INSERT INTO `content` (`id`, `elementId`, `siteId`, `title`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,1,1,NULL,'2018-06-14 16:22:37','2018-06-14 16:22:37','28051f91-8b71-40e6-bdc6-65038a7cab72');
+	(1,1,1,NULL,'2018-09-20 16:27:09','2018-09-20 16:27:09','a917415b-2565-42ee-8e13-86d227aedbc1');
 
 /*!40000 ALTER TABLE `content` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -315,7 +315,7 @@ LOCK TABLES `elements` WRITE;
 
 INSERT INTO `elements` (`id`, `fieldLayoutId`, `type`, `enabled`, `archived`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,NULL,'craft\\elements\\User',1,0,'2018-06-14 16:22:37','2018-06-14 16:22:37','9da736c5-cc04-46e6-a89a-d4eef32e2a62');
+	(1,NULL,'craft\\elements\\User',1,0,'2018-09-20 16:27:09','2018-09-20 16:27:09','d9a867eb-0ef4-4980-a30f-34fa63dd8f42');
 
 /*!40000 ALTER TABLE `elements` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -338,10 +338,10 @@ CREATE TABLE `elements_sites` (
   `uid` char(36) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `elements_sites_elementId_siteId_unq_idx` (`elementId`,`siteId`),
-  UNIQUE KEY `elements_sites_uri_siteId_unq_idx` (`uri`,`siteId`),
   KEY `elements_sites_siteId_idx` (`siteId`),
   KEY `elements_sites_slug_siteId_idx` (`slug`,`siteId`),
   KEY `elements_sites_enabled_idx` (`enabled`),
+  KEY `elements_sites_uri_siteId_idx` (`uri`,`siteId`),
   CONSTRAINT `elements_sites_elementId_fk` FOREIGN KEY (`elementId`) REFERENCES `elements` (`id`) ON DELETE CASCADE,
   CONSTRAINT `elements_sites_siteId_fk` FOREIGN KEY (`siteId`) REFERENCES `sites` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -351,7 +351,7 @@ LOCK TABLES `elements_sites` WRITE;
 
 INSERT INTO `elements_sites` (`id`, `elementId`, `siteId`, `slug`, `uri`, `enabled`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,1,1,NULL,NULL,1,'2018-06-14 16:22:37','2018-06-14 16:22:37','9c2c9ccd-fa82-4b55-863e-6024b719a51c');
+	(1,1,1,NULL,NULL,1,'2018-09-20 16:27:09','2018-09-20 16:27:09','282ddff4-3b50-4784-8581-b96aeb3251a6');
 
 /*!40000 ALTER TABLE `elements_sites` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -495,7 +495,7 @@ LOCK TABLES `fieldgroups` WRITE;
 
 INSERT INTO `fieldgroups` (`id`, `name`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,'Common','2018-06-14 16:22:37','2018-06-14 16:22:37','ba23725b-b739-4815-aa46-a18b78aa2b2f');
+	(1,'Common','2018-09-20 16:27:09','2018-09-20 16:27:09','842ceb07-f3f3-4343-8418-31a5a8d85173');
 
 /*!40000 ALTER TABLE `fieldgroups` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -643,10 +643,33 @@ LOCK TABLES `info` WRITE;
 
 INSERT INTO `info` (`id`, `version`, `schemaVersion`, `edition`, `timezone`, `name`, `on`, `maintenance`, `fieldVersion`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,'3.0.11','3.0.91',0,'America/Los_Angeles','Test',1,0,'R74AhvPpsl0A','2018-06-14 16:22:37','2018-06-14 16:22:37','cac62dd5-4913-4012-96ce-81ec214ba8e5');
+	(1,'3.0.25','3.0.93',1,'America/Los_Angeles','Test',1,0,'0AptdzZD54MU','2018-09-20 16:27:09','2018-09-20 16:29:24','a110d5cb-5964-4391-afe2-da0bcfa17a1b');
 
 /*!40000 ALTER TABLE `info` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table keychain
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `keychain`;
+
+CREATE TABLE `keychain` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` text COMMENT 'User defined description so a human can understand what this is for.',
+  `key` text NOT NULL,
+  `certificate` text NOT NULL,
+  `class` varchar(255) NOT NULL,
+  `pluginHandle` varchar(255) NOT NULL,
+  `settings` text,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `isEncrypted` tinyint(1) NOT NULL DEFAULT '1',
+  `dateUpdated` datetime NOT NULL,
+  `dateCreated` datetime NOT NULL,
+  `uid` char(36) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Dump of table matrixblocks
@@ -730,101 +753,107 @@ LOCK TABLES `migrations` WRITE;
 
 INSERT INTO `migrations` (`id`, `pluginId`, `type`, `name`, `applyTime`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,NULL,'app','Install','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','9979bbc0-d30b-4998-b9b0-beb849ad57f3'),
-	(2,NULL,'app','m150403_183908_migrations_table_changes','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','d710e96d-c696-458a-b313-1db6379a1366'),
-	(3,NULL,'app','m150403_184247_plugins_table_changes','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','2e778e54-543b-4e64-b59e-6e4d24bb5424'),
-	(4,NULL,'app','m150403_184533_field_version','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','2894b221-020a-451f-b87e-1d9d20b048a4'),
-	(5,NULL,'app','m150403_184729_type_columns','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','19da2e86-4627-43a9-9a15-a9a78ff41095'),
-	(6,NULL,'app','m150403_185142_volumes','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','cdadf5f3-6046-47a1-9773-90f4484b078e'),
-	(7,NULL,'app','m150428_231346_userpreferences','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','e363f9b2-3ead-4896-aaff-91ebcd9fe977'),
-	(8,NULL,'app','m150519_150900_fieldversion_conversion','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','adf636c1-69e6-454f-8b73-69d1578c9265'),
-	(9,NULL,'app','m150617_213829_update_email_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','1255d627-cf52-404a-8299-02308b3c53d4'),
-	(10,NULL,'app','m150721_124739_templatecachequeries','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','24c3658d-f636-45bb-ade5-e5ab194c5f0d'),
-	(11,NULL,'app','m150724_140822_adjust_quality_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','878662b1-f852-4ad9-9c47-54b937c23e18'),
-	(12,NULL,'app','m150815_133521_last_login_attempt_ip','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','46299614-14a9-43d7-ad88-8ae4b4d1e44c'),
-	(13,NULL,'app','m151002_095935_volume_cache_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','fb9f35bc-7075-4d3f-89ad-889b604613e8'),
-	(14,NULL,'app','m151005_142750_volume_s3_storage_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','92a46674-1676-4cf0-b7c3-eeef1001ad88'),
-	(15,NULL,'app','m151016_133600_delete_asset_thumbnails','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','d13aad9c-e707-4b62-9ffb-85cf96d30ea9'),
-	(16,NULL,'app','m151209_000000_move_logo','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','9abefd97-0e48-4f7d-859d-81c056474991'),
-	(17,NULL,'app','m151211_000000_rename_fileId_to_assetId','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','78e58d5e-40a8-4dbc-940f-2923a1463e8a'),
-	(18,NULL,'app','m151215_000000_rename_asset_permissions','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','0a0c15e7-e9f1-4af3-8ca0-e36edfc8e068'),
-	(19,NULL,'app','m160707_000001_rename_richtext_assetsource_setting','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','4451e065-3bb5-4b8a-9c25-5ad4cba674b3'),
-	(20,NULL,'app','m160708_185142_volume_hasUrls_setting','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','08d78964-47bc-4652-bf05-d030f5c4f695'),
-	(21,NULL,'app','m160714_000000_increase_max_asset_filesize','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','d0d83142-bab9-4629-9685-d3ecad66cae9'),
-	(22,NULL,'app','m160727_194637_column_cleanup','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','01ae8a6e-94dc-45da-9ea5-bbc828c10152'),
-	(23,NULL,'app','m160804_110002_userphotos_to_assets','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','2ff59af7-f831-4d96-bbc1-2892b25f4708'),
-	(24,NULL,'app','m160807_144858_sites','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ea8b94f3-13ea-452d-844c-5f63aa7c54dc'),
-	(25,NULL,'app','m160829_000000_pending_user_content_cleanup','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','69bf1093-c791-4909-b4c9-d996189890e1'),
-	(26,NULL,'app','m160830_000000_asset_index_uri_increase','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','970879a8-567f-44da-8f05-9cb6c8b2ad8c'),
-	(27,NULL,'app','m160912_230520_require_entry_type_id','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ae6002de-393b-4c83-86d0-0763fb098151'),
-	(28,NULL,'app','m160913_134730_require_matrix_block_type_id','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','bdb42dfc-5a88-4ebd-9f61-fa94866984f2'),
-	(29,NULL,'app','m160920_174553_matrixblocks_owner_site_id_nullable','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','44765e13-5fea-4302-856d-fd4b5a3fe150'),
-	(30,NULL,'app','m160920_231045_usergroup_handle_title_unique','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','c63368bb-235f-48bc-a2ca-803db2c75560'),
-	(31,NULL,'app','m160925_113941_route_uri_parts','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','8265012f-b498-4e92-9d31-ef564866f169'),
-	(32,NULL,'app','m161006_205918_schemaVersion_not_null','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','52342407-1243-44dd-a12b-b6a7377da8fb'),
-	(33,NULL,'app','m161007_130653_update_email_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','a6777982-f6df-434c-bf66-596448c80bba'),
-	(34,NULL,'app','m161013_175052_newParentId','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','5319bc53-b5c4-4b7a-8201-6667442514cd'),
-	(35,NULL,'app','m161021_102916_fix_recent_entries_widgets','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','346e7bdc-07b1-49bb-a72c-fce4eca907fe'),
-	(36,NULL,'app','m161021_182140_rename_get_help_widget','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ab567686-b808-4b7a-bc1a-6ed53c5c6faf'),
-	(37,NULL,'app','m161025_000000_fix_char_columns','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','4962773b-754b-4e8c-8b27-4e25714470f8'),
-	(38,NULL,'app','m161029_124145_email_message_languages','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ee077cc4-0d57-4301-a07a-b16c567966f3'),
-	(39,NULL,'app','m161108_000000_new_version_format','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','3549faf8-8a57-46f2-99fb-ff4771afd739'),
-	(40,NULL,'app','m161109_000000_index_shuffle','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','20f70c72-f1a3-4c49-8a9b-4c5451dbad54'),
-	(41,NULL,'app','m161122_185500_no_craft_app','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','067f3783-2a94-4c17-b559-ec1a21ba0d80'),
-	(42,NULL,'app','m161125_150752_clear_urlmanager_cache','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','7cacd3e9-5898-47c8-a4d9-6aa0cc7eeb48'),
-	(43,NULL,'app','m161220_000000_volumes_hasurl_notnull','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ff975431-e33b-4c34-a533-5c1f7dd51672'),
-	(44,NULL,'app','m170114_161144_udates_permission','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','f1c82fa2-f8a9-4565-9bda-13fcaf3fab44'),
-	(45,NULL,'app','m170120_000000_schema_cleanup','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','7eecf84f-4a72-4b67-9ad5-929c2178bf1e'),
-	(46,NULL,'app','m170126_000000_assets_focal_point','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ad64a195-12ef-49f3-a47b-3937bf75eeb9'),
-	(47,NULL,'app','m170206_142126_system_name','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','48c79412-22b7-4133-a649-64ee3aa4fb89'),
-	(48,NULL,'app','m170217_044740_category_branch_limits','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','74d0932a-e21d-4cd2-b8c7-31176d9aac57'),
-	(49,NULL,'app','m170217_120224_asset_indexing_columns','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','c1ba71e6-cf5e-493a-9245-66423b982a96'),
-	(50,NULL,'app','m170223_224012_plain_text_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','512d4afb-154e-4df7-a25f-4dd827e7d5e6'),
-	(51,NULL,'app','m170227_120814_focal_point_percentage','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','e2a8c107-2021-4675-be96-7edaa36ef2f2'),
-	(52,NULL,'app','m170228_171113_system_messages','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','3532cb60-436e-4899-9a1e-530656db49cb'),
-	(53,NULL,'app','m170303_140500_asset_field_source_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','9286d372-c2e0-47f4-8078-aa59d704faf5'),
-	(54,NULL,'app','m170306_150500_asset_temporary_uploads','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','7de3fa65-c3d3-4418-beff-1e38c77f357a'),
-	(55,NULL,'app','m170414_162429_rich_text_config_setting','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ea54b3ca-5483-45c3-8e2e-4c22a48fabe4'),
-	(56,NULL,'app','m170523_190652_element_field_layout_ids','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','f9c99bc2-2761-4567-a7ae-c3a0a7c43b0c'),
-	(57,NULL,'app','m170612_000000_route_index_shuffle','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','9c8a5e20-596c-4f4a-825f-172c7bbed5c7'),
-	(58,NULL,'app','m170621_195237_format_plugin_handles','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','2027bc74-9ecb-4d11-b169-010f97d1bd4a'),
-	(59,NULL,'app','m170630_161028_deprecation_changes','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ec8464a8-63d0-44e5-945d-37b460eb871f'),
-	(60,NULL,'app','m170703_181539_plugins_table_tweaks','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','57447e1a-086b-4c60-a5f6-f925c1ffe4d8'),
-	(61,NULL,'app','m170704_134916_sites_tables','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','b6208bf9-761f-4ebc-8577-3a4cf3de121b'),
-	(62,NULL,'app','m170706_183216_rename_sequences','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','c05bccd7-321b-4c17-8c5e-2c3a9fc86425'),
-	(63,NULL,'app','m170707_094758_delete_compiled_traits','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','6042b4a9-ca5b-430a-9745-115c5cefd9d7'),
-	(64,NULL,'app','m170731_190138_drop_asset_packagist','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','756c8e81-fc50-4e3d-9e73-ed68c80c40fd'),
-	(65,NULL,'app','m170810_201318_create_queue_table','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','09028341-6abe-44b0-894b-fb9e3ccd79d3'),
-	(66,NULL,'app','m170816_133741_delete_compiled_behaviors','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','f5a05964-0f48-40b7-906f-0a6248ca5e8c'),
-	(67,NULL,'app','m170821_180624_deprecation_line_nullable','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','cda8de5f-886c-462d-ae31-5a54eb784f95'),
-	(68,NULL,'app','m170903_192801_longblob_for_queue_jobs','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','6b5fef9d-6126-468c-bf55-7c37484343db'),
-	(69,NULL,'app','m170914_204621_asset_cache_shuffle','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','13206a24-6eb6-41f2-864a-d445bfd10594'),
-	(70,NULL,'app','m171011_214115_site_groups','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ebb2a4ba-d877-4615-b76d-a7135f8c2bd3'),
-	(71,NULL,'app','m171012_151440_primary_site','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','9e7266fb-8703-48e0-a7d5-d098bb52bf29'),
-	(72,NULL,'app','m171013_142500_transform_interlace','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','50b37040-ab54-4e8a-b30c-980f53e70f51'),
-	(73,NULL,'app','m171016_092553_drop_position_select','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','a975699d-dacf-4915-a071-b2797cf3bed8'),
-	(74,NULL,'app','m171016_221244_less_strict_translation_method','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','c2959950-9860-4ac2-993d-5a086b489528'),
-	(75,NULL,'app','m171107_000000_assign_group_permissions','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','0e34349c-7be5-4095-90e8-17f9e9b2b5fb'),
-	(76,NULL,'app','m171117_000001_templatecache_index_tune','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','9b3b4e7e-dd9b-4b8b-9559-962292edfc0f'),
-	(77,NULL,'app','m171126_105927_disabled_plugins','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','82fcb0c2-fd88-4821-b225-6f9d07920704'),
-	(78,NULL,'app','m171130_214407_craftidtokens_table','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','5d42ca83-5c22-4d0d-9eb2-ab37443a32c6'),
-	(79,NULL,'app','m171202_004225_update_email_settings','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','11f8bcfe-df26-4932-825f-6a07a27658de'),
-	(80,NULL,'app','m171204_000001_templatecache_index_tune_deux','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','6d6ec0a0-8429-4b4f-91c5-f9346df587ba'),
-	(81,NULL,'app','m171205_130908_remove_craftidtokens_refreshtoken_column','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','dde0f9ac-4e64-4704-a244-1d253158f6b1'),
-	(82,NULL,'app','m171218_143135_longtext_query_column','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','3c64bdee-0dd9-4bdb-bbce-b5c5d4588afe'),
-	(83,NULL,'app','m171231_055546_environment_variables_to_aliases','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','bdcdc608-f2df-4145-b68c-db210b47ec75'),
-	(84,NULL,'app','m180113_153740_drop_users_archived_column','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','c92df96a-4f34-47b0-88d7-1ea136e583ba'),
-	(85,NULL,'app','m180122_213433_propagate_entries_setting','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','4237e5ee-d244-40da-9e96-fb20dc616aca'),
-	(86,NULL,'app','m180124_230459_fix_propagate_entries_values','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','6d9345f4-5d80-4e6c-a661-ccf78cf9ced3'),
-	(87,NULL,'app','m180128_235202_set_tag_slugs','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','3648248d-07a6-459d-b85e-b3cd6bb2227c'),
-	(88,NULL,'app','m180202_185551_fix_focal_points','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','f15ce021-47a6-447f-ba04-2f63f6cb5d6b'),
-	(89,NULL,'app','m180217_172123_tiny_ints','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','1b07ba5b-f2d6-4bee-961f-4cb75fd7c232'),
-	(90,NULL,'app','m180321_233505_small_ints','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','f777363f-b504-4868-8365-7754d52a2484'),
-	(91,NULL,'app','m180328_115523_new_license_key_statuses','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','ab4d68e1-2e81-4a0a-a4c1-3784756e5ce3'),
-	(92,NULL,'app','m180404_182320_edition_changes','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','aa9acff4-7f84-4d4b-93ea-255d9b59a47b'),
-	(93,NULL,'app','m180411_102218_fix_db_routes','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','735346ac-26c7-4e1c-8f88-6743bae47151'),
-	(94,NULL,'app','m180416_205628_resourcepaths_table','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','d074d371-03f6-497e-8bbf-327741ab239c'),
-	(95,NULL,'app','m180418_205713_widget_cleanup','2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:38','3e536fe0-fb9e-49d9-856b-2b79a1953e73');
+	(1,NULL,'app','Install','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','3ce3b0ba-6ca1-444c-b01a-43fe2920beae'),
+	(2,NULL,'app','m150403_183908_migrations_table_changes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','0910b5ec-30b6-405f-82f3-324a36ed0912'),
+	(3,NULL,'app','m150403_184247_plugins_table_changes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','b6ada4b4-7cfa-4610-affe-f8adde65a1d2'),
+	(4,NULL,'app','m150403_184533_field_version','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','fa703519-5d12-4741-9875-7898a6516faa'),
+	(5,NULL,'app','m150403_184729_type_columns','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','5bcb164a-8108-4d87-b343-01f350176ff5'),
+	(6,NULL,'app','m150403_185142_volumes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c10edc1f-1d6b-4469-9537-af0d0142de1b'),
+	(7,NULL,'app','m150428_231346_userpreferences','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','07c03281-bf9c-443b-af3e-d912fe85d471'),
+	(8,NULL,'app','m150519_150900_fieldversion_conversion','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','913babda-7309-4242-9971-87880e029220'),
+	(9,NULL,'app','m150617_213829_update_email_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','79c7b1ec-d799-48ea-9825-c95bd0d3903c'),
+	(10,NULL,'app','m150721_124739_templatecachequeries','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c232bb0c-2300-41fa-a5f7-c44b08033adc'),
+	(11,NULL,'app','m150724_140822_adjust_quality_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','6ac2e6d8-5e2b-4222-95b6-1b1033ca3853'),
+	(12,NULL,'app','m150815_133521_last_login_attempt_ip','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','f0691766-3e71-417f-8492-ccd7fc479de8'),
+	(13,NULL,'app','m151002_095935_volume_cache_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','16362b27-08da-4057-84ae-8884afb5bb4d'),
+	(14,NULL,'app','m151005_142750_volume_s3_storage_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','66fdec8e-cc94-4dae-85bb-d009aeebc31a'),
+	(15,NULL,'app','m151016_133600_delete_asset_thumbnails','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c3db49a4-0f7b-4fba-84ca-3ce17d03d221'),
+	(16,NULL,'app','m151209_000000_move_logo','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','a091c5da-82c5-4b7b-98eb-d2862184c2a7'),
+	(17,NULL,'app','m151211_000000_rename_fileId_to_assetId','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','570fcda9-2e09-4e78-8fd3-e4ff0577e763'),
+	(18,NULL,'app','m151215_000000_rename_asset_permissions','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','fdecade3-6507-499d-8814-5c7cbae2c05f'),
+	(19,NULL,'app','m160707_000001_rename_richtext_assetsource_setting','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','40807401-2668-4aa8-bc76-9b49745338b5'),
+	(20,NULL,'app','m160708_185142_volume_hasUrls_setting','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','d81221df-b288-44b4-99de-1ecd7e367199'),
+	(21,NULL,'app','m160714_000000_increase_max_asset_filesize','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','62c4ee94-0e39-48bc-ae67-2629b17b2ddb'),
+	(22,NULL,'app','m160727_194637_column_cleanup','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','9d7ad3e8-ab48-42ef-b2c3-d248c8032788'),
+	(23,NULL,'app','m160804_110002_userphotos_to_assets','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','bd96aa9e-6edc-4b5e-bde0-a77091db3d32'),
+	(24,NULL,'app','m160807_144858_sites','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','de74dfaa-00ce-4434-a2e2-d86afae23899'),
+	(25,NULL,'app','m160829_000000_pending_user_content_cleanup','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','86801f86-f50e-40af-9f11-8bbdf66a8163'),
+	(26,NULL,'app','m160830_000000_asset_index_uri_increase','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','acac0e1b-16c3-4eb9-a0b6-147b41ae871d'),
+	(27,NULL,'app','m160912_230520_require_entry_type_id','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','97492e3c-435d-49e7-b702-1713eed9e28f'),
+	(28,NULL,'app','m160913_134730_require_matrix_block_type_id','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','e5f4589a-ba94-4d96-b437-0af93d711581'),
+	(29,NULL,'app','m160920_174553_matrixblocks_owner_site_id_nullable','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','8a3250f5-23b8-46b2-b56e-51c4f09e565a'),
+	(30,NULL,'app','m160920_231045_usergroup_handle_title_unique','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','2cb63572-532f-4c97-8915-a6fec838bc15'),
+	(31,NULL,'app','m160925_113941_route_uri_parts','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','831969b5-64ce-475a-b6e3-cd8f42db8329'),
+	(32,NULL,'app','m161006_205918_schemaVersion_not_null','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','1d737784-1f29-4933-9bc8-bd6bfebe91bd'),
+	(33,NULL,'app','m161007_130653_update_email_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','9ed92822-13e9-4ff8-b143-08ac7ae51e02'),
+	(34,NULL,'app','m161013_175052_newParentId','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','44f3239a-4d54-4d23-ae35-b62e07e53ee5'),
+	(35,NULL,'app','m161021_102916_fix_recent_entries_widgets','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','2d2f6bed-8a23-49f4-b819-fcd7a3940081'),
+	(36,NULL,'app','m161021_182140_rename_get_help_widget','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','5b2faf04-0006-4ce1-8003-72a93350bcd5'),
+	(37,NULL,'app','m161025_000000_fix_char_columns','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c5a74a3e-6492-4b83-9ec0-1bd202417075'),
+	(38,NULL,'app','m161029_124145_email_message_languages','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','84955fc7-b11b-4a8d-9b0c-c02d1b093a57'),
+	(39,NULL,'app','m161108_000000_new_version_format','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','994ac697-0edf-4757-9e83-3172967f3334'),
+	(40,NULL,'app','m161109_000000_index_shuffle','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','f9b0cf82-0374-4dcd-a161-60f78540d281'),
+	(41,NULL,'app','m161122_185500_no_craft_app','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','0b12ff71-c114-4130-822d-a07da3893479'),
+	(42,NULL,'app','m161125_150752_clear_urlmanager_cache','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c9aa8813-832d-4b59-b7f9-d6bbc373fda0'),
+	(43,NULL,'app','m161220_000000_volumes_hasurl_notnull','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','2ca01755-99d5-4dfc-bec3-9ebe5405f660'),
+	(44,NULL,'app','m170114_161144_udates_permission','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','08f37354-cc20-48ab-9e46-7f83e4689768'),
+	(45,NULL,'app','m170120_000000_schema_cleanup','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','be15d980-5b28-405a-b1c4-3c5ad4860fbc'),
+	(46,NULL,'app','m170126_000000_assets_focal_point','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','9729df19-dad2-4b8c-9dc4-db3a33c78034'),
+	(47,NULL,'app','m170206_142126_system_name','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','cd426c41-7249-42d8-b06c-83ed4b047923'),
+	(48,NULL,'app','m170217_044740_category_branch_limits','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','95bb79df-3692-4048-964c-6c8171686b32'),
+	(49,NULL,'app','m170217_120224_asset_indexing_columns','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','56475548-3eea-4776-a550-34de3d573445'),
+	(50,NULL,'app','m170223_224012_plain_text_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','4a432c91-19ab-4ddd-b383-9cf5ec3875be'),
+	(51,NULL,'app','m170227_120814_focal_point_percentage','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','b5833745-67ec-4b3f-8b63-8639adbc32e1'),
+	(52,NULL,'app','m170228_171113_system_messages','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','07b92e98-dd42-48c8-b4bf-2501d733be21'),
+	(53,NULL,'app','m170303_140500_asset_field_source_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','286382c7-3850-45d3-afcc-1eca599c06f7'),
+	(54,NULL,'app','m170306_150500_asset_temporary_uploads','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','06a92672-9776-4e6d-b117-5f74058ae80a'),
+	(55,NULL,'app','m170414_162429_rich_text_config_setting','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','1a2fd0af-9991-4063-a3b7-a9350eff542f'),
+	(56,NULL,'app','m170523_190652_element_field_layout_ids','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','b5cd7b7b-c99e-4f70-aae2-71e5e03c4dec'),
+	(57,NULL,'app','m170612_000000_route_index_shuffle','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','4045620f-78bc-4ba0-8ef1-829128354f7d'),
+	(58,NULL,'app','m170621_195237_format_plugin_handles','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c6c947e3-c753-4094-a8fc-1661ae9473cb'),
+	(59,NULL,'app','m170630_161028_deprecation_changes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','09440708-f677-4be6-b235-87942cbacd4c'),
+	(60,NULL,'app','m170703_181539_plugins_table_tweaks','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','7006cf5c-390c-41ac-aa27-77f4f152d4a3'),
+	(61,NULL,'app','m170704_134916_sites_tables','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','7956f7cf-eecc-4308-a446-2f72747cb68b'),
+	(62,NULL,'app','m170706_183216_rename_sequences','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','0d451edd-6b85-4de6-afdf-984bacc80e5f'),
+	(63,NULL,'app','m170707_094758_delete_compiled_traits','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c1871b51-79d3-46e8-965f-ede2ef7ad465'),
+	(64,NULL,'app','m170731_190138_drop_asset_packagist','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','5a72403b-9eba-4d6b-8832-74a047273d6e'),
+	(65,NULL,'app','m170810_201318_create_queue_table','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','c93a4549-d930-42d8-9ea4-7f1b1ad0161c'),
+	(66,NULL,'app','m170816_133741_delete_compiled_behaviors','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','0ee2a799-54ad-4dd7-a3e5-813e9dde95be'),
+	(67,NULL,'app','m170821_180624_deprecation_line_nullable','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','dc6cf940-58e1-438f-aa22-008e427bb028'),
+	(68,NULL,'app','m170903_192801_longblob_for_queue_jobs','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','b68e2d27-ffe4-49d4-aa59-05ebf9d603d9'),
+	(69,NULL,'app','m170914_204621_asset_cache_shuffle','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','64f69478-d183-4b2b-9403-eecb6ed62cca'),
+	(70,NULL,'app','m171011_214115_site_groups','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','d0b05bd8-1d63-4a06-91fe-87b8f3d32d4e'),
+	(71,NULL,'app','m171012_151440_primary_site','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','9f30e6b2-f174-4d67-ac90-8b8674e22c99'),
+	(72,NULL,'app','m171013_142500_transform_interlace','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','5f9f1d27-010d-41dd-b910-36334d09ea43'),
+	(73,NULL,'app','m171016_092553_drop_position_select','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','6f50c93d-4d90-4f1b-9abb-0e5e4824781a'),
+	(74,NULL,'app','m171016_221244_less_strict_translation_method','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','0971d87f-6834-4502-87de-6e7f7edf4811'),
+	(75,NULL,'app','m171107_000000_assign_group_permissions','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','a5030e4f-1317-4063-bc0a-8900988ee792'),
+	(76,NULL,'app','m171117_000001_templatecache_index_tune','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','5af4a47f-f774-4a1b-a12c-0b25834f9f0c'),
+	(77,NULL,'app','m171126_105927_disabled_plugins','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','f6121407-e9cc-4432-9651-e12b5da7c32d'),
+	(78,NULL,'app','m171130_214407_craftidtokens_table','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','9e191260-1f7b-4f76-a5cb-f6d5f70d6d39'),
+	(79,NULL,'app','m171202_004225_update_email_settings','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','683aef6d-d248-4329-9a77-13f980849165'),
+	(80,NULL,'app','m171204_000001_templatecache_index_tune_deux','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','6af89618-4281-4ab9-98e3-3403ead0a487'),
+	(81,NULL,'app','m171205_130908_remove_craftidtokens_refreshtoken_column','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','95325af9-44fb-4569-9d82-f3c2e4a40dd9'),
+	(82,NULL,'app','m171218_143135_longtext_query_column','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','966870b2-8727-4d0f-bb2b-fdb0e203b9b5'),
+	(83,NULL,'app','m171231_055546_environment_variables_to_aliases','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','a8facace-b40c-4e7e-8c90-d660ff9a5a9e'),
+	(84,NULL,'app','m180113_153740_drop_users_archived_column','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','eb3e02c7-9b85-4d51-98b8-ebd24a5e0b95'),
+	(85,NULL,'app','m180122_213433_propagate_entries_setting','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','02d4c0c1-dd11-4f34-ba3d-1e5d6a1feeaa'),
+	(86,NULL,'app','m180124_230459_fix_propagate_entries_values','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','3f342926-5351-441f-9d84-3dd5bd8eb84b'),
+	(87,NULL,'app','m180128_235202_set_tag_slugs','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','80b25f32-531f-47db-924a-e9780f12866a'),
+	(88,NULL,'app','m180202_185551_fix_focal_points','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','0277fea1-949b-43c9-a1d7-f8bb2d3f0072'),
+	(89,NULL,'app','m180217_172123_tiny_ints','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','6ab569a7-5e81-4a72-9ac6-408e35a11662'),
+	(90,NULL,'app','m180321_233505_small_ints','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','82a74695-5c06-497e-9b72-38fc7dfcdd97'),
+	(91,NULL,'app','m180328_115523_new_license_key_statuses','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','5c0febc5-bd36-4050-9a3d-048791dae31a'),
+	(92,NULL,'app','m180404_182320_edition_changes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','92ef3314-777e-41ed-9d42-c1e04fdd70a8'),
+	(93,NULL,'app','m180411_102218_fix_db_routes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','9343d040-6850-49b8-a6ab-9e2c3591f16d'),
+	(94,NULL,'app','m180416_205628_resourcepaths_table','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','dfd0a053-b51e-4c4c-80c8-f23218ba7504'),
+	(95,NULL,'app','m180418_205713_widget_cleanup','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','3269555e-62fe-4732-b4e0-57fec55cb860'),
+	(96,NULL,'app','m180824_193422_case_sensitivity_fixes','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','6d23b19f-4574-49fb-ba8e-ac4eadb417c3'),
+	(97,NULL,'app','m180901_151639_fix_matrixcontent_tables','2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:27:09','e7f31bae-8b2d-48c2-9f0b-bdb05521ef55'),
+	(98,2,'plugin','Install','2018-09-20 16:29:30','2018-09-20 16:29:30','2018-09-20 16:29:30','9ce54130-3ac1-4210-a09d-e6831a5e5a19'),
+	(99,1,'plugin','Install','2018-09-20 16:29:30','2018-09-20 16:29:30','2018-09-20 16:29:30','cf81a57f-d842-4aa6-a58c-78784313e90f'),
+	(100,1,'plugin','m180812_200148_add_label_and_mapping','2018-09-20 16:29:30','2018-09-20 16:29:30','2018-09-20 16:29:30','a10b8b11-fd64-4605-966b-720fde5874fe'),
+	(101,1,'plugin','m180823_193925_clean_identity_table','2018-09-20 16:29:30','2018-09-20 16:29:30','2018-09-20 16:29:30','4d960dbd-9b8b-4651-8757-ddbc74e31216');
 
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -853,6 +882,16 @@ CREATE TABLE `plugins` (
   KEY `plugins_enabled_idx` (`enabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `plugins` WRITE;
+/*!40000 ALTER TABLE `plugins` DISABLE KEYS */;
+
+INSERT INTO `plugins` (`id`, `handle`, `version`, `schemaVersion`, `licenseKey`, `licenseKeyStatus`, `enabled`, `settings`, `installDate`, `dateCreated`, `dateUpdated`, `uid`)
+VALUES
+	(1,'saml-sp','1.0.0-RC4','1.0.0-RC1',NULL,'unknown',1,NULL,'2018-09-20 16:29:30','2018-09-20 16:29:30','2018-09-20 16:29:31','b02ae780-e706-43f0-a041-646c2a9e9c8a'),
+	(2,'keychain','1.0.0-RC1','1.0.0-RC1',NULL,'unknown',1,NULL,'2018-09-20 16:29:30','2018-09-20 16:29:30','2018-09-20 16:29:31','bea0b71d-0a52-4aac-9481-ad85675b3e32');
+
+/*!40000 ALTER TABLE `plugins` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table queue
@@ -926,25 +965,30 @@ LOCK TABLES `resourcepaths` WRITE;
 
 INSERT INTO `resourcepaths` (`hash`, `path`)
 VALUES
-	('105c6c02','@lib/fabric'),
-	('20ea8e15','@lib/fileupload'),
-	('36a7afba','@lib/d3'),
-	('38028feb','@lib/picturefill'),
-	('3fa6b329','@lib/jquery-touch-events'),
-	('4e971cd9','@craft/web/assets/recententries/dist'),
-	('51ab83c','@lib/garnishjs'),
-	('6610e6e5','@lib/xregexp'),
-	('6a538726','@craft/web/assets/cp/dist'),
-	('6c7ca26f','@lib/selectize'),
-	('702d5eb7','@craft/web/assets/updateswidget/dist'),
-	('91d7b331','@craft/web/assets/dashboard/dist'),
-	('9b381899','@lib/element-resize-detector'),
-	('a5274411','@lib/velocity'),
-	('b4a8b36c','@bower/jquery/dist'),
-	('b900ebf9','@lib/jquery.payment'),
-	('d781a8be','@craft/web/assets/craftsupport/dist'),
-	('e89495fa','@craft/web/assets/feed/dist'),
-	('eb8edfb4','@lib/jquery-ui');
+	('1298516d','@app/web/assets/updateswidget/dist'),
+	('1c0afdac','@app/web/assets/craftsupport/dist'),
+	('2a5779a5','@app/web/assets/pluginstore/dist'),
+	('2c221303','@app/web/assets/recententries/dist'),
+	('316f348e','@app/web/assets/cp/dist'),
+	('355121f0','@app/web/assets/login/dist'),
+	('446b0914','@lib/velocity'),
+	('48747f30','@app/web/assets/feed/dist'),
+	('49a1503','@app/web/assets/installer/dist'),
+	('55e4fe69','@bower/jquery/dist'),
+	('584ca6fc','@lib/jquery.payment'),
+	('6dce3f91','@lib'),
+	('7a74559c','@lib/element-resize-detector'),
+	('875cabe0','@lib/xregexp'),
+	('8d30ef6a','@lib/selectize'),
+	('ac292b1','@lib/jquery-ui'),
+	('b0a937d1','@app/web/assets/plugins/dist'),
+	('c1a6c310','@lib/fileupload'),
+	('d7ebe2bf','@lib/d3'),
+	('d94ec2ee','@lib/picturefill'),
+	('deeafe2c','@lib/jquery-touch-events'),
+	('e456f539','@lib/garnishjs'),
+	('f1102107','@lib/fabric'),
+	('f2627ac2','@app/web/assets/dashboard/dist');
 
 /*!40000 ALTER TABLE `resourcepaths` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -973,6 +1017,77 @@ CREATE TABLE `routes` (
 
 
 
+# Dump of table saml_provider_keychain_link
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `saml_provider_keychain_link`;
+
+CREATE TABLE `saml_provider_keychain_link` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `providerId` int(11) NOT NULL,
+  `keyChainId` int(11) NOT NULL,
+  `dateUpdated` datetime NOT NULL,
+  `dateCreated` datetime NOT NULL,
+  `uid` char(36) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `saml_provider_keychain_link_providerId_keyChainId_unq_fk` (`providerId`,`keyChainId`),
+  KEY `saml_provider_keychain_link_keyChainId_fk` (`keyChainId`),
+  CONSTRAINT `saml_provider_keychain_link_keyChainId_fk` FOREIGN KEY (`keyChainId`) REFERENCES `keychain` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `saml_provider_keychain_link_providerId_fk` FOREIGN KEY (`providerId`) REFERENCES `saml_sp_providers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table saml_sp_provider_identity
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `saml_sp_provider_identity`;
+
+CREATE TABLE `saml_sp_provider_identity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `providerId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `nameId` varchar(255) NOT NULL,
+  `sessionId` varchar(255) DEFAULT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `lastLoginDate` datetime NOT NULL,
+  `dateUpdated` datetime NOT NULL,
+  `dateCreated` datetime NOT NULL,
+  `uid` char(36) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `saml_sp_provider_identity_providerId_userId_unq_idx` (`providerId`,`userId`),
+  KEY `saml_sp_provider_identity_nameId_fk` (`nameId`),
+  KEY `saml_sp_provider_identity_userId_fk` (`userId`),
+  CONSTRAINT `saml_sp_provider_identity_providerId_fk` FOREIGN KEY (`providerId`) REFERENCES `saml_sp_providers` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `saml_sp_provider_identity_userId_fk` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table saml_sp_providers
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `saml_sp_providers`;
+
+CREATE TABLE `saml_sp_providers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(64) DEFAULT NULL,
+  `entityId` varchar(255) NOT NULL,
+  `metadata` text NOT NULL,
+  `sha256` varchar(255) NOT NULL,
+  `providerType` enum('idp','sp') NOT NULL,
+  `mapping` text,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `dateUpdated` datetime NOT NULL,
+  `dateCreated` datetime NOT NULL,
+  `uid` char(36) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `saml_sp_providers_sha256_unq_fk` (`sha256`),
+  KEY `saml_sp_providers_entityId_fk` (`entityId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 # Dump of table searchindex
 # ------------------------------------------------------------
 
@@ -993,11 +1108,11 @@ LOCK TABLES `searchindex` WRITE;
 
 INSERT INTO `searchindex` (`elementId`, `attribute`, `fieldId`, `siteId`, `keywords`)
 VALUES
-	(1,'username',0,1,' flipbox '),
+	(1,'username',0,1,' admin '),
 	(1,'firstname',0,1,''),
 	(1,'lastname',0,1,''),
 	(1,'fullname',0,1,''),
-	(1,'email',0,1,' craft flipboxdigital com '),
+	(1,'email',0,1,' test test com '),
 	(1,'slug',0,1,'');
 
 /*!40000 ALTER TABLE `searchindex` ENABLE KEYS */;
@@ -1074,6 +1189,15 @@ CREATE TABLE `sessions` (
   CONSTRAINT `sessions_userId_fk` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `sessions` WRITE;
+/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+
+INSERT INTO `sessions` (`id`, `userId`, `token`, `dateCreated`, `dateUpdated`, `uid`)
+VALUES
+	(1,1,'cA9zM0-wDXq6WCxKaex86Ja9jwLwRqGc7fF0S7a5xoDPG3DXgFDdO3gWCxcMQ8OFDTsJH51Xtb0vpfmNuvzwXrCnJ-N_o0zcBYwH','2018-09-20 16:29:16','2018-09-20 16:29:31','6231757e-7045-4dc0-b9ae-54dbee07ccee');
+
+/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table shunnedmessages
@@ -1116,7 +1240,7 @@ LOCK TABLES `sitegroups` WRITE;
 
 INSERT INTO `sitegroups` (`id`, `name`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,'Test','2018-06-14 16:22:37','2018-06-14 16:22:37','945cd2f5-1a7d-48eb-920e-d39e773f675e');
+	(1,'Test','2018-09-20 16:27:09','2018-09-20 16:27:09','541cab41-72de-42fd-bca1-6341c2711445');
 
 /*!40000 ALTER TABLE `sitegroups` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1152,7 +1276,7 @@ LOCK TABLES `sites` WRITE;
 
 INSERT INTO `sites` (`id`, `groupId`, `primary`, `name`, `handle`, `language`, `hasUrls`, `baseUrl`, `sortOrder`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,1,1,'Test','default','en-US',1,'@web/',1,'2018-06-14 16:22:37','2018-06-14 16:22:37','935ed4b4-6139-4d2b-88bc-6a4ad8da94dc');
+	(1,1,1,'Test','default','en-US',1,'@web/',1,'2018-09-20 16:27:09','2018-09-20 16:27:09','892ba0ed-5931-47b5-9ea8-3536266a4f20');
 
 /*!40000 ALTER TABLE `sites` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1245,7 +1369,7 @@ LOCK TABLES `systemsettings` WRITE;
 
 INSERT INTO `systemsettings` (`id`, `category`, `settings`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,'email','{\"fromEmail\":\"craft@flipboxdigital.com\",\"fromName\":\"Test\",\"transportType\":\"craft\\\\mail\\\\transportadapters\\\\Sendmail\"}','2018-06-14 16:22:38','2018-06-14 16:22:38','2bf7be27-7c3a-415d-9f6a-b0493f5b81af');
+	(1,'email','{\"fromEmail\":\"test@test.com\",\"fromName\":\"Test\",\"transportType\":\"craft\\\\mail\\\\transportadapters\\\\Sendmail\"}','2018-09-20 16:27:09','2018-09-20 16:27:09','fdd9ea46-2f6a-469f-8ebe-a134bdf2d106');
 
 /*!40000 ALTER TABLE `systemsettings` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1524,10 +1648,10 @@ CREATE TABLE `users` (
   `dateUpdated` datetime NOT NULL,
   `uid` char(36) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_username_unq_idx` (`username`),
-  UNIQUE KEY `users_email_unq_idx` (`email`),
   KEY `users_uid_idx` (`uid`),
   KEY `users_verificationCode_idx` (`verificationCode`),
+  KEY `users_email_idx` (`email`),
+  KEY `users_username_idx` (`username`),
   KEY `users_photoId_fk` (`photoId`),
   CONSTRAINT `users_id_fk` FOREIGN KEY (`id`) REFERENCES `elements` (`id`) ON DELETE CASCADE,
   CONSTRAINT `users_photoId_fk` FOREIGN KEY (`photoId`) REFERENCES `assets` (`id`) ON DELETE SET NULL
@@ -1538,7 +1662,7 @@ LOCK TABLES `users` WRITE;
 
 INSERT INTO `users` (`id`, `username`, `photoId`, `firstName`, `lastName`, `email`, `password`, `admin`, `locked`, `suspended`, `pending`, `lastLoginDate`, `lastLoginAttemptIp`, `invalidLoginWindowStart`, `invalidLoginCount`, `lastInvalidLoginDate`, `lockoutDate`, `hasDashboard`, `verificationCode`, `verificationCodeIssuedDate`, `unverifiedEmail`, `passwordResetRequired`, `lastPasswordChangeDate`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,'flipbox',NULL,NULL,NULL,'craft@flipboxdigital.com','$2y$13$KtP29szCrmqoF0JM4Dv0rO3Q.I1kLqPFABQ73QzMfBRZZ6XHWuleC',1,0,0,0,'2018-06-14 16:22:38','172.19.0.1',NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,0,'2018-06-14 16:22:38','2018-06-14 16:22:38','2018-06-14 16:22:41','5be4ab9b-799d-4ad8-9e0a-2e4af8173f8c');
+	(1,'admin',NULL,NULL,NULL,'test@test.com','$2y$13$oaxQMMMzr2xwwPlaFK.mC.keC/aWkG1VyiWVX7IB08Dntu9k0AJsq',1,0,0,0,'2018-09-20 16:29:16','192.168.224.1',NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,0,'2018-09-20 16:27:09','2018-09-20 16:27:09','2018-09-20 16:29:16','f669a272-3a35-4303-982a-d147da122c29');
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1621,10 +1745,10 @@ LOCK TABLES `widgets` WRITE;
 
 INSERT INTO `widgets` (`id`, `userId`, `type`, `sortOrder`, `colspan`, `settings`, `enabled`, `dateCreated`, `dateUpdated`, `uid`)
 VALUES
-	(1,1,'craft\\widgets\\RecentEntries',1,0,'{\"section\":\"*\",\"siteId\":\"1\",\"limit\":10}',1,'2018-06-14 16:22:41','2018-06-14 16:22:41','b303069d-ca92-4fcd-9ea1-dc4e408f5925'),
-	(2,1,'craft\\widgets\\CraftSupport',2,0,'[]',1,'2018-06-14 16:22:41','2018-06-14 16:22:41','27b067f8-1212-4e57-8b5f-541b5686941a'),
-	(3,1,'craft\\widgets\\Updates',3,0,'[]',1,'2018-06-14 16:22:41','2018-06-14 16:22:41','5bfd552b-5da7-401f-a33a-af0cff97b72f'),
-	(4,1,'craft\\widgets\\Feed',4,0,'{\"url\":\"https://craftcms.com/news.rss\",\"title\":\"Craft News\",\"limit\":5}',1,'2018-06-14 16:22:41','2018-06-14 16:22:41','f7419f5b-3d4d-4c5b-8a3e-0cb5e5d059b8');
+	(1,1,'craft\\widgets\\RecentEntries',1,0,'{\"section\":\"*\",\"siteId\":\"1\",\"limit\":10}',1,'2018-09-20 16:27:11','2018-09-20 16:27:11','6f8abc91-583b-4965-ba73-daea78ac635c'),
+	(2,1,'craft\\widgets\\CraftSupport',2,0,'[]',1,'2018-09-20 16:27:11','2018-09-20 16:27:11','5e518b3e-b6c5-4702-a753-ed9e2aea7db5'),
+	(3,1,'craft\\widgets\\Updates',3,0,'[]',1,'2018-09-20 16:27:11','2018-09-20 16:27:11','e6847b07-ba51-4164-9879-e8860071411c'),
+	(4,1,'craft\\widgets\\Feed',4,0,'{\"url\":\"https://craftcms.com/news.rss\",\"title\":\"Craft News\",\"limit\":5}',1,'2018-09-20 16:27:11','2018-09-20 16:27:11','86f556f5-baa5-4b7c-b20d-28ea27b2acac');
 
 /*!40000 ALTER TABLE `widgets` ENABLE KEYS */;
 UNLOCK TABLES;
