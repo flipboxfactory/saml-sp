@@ -16,12 +16,12 @@
   "minimum-stability":"beta",
   "require": {
     "craftcms/cms": "^3.0.0",
-    "flipboxfactory/saml-core": "1.0.0.RC1",
-    "vlucas/phpdotenv": "^2.4"
+    "flipboxfactory/saml-core": "1.0.0.RC1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.2",
-    "codeception/codeception": "2.4.4"
+    "codeception/codeception": "^2.4",
+    "vlucas/phpdotenv": "^2.4"
   },
   "autoload": {
     "psr-4": {
@@ -43,7 +43,7 @@
   "extra": {
     "name": "SAML SSO Service Provider",
     "version":"1.0.0-RC4",
-    "schemaVersion":"1.0.0-RC1",
+    "schemaVersion":"1.0.0-RC4",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",
