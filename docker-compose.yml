@@ -16,10 +16,6 @@ services:
             XDEBUG_ON: "yes"
             XDEBUG_HOST: "host.docker.internal"
             XDEBUG_IDEKEY: "PHPSTORM"
-            TEST_DB_SERVER: db
-            TEST_DB_USER: craft
-            TEST_DB_PASSWORD: craft
-            TEST_DB_DATABASE: test
             DB_SERVER: db
             DB_USER: craft
             DB_PASSWORD: craft
