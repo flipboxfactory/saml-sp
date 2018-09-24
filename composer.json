@@ -43,7 +43,7 @@
   "extra": {
     "name": "SAML SSO Service Provider",
     "version":"1.0.0-RC4",
-    "schemaVersion":"1.0.0-RC4",
+    "schemaVersion":"1.0.0-RC1",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",
