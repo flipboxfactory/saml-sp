@@ -5,7 +5,6 @@ namespace flipbox\saml\sp\tests;
 use Codeception\Test\Unit;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\Login;
-use flipbox\saml\sp\services\Cp;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
 use flipbox\saml\sp\services\bindings\HttpPost;
@@ -30,7 +29,7 @@ class SamlTest extends Unit
      */
     protected function _before()
     {
-        $this->module = Saml::getInstance();
+        $this->module = new Saml('saml-sp');
     }
 
     public function testComponents()
@@ -46,6 +45,5 @@ class SamlTest extends Unit
         $this->assertInstanceOf(Metadata::class, $this->module->getMetadata());
         $this->assertInstanceOf(Response::class, $this->module->getResponse());
         $this->assertInstanceOf(Session::class, $this->module->getSession());
-        $this->assertInstanceOf(Cp::class, $this->module->getCp());
     }
 }
