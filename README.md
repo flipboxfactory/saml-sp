@@ -8,7 +8,7 @@
 
 ## Docs
 
-[Read the docs](https://flipboxfactory.github.io/saml-sp/)
+[Read the docs](https://saml-sp.flipboxfactory.com/)
 
 ## Installation
 
@@ -21,7 +21,7 @@ composer require flipboxfactory/saml-sp
 ## Testing
 
 ``` bash
-$ ./vendor/bin/phpunit
+$ make test
 ```
 
 ## Contributing
