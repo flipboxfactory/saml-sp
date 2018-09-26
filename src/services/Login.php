@@ -303,8 +303,7 @@ class Login extends Component
 
         if ($assertion->getFirstAttributeStatement()) {
             $this->transformToUser($response, $user);
-        }
-        else {
+        } else {
             /**
              * There doesn't seem to be any attribute statements.
              * Try and use username for the email and move on.
