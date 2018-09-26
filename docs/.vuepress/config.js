@@ -38,9 +38,9 @@ module.exports = {
                     collapsable: false,
                     children: [
                         ['/configure/', 'Overview'],
-                        ['/configure/keychain', 'KeyChain'],
                         ['/configure/login', 'Login'],
                         ['/configure/logout', 'Logout'],
+                        ['/configure/keychain', 'KeyChain'],
                         ['/configure/settings', 'Settings'],
                     ]
                 },

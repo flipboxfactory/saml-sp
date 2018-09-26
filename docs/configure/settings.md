@@ -1,3 +1,4 @@
-# Settings
+## Plugin Settings
+You may override the default plugin settings by creating a `/config/saml-sp.php` file.
 
-Settings page stuff
+View the settings you can override at `/plugins/saml-sp/src/models/Settings.php`. Each setting has a description of what it does and how to customize it.
