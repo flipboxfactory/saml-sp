@@ -9,7 +9,6 @@
 
 return [
     '*' => [
-        'tablePrefix' => 'craft',
         'server' => getenv('DB_SERVER'),
         'database' => getenv('DB_DATABASE'),
         'user'   => getenv('DB_USER'),

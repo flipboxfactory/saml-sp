@@ -21,7 +21,7 @@ services:
             DB_PASSWORD: craft
             DB_DATABASE: test
             PLUGIN_REQUIRE: "flipboxfactory/saml-sp"
-            PLUGIN_VERSION: "1.0.0-RC4"
+            PLUGIN_VERSION: "^1.0.0@dev"
     db:
         image: 'mysql:5.6'
         restart: always
