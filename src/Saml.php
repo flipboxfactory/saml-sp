@@ -11,6 +11,7 @@ use Craft;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\UrlHelper;
 use craft\services\Fields;
 use craft\web\UrlManager;
 use flipbox\saml\core\models\SettingsInterface;
@@ -148,6 +149,19 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                     'login' => 'saml-sp/cp/view/login',
                 ] : []
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSettingsResponse()
+    {
+
+        Craft::$app->getResponse()->redirect(
+            UrlHelper::cpUrl('saml-sp/settings')
+        );
+
+        Craft::$app->end();
     }
 
     /**
