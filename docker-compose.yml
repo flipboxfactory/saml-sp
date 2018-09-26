@@ -1,0 +1,37 @@
+# This setup provides craft already configured with a database and the plugin already installed
+# Username is admin
+# Password is password
+
+version: '3'
+services:
+    web:
+        image: 'flipbox/craftcms:3'
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - '.:/var/www/html/plugin'
+            - './storage/logs:/var/www/html/storage/logs'
+        environment:
+            XDEBUG_ON: "yes"
+            XDEBUG_HOST: "host.docker.internal"
+            XDEBUG_IDEKEY: "PHPSTORM"
+            DB_SERVER: db
+            DB_USER: craft
+            DB_PASSWORD: craft
+            DB_DATABASE: test
+            PLUGIN_REQUIRE: "flipboxfactory/saml-sp"
+            PLUGIN_VERSION: "^1.0.0@dev"
+    db:
+        image: 'mysql:5.6'
+        restart: always
+        volumes:
+            - .:/app
+            - ./tests/_data/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+        ports:
+            - '3306:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: test
+            MYSQL_USER: craft
+            MYSQL_PASSWORD: craft

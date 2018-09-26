@@ -1,0 +1,93 @@
+.content
+  code
+    display inline-block
+
+.content
+  pre, pre[class*="language-"]
+    padding 1.3rem !important
+    overflow auto
+    border 1px solid #dfdfdf
+    background-image linear-gradient(transparent 50%, rgba(0, 0, 0, 0.015) 50%) !important
+    background-size 2.55em 2.55em !important
+    background-origin content-box !important
+    background-attachment local !important
+    &::before
+    &::after
+      content none
+    code
+      color $textColor !important
+
+      background-color transparent
+      border 0
+      width 100%
+      line-height 1.475
+    > code
+      box-shadow none
+      background-image none
+
+.content {
+  .code-toggle {
+    margin: 0.85rem 0;
+
+    ul.code-language-switcher {
+      border-radius: 3px 3px 0 0;
+      background-color: #dfe2e5;
+    }
+
+    pre, pre[class*="language-"] {
+      margin: 0;
+    }
+  }
+
+  a.outbound-link {
+    color: lighten($textColor, 25%);
+    margin-right: 0.25rem;
+  }
+
+  a + svg.outbound {
+    margin-left: 0.25rem;
+    position: relative;
+    top: 2px;
+  }
+}
+
+ul.code-language-switcher {
+  height: $navbarHeight;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 0.7rem .7rem;
+  font-size: 15px;
+  line-height: 1.4;
+  z-index: 2;
+  background: #999;
+
+  li {
+    margin: 0 5px 0 0;
+    padding: 0;
+    list-style-type: none;
+
+    a {
+      display: block;
+      padding: 0 0.625rem;
+      line-height: 2.2rem;
+      cursor: pointer;
+      border-radius: 4px;
+      color lighten($textColor, 20%)
+
+      &:hover {
+        text-decoration: none !important;
+
+        &:not(.active) {
+          background: rgba(255,255,255,0.5)
+        }
+      }
+
+      &.active {
+        cursor default
+        background-color #fff
+      }
+    }
+  }
+}
