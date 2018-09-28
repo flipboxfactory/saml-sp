@@ -1,4 +1,4 @@
-# SAML Service Provider for Craft CMS
+# SAML SSO Service Provider for Craft CMS
 [![Join the chat at https://gitter.im/flipboxfactory/saml-sp](https://badges.gitter.im/flipboxfactory/saml-sp.svg)](https://gitter.im/flipboxfactory/saml-sp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Latest Version](https://img.shields.io/github/release/flipboxfactory/saml-sp.svg?style=flat-square)](https://github.com/flipboxfactory/saml-sp/releases)
 [![Build Status](https://img.shields.io/travis/flipboxfactory/saml-sp/master.svg?style=flat-square)](https://travis-ci.com/flipboxfactory/saml-sp)
