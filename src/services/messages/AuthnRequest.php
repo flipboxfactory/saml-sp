@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 1/10/18
- * Time: 11:23 AM
- */
 
 namespace flipbox\saml\sp\services\messages;
 

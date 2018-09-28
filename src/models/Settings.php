@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 1/9/18
- * Time: 9:37 AM
- */
 
 namespace flipbox\saml\sp\models;
 

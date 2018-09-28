@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 3/10/18
- * Time: 8:40 PM
- */
 
 namespace flipbox\saml\sp\controllers\cp\view\metadata;
 
