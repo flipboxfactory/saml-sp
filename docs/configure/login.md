@@ -1,7 +1,7 @@
 # Configure Login (SSO)
 Set the `loginPath` within the Craft general config `config/general.php`.
 
-After the IDP is saved in CraftCMS, navigate back to the provider. Under the configure in CraftCMS, navigate back to the provider. 
+After the IDP is saved in Craft, navigate back to the provider. Under the "Configure" tab in Craft, navigate back to the provider. 
 The following code snippets show login configuration options.
  
 ## Simple Config
@@ -14,10 +14,11 @@ return [
    'loginPath' => '/sso/login/request',
 ];
 ```
-## Explicit Config
-If there is multiple IDPs in the system, you should be explicit with which provider you want to use. 
 
-Under the "Configure" tab there is a "Login/Logout Paths" header which contains read-only properties. Copy the "Login Path'
+## Explicit Config
+If you want to set multiple IDPs by environment, you should be explicit which provider you want to use. 
+
+Under the "Configure" tab there is a "Login/Logout Paths" header which contains read-only properties. Copy the "Login Path"
 and use it as the CraftCMS `loginPath`.
 
 
