@@ -8,11 +8,10 @@
 
 namespace flipbox\saml\sp\services;
 
-use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\AbstractProviderService;
 use flipbox\saml\core\services\ProviderServiceInterface;
-use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 /**
  * Class Provider
@@ -21,13 +20,7 @@ use flipbox\saml\sp\Saml;
  */
 class Provider extends AbstractProviderService implements ProviderServiceInterface
 {
-    /**
-     * @inheritdoc
-     */
-    public function getRecordClass()
-    {
-        return ProviderRecord::class;
-    }
+    use SamlPluginEnsured;
 
     /**
      * @inheritdoc
@@ -35,13 +28,5 @@ class Provider extends AbstractProviderService implements ProviderServiceInterfa
     public function findOwn()
     {
         return $this->findByEntityId(Saml::getInstance()->getSettings()->getEntityId())->one();
-    }
-
-    /**
-     * @return SamlPluginInterface
-     */
-    protected function getSamlPlugin(): SamlPluginInterface
-    {
-        return Saml::getInstance();
     }
 }

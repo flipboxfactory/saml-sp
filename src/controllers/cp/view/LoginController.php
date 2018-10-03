@@ -6,7 +6,6 @@
 
 namespace flipbox\saml\sp\controllers\cp\view;
 
-use flipbox\saml\sp\controllers\cp\view\GeneralController;
 use flipbox\saml\sp\Saml;
 
 class LoginController extends GeneralController

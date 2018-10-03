@@ -11,7 +11,6 @@ namespace flipbox\saml\sp\records;
 use flipbox\ember\records\traits\StateAttribute;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
-use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\Saml;
 
 class ProviderRecord extends AbstractProvider implements ProviderInterface

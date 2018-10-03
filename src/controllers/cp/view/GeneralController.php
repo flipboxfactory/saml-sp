@@ -8,24 +8,11 @@
 
 namespace flipbox\saml\sp\controllers\cp\view;
 
-use Craft;
-use craft\helpers\UrlHelper;
-use craft\web\Controller;
 use flipbox\saml\core\controllers\cp\view\AbstractGeneralController;
-use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\records\ProviderRecord;
-use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 class GeneralController extends AbstractGeneralController
 {
-
-    protected function getSamlPlugin(): SamlPluginInterface
-    {
-        return Saml::getInstance();
-    }
-
-    protected function getProviderRecord()
-    {
-        return ProviderRecord::class;
-    }
+    use SamlPluginEnsured;
 }

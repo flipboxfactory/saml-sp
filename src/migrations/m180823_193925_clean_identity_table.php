@@ -2,7 +2,6 @@
 
 namespace flipbox\saml\sp\migrations;
 
-use Craft;
 use craft\db\Migration;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 

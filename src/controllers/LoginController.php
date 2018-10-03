@@ -8,12 +8,12 @@
 
 namespace flipbox\saml\sp\controllers;
 
+use Craft;
 use craft\web\Controller;
 use flipbox\saml\core\exceptions\InvalidMetadata;
+use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use Craft;
-use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\sp\services\bindings\Factory;
 use LightSaml\Model\Protocol\AuthnRequest;
 use yii\web\HttpException;
@@ -54,7 +54,9 @@ class LoginController extends Controller
     public function actionIndex()
     {
 
-        $response = Factory::receive(Craft::$app->request);
+        $response = Saml::getInstance()->getBindingFactory()->receive(
+            Craft::$app->request
+        );
 
         if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()) {
             throw new HttpException(400, "Invalid request");
@@ -136,7 +138,10 @@ class LoginController extends Controller
         );
 
 
-        Factory::send($authnRequest, $idp);
+        Saml::getInstance()->getBindingFactory()->send(
+            $authnRequest,
+            $idp
+        );
 
         Craft::$app->end();
     }

@@ -10,7 +10,6 @@ namespace flipbox\saml\sp\models;
 
 use flipbox\saml\core\models\AbstractSettings;
 use flipbox\saml\core\models\SettingsInterface;
-use flipbox\saml\sp\helpers\UserHelper;
 use LightSaml\ClaimTypes;
 
 class Settings extends AbstractSettings implements SettingsInterface

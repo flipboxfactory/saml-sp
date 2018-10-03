@@ -8,10 +8,16 @@
 
 namespace flipbox\saml\sp\services;
 
-use flipbox\saml\core\SamlPluginInterface;
+use craft\elements\User;
+use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\services\AbstractProviderIdentityService;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\services\login\AssertionTrait;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
+use LightSaml\Model\Protocol\Response as SamlResponse;
+use yii\base\UserException;
 
 /**
  * Class ProviderIdentity
@@ -21,19 +27,83 @@ use flipbox\saml\sp\Saml;
 class ProviderIdentity extends AbstractProviderIdentityService
 {
 
-    /**
-     * @inheritdoc
-     */
-    protected function getSamlPlugin(): SamlPluginInterface
-    {
-        return Saml::getInstance();
-    }
+    use SamlPluginEnsured, AssertionTrait;
 
     /**
-     * @inheritdoc
+     * ACS Methods
      */
-    public function getRecordClass()
+
+    /**
+     * @param User $user
+     * @param SamlResponse $response
+     * @return ProviderIdentityRecord
+     * @throws InvalidMessage
+     * @throws UserException
+     */
+    public function getByUserAndResponse(User $user, \LightSaml\Model\Protocol\Response $response)
     {
-        return ProviderIdentityRecord::class;
+
+        $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
+            $response->getIssuer()->getValue()
+        )->one();
+
+        /**
+         * Get Identity
+         */
+        $identity = $this->forceGet(
+            $this->getFirstAssertion($response)->getSubject()->getNameID()->getValue(),
+            $idpProvider
+        );
+
+        /**
+         * Get Session
+         */
+        $sessionIndex = null;
+        if ($response->getFirstAssertion()->hasAnySessionIndex()) {
+            $sessionIndex = $response->getFirstAssertion()->getFirstAuthnStatement()->getSessionIndex();
+        }
+
+        /**
+         * Set Identity Properties
+         */
+        $identity->userId = $user->id;
+        $identity->enabled = true;
+        $identity->sessionId = $sessionIndex;
+        return $identity;
+    }
+
+
+    /**
+     * @param string $nameId
+     * @param ProviderInterface $provider
+     * @return ProviderIdentityRecord
+     * @throws UserException
+     */
+    protected function forceGet($nameId, ProviderInterface $provider)
+    {
+        // @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
+        if (! $identity = $this->findByNameId(
+            $nameId,
+            $provider
+        )->one()
+        ) {
+            if (! Saml::getInstance()->getSettings()->createUser) {
+                throw new UserException("System doesn't have permission to create a new user.");
+            }
+
+            /**
+             * Create the new identity if one wasn't found above.
+             * Since we now have the user id, and we might not have above,
+             * do this last.
+             */
+            $identity = new ProviderIdentityRecord(
+                [
+                    'providerId' => $provider->id,
+                    'nameId'     => $nameId,
+                ]
+            );
+        }
+
+        return $identity;
     }
 }

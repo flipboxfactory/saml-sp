@@ -7,19 +7,12 @@
 namespace flipbox\saml\sp\controllers\cp\view\metadata;
 
 use flipbox\saml\core\controllers\cp\view\metadata\AbstractDefaultController;
-use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\sp\records\ProviderRecord;
-use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 class DefaultController extends AbstractDefaultController
 {
-    /**
-     * @inheritdoc
-     */
-    public function getSamlPlugin(): SamlPluginInterface
-    {
-        return Saml::getInstance();
-    }
+    use SamlPluginEnsured;
 
     /**
      * @inheritdoc

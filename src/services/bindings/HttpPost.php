@@ -8,9 +8,8 @@
 
 namespace flipbox\saml\sp\services\bindings;
 
-use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\bindings\AbstractHttpPost;
-use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 /**
  * Class AbstractHttpPost
@@ -19,18 +18,12 @@ use flipbox\saml\sp\Saml;
  */
 class HttpPost extends AbstractHttpPost
 {
+    use SamlPluginEnsured;
+
     const TEMPLATE_PATH = 'saml-sp/_components/post-binding-submit.twig';
 
     public function getTemplatePath()
     {
         return static::TEMPLATE_PATH;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getSamlPlugin(): SamlPluginInterface
-    {
-        return Saml::getInstance();
     }
 }

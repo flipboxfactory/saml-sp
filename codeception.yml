@@ -23,12 +23,12 @@ modules:
   config:
       Yii2:
           configFile: 'tests/_craft/config/test.php'
-#  enabled:
-#      - Db:
-#          dsn: 'mysql:host=%DB_SERVER%;dbname=%DB_DATABASE%;'
-#          user: '%DB_USER%'
-#          password: '%DB_PASSWORD%'
-#          dump: 'tests/_data/dump.sql'
-#          populate: true
-#          cleanup: true
-#          reconnect: true
+  enabled:
+      - Db:
+          dsn: 'mysql:host=%DB_SERVER%;dbname=%DB_DATABASE%;'
+          user: '%DB_USER%'
+          password: '%DB_PASSWORD%'
+          dump: 'tests/_data/dump.sql'
+          populate: true
+          cleanup: true
+          reconnect: true
