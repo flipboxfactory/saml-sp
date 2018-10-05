@@ -26,4 +26,22 @@ class SettingsTest extends Unit
 
         $this->assertInternalType('string', $settings->relayStateOverrideParam);
     }
+
+    public function testEntityIdGetter()
+    {
+        $settings = new Settings();
+
+        $this->assertInternalType('string', $settings->getEntityId());
+    }
+
+    public function testEntityIdSetter()
+    {
+        $settings = new Settings();
+
+        $settings->setEntityId($entityId = 'some-entity');
+
+        $this->assertInternalType('string', $settings->getEntityId());
+
+        $this->assertEquals($entityId, $settings->getEntityId());
+    }
 }

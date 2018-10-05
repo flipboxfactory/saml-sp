@@ -1,4 +1,9 @@
+composer-update:
+	docker-compose exec web sh -c "cd plugin && composer update"
 composer-install-plugin:
 	docker-compose exec web sh -c "cd plugin && composer install"
-test:
-	docker-compose exec web sh -c "cd plugin && ./vendor/bin/codecept run --coverage --coverage-xml -vv"
+test: test-unit
+
+test-unit:
+	docker-compose exec web sh -c "cd plugin && ./vendor/bin/codecept run unit --coverage --coverage-xml -vv"
+

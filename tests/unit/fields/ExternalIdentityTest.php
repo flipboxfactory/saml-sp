@@ -17,4 +17,19 @@ class ExternalIdentityTest extends Unit
         $invalidValue = [];
         $this->assertEmpty($field->getStaticHtml($invalidValue, new User()));
     }
+
+    public function testDisplayName()
+    {
+        $field = new ExternalIdentity();
+
+        $this->assertEquals('External Identity', $field->displayName());
+    }
+
+    public function testHasContentColumn()
+    {
+        $field = new ExternalIdentity();
+
+        $this->assertFalse($field->hasContentColumn());
+    }
+
 }

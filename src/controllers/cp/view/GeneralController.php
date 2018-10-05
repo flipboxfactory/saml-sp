@@ -9,7 +9,6 @@
 namespace flipbox\saml\sp\controllers\cp\view;
 
 use flipbox\saml\core\controllers\cp\view\AbstractGeneralController;
-use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 class GeneralController extends AbstractGeneralController
