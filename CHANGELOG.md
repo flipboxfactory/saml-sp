@@ -1,6 +1,10 @@
 Changelog
 =========
 # 1.0.0
+### Changed
+- Broke/cleaned up the Login service
+
+# 1.0.0
 ### Added
 - New Docs! and Tests!
 
