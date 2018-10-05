@@ -3,6 +3,7 @@
   "description": "SAML SSO Service Provider",
   "version": "1.0.3",
   "type": "craft-plugin",
+  "license": "proprietary",
   "keywords": [
     "cms",
     "craftcms",
