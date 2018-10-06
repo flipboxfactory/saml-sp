@@ -1,6 +1,10 @@
 Changelog
 =========
-# 1.0.0
+# 1.0.3.1
+### Fixed
+- issue with ACS within the auth and request presented in 1.0.3
+
+# 1.0.3
 ### Changed
 - Broke/cleaned up the Login service
 
