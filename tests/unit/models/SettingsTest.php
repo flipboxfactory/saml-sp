@@ -23,6 +23,7 @@ class SettingsTest extends Unit
 
         $this->assertInternalType('array', $settings->groupAttributeNames);
         $this->assertInternalType('array', $settings->responseAttributeMap);
+        $this->assertInternalType('array', $settings->defaultGroupAssignments);
 
         $this->assertInternalType('string', $settings->relayStateOverrideParam);
     }

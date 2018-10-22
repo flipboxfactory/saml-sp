@@ -85,6 +85,13 @@ class Settings extends AbstractSettings implements SettingsInterface
     ];
 
     /**
+     * An array of user group ids. Users will automatically be assigned to these group
+     * ids.
+     *
+     * @var array
+     */
+    public $defaultGroupAssignments = [];
+    /**
      * An array map with the Response attribute names as the array keys and the
      * array values as the user element field. The array value can also be a callable.
      *
@@ -139,12 +146,12 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $responseAttributeMap = [
         // "IDP Attribute Name" => "Craft Property Name"
         ClaimTypes::EMAIL_ADDRESS => 'email',
-        ClaimTypes::GIVEN_NAME => 'firstName',
-        ClaimTypes::SURNAME => 'lastName',
+        ClaimTypes::GIVEN_NAME    => 'firstName',
+        ClaimTypes::SURNAME       => 'lastName',
 
-        'email' => 'email',
+        'email'     => 'email',
         'firstName' => 'firstName',
-        'lastName' => 'lastName',
+        'lastName'  => 'lastName',
     ];
 
     /**
