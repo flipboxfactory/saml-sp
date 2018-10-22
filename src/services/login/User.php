@@ -179,8 +179,7 @@ class User
     protected function transform(
         SamlResponse $response,
         UserElement $user
-    )
-    {
+    ) {
 
         $assertion = $response->getFirstAssertion();
 
@@ -220,8 +219,7 @@ class User
         UserElement $user,
         Attribute $attribute,
         $craftProperty
-    )
-    {
+    ) {
 
         if (is_string($craftProperty) && property_exists($user, $craftProperty)) {
             Saml::debug(

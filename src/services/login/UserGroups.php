@@ -150,7 +150,6 @@ class UserGroups
 
             if (\Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds)) {
                 $user->setGroups($groups);
-
             }
         }
 
@@ -169,5 +168,4 @@ class UserGroups
 
         return $groups;
     }
-
 }
