@@ -100,10 +100,16 @@ class User
          */
         $this->save($user);
 
+
         /**
          * Sync groups depending on the plugin setting.
          */
         Saml::getInstance()->getUserGroups()->syncByAssertion($user, $this->getFirstAssertion($response));
+
+        /**
+         * Sync defaults
+         */
+        Saml::getInstance()->getUserGroups()->assignDefaultGroups($user);
     }
 
     /**
