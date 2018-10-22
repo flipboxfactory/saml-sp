@@ -42,6 +42,7 @@ module.exports = {
                         ['/configure/logout', 'Logout'],
                         ['/configure/keychain', 'KeyChain'],
                         ['/configure/settings', 'Settings'],
+                        ['/configure/events', 'Events'],
                     ]
                 },
                 {
