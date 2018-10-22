@@ -125,4 +125,47 @@ class UserGroups
 
         return \Craft::$app->getUsers()->assignUserToGroups($user->id, $groups);
     }
+
+    /**
+     * @param UserElement $user
+     * @return bool|null
+     */
+    public function assignDefaultGroups(\craft\elements\User $user)
+    {
+        $groups = array_merge(
+            $user->getGroups(),
+            $newGroups = $this->getDefaultGroups()
+        );
+
+        /**
+         * if it's not empty add the groups
+         */
+        if (! empty($newGroups)) {
+            $groupIds = array_map(
+                function ($group) {
+                    return (int)$group->id;
+                },
+                $groups
+            );
+
+            if (\Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds)) {
+                $user->setGroups($groups);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultGroups()
+    {
+        $groups = [];
+        foreach (Saml::getInstance()->getSettings()->defaultGroupAssignments as $groupId) {
+            $groups[$groupId] = \Craft::$app->getUserGroups()->getGroupById($groupId);
+        }
+
+        return $groups;
+    }
 }

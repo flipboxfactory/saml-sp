@@ -214,7 +214,7 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
     /**
      * @inheritdoc
      */
-    public function createSettingsModel()
+    protected function createSettingsModel()
     {
         return new Settings();
     }
