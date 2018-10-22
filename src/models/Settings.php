@@ -91,6 +91,7 @@ class Settings extends AbstractSettings implements SettingsInterface
      * @var array
      */
     public $defaultGroupAssignments = [];
+
     /**
      * An array map with the Response attribute names as the array keys and the
      * array values as the user element field. The array value can also be a callable.
