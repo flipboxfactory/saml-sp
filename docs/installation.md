@@ -8,7 +8,7 @@ composer require flipboxfactory/saml-sp
 ```
 
 ### Option 2: Plugin Store
-Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and search for `SAML Service Provider (SSO)`.  Installation
+Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and search for `SAML SSO Service Provider`.  Installation
 is a button click away.
 
 

@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'SAML Service Provider (SSO)',
+    title: 'SAML SSO Service Provider',
     description: 'Single sign-on and single logout for Craft CMS',
     base: '/',
     //theme: 'flipbox',

@@ -1,6 +1,6 @@
 # Overview
 
-SAML Service Provider (SSO) provides an easy way to do Single Sign-On (SSO) and Single Logout (SLO) in Craft CMS version 3.
+SAML SSO Service Provider creates an easy way to do Single Sign-On (SSO) and Single Logout (SLO) in Craft CMS version 3.
 
 ### Features Include:
 * Single Sign-On (SSO) with Identity Providers like [Okta](https://okta.com), Google, etc

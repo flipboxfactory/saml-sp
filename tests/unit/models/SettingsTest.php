@@ -8,7 +8,7 @@ use flipbox\saml\sp\Saml;
 
 class SettingsTest extends Unit
 {
-    public function testVariables()
+    public function testSettingTypes()
     {
         $settings = new Settings();
 
@@ -22,10 +22,30 @@ class SettingsTest extends Unit
         $this->assertInternalType('bool', $settings->syncGroups);
 
         $this->assertInternalType('array', $settings->groupAttributeNames);
-        $this->assertInternalType('array', $settings->responseAttributeMap);
         $this->assertInternalType('array', $settings->defaultGroupAssignments);
+        $this->assertInternalType('array', $settings->responseAttributeMap);
 
         $this->assertInternalType('string', $settings->relayStateOverrideParam);
+    }
+
+    public function testSettingDefaults()
+    {
+        $settings = new Settings();
+
+        $this->assertTrue($settings->enableCpLoginButtons);
+        $this->assertTrue($settings->enableUsers);
+        $this->assertTrue($settings->signAuthnRequest);
+        $this->assertTrue($settings->wantsSignedAssertions);
+        $this->assertTrue($settings->mergeLocalUsers);
+        $this->assertTrue($settings->createUser);
+        $this->assertTrue($settings->autoCreateGroups);
+        $this->assertTrue($settings->syncGroups);
+
+        $this->assertEquals(['groups'], $settings->groupAttributeNames);
+        $this->assertEquals([], $settings->defaultGroupAssignments);
+        $this->assertCount(6, $settings->responseAttributeMap);
+
+        $this->assertEquals('RelayState', $settings->relayStateOverrideParam);
     }
 
     public function testEntityIdGetter()
