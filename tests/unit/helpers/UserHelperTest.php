@@ -145,4 +145,5 @@ class UserHelperTest extends Unit
 
         return $user;
     }
-}*/
+*/
+}
