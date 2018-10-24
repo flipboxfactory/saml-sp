@@ -148,7 +148,7 @@ class UserGroups
                 $groups
             );
 
-            if (\Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds)) {
+            if (\Craft::$app->getUsers()->assignUserToGroups($user->id, array_unique($groupIds))) {
                 $user->setGroups($groups);
             }
         }
