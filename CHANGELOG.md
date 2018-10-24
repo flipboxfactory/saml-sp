@@ -1,5 +1,9 @@
 Changelog
 =========
+# 1.0.6
+### Fixed
+- Fixed issues with `\flipbox\saml\sp\services\login\UserGroups::syncByAssertion` deleting existing user groups
+
 # 1.0.4
 ### Added
 - Added config `defaultGroupAssignments` to give the ability to add users by default to certain groups.
