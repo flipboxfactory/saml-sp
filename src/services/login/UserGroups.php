@@ -123,7 +123,25 @@ class UserGroups
             return true;
         }
 
-        return \Craft::$app->getUsers()->assignUserToGroups($user->id, $groups);
+        /**
+         * Get existing groups
+         */
+        $existingGroupIds = array_map(
+            function ($group) {
+                return (int)$group->id;
+            },
+            $user->getGroups()
+        );
+
+        return \Craft::$app->getUsers()->assignUserToGroups(
+            $user->id,
+            array_unique(
+                array_merge(
+                    $existingGroupIds,
+                    $groups
+                )
+            )
+        );
     }
 
     /**
