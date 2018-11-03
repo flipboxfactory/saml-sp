@@ -45,13 +45,6 @@ module.exports = {
                         ['/configure/events', 'Events'],
                     ]
                 },
-                {
-                    title: 'Providers',
-                    collapsable: false,
-                    children: [
-                        ['/providers/', 'Overview'],
-                    ]
-                },
             ]
         }
     },
