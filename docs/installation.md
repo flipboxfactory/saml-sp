@@ -1,15 +1,14 @@
 # Installation / Upgrading
 
 ### Option 1: Composer
-Composer is a simple, straight forward installation.  Simple run the following command in your project root:
+Composer is a simple, straight forward installation.  Simply run the following command from your project root:
 
 ```bash
 composer require flipboxfactory/saml-sp
 ```
 
 ### Option 2: Plugin Store
-Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and search for `SAML SSO Service Provider`.  Installation
-is a button click away.
+Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and search for `SAML SSO Service Provider`.  Installation is a button click away.
 
 
 Once the plugin is installed, head over to [configure](/configure/) the plugin.
