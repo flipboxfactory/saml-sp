@@ -1,5 +1,11 @@
 Changelog
 =========
+# 1.1.0
+### Removed
+- Remove static method and associated (deprecated) constants: `\flipbox\saml\sp\services\messages\Metadata::getLoginLocation`. Get this from the settings model now.
+- Remove static method and associated (deprecated) constants: `\flipbox\saml\sp\services\messages\Metadata::getLogoutRequestLocation`. Get this from the settings model now.
+- Remove static method and associated (deprecated) constants: `\flipbox\saml\sp\services\messages\Metadata::getLogoutResponseLocation`. Get this from the settings model now.
+
 # 1.0.6
 ### Fixed
 - Fixed issues with `\flipbox\saml\sp\services\login\UserGroups::syncByAssertion` deleting existing user groups

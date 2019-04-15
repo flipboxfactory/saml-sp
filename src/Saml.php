@@ -103,20 +103,20 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
     {
         $this->setComponents(
             [
-                'authnRequest'     => AuthnRequest::class,
-                'httpPost'         => HttpPost::class,
-                'httpRedirect'     => HttpRedirect::class,
-                'bindingFactory'   => Factory::class,
-                'login'            => Login::class,
-                'user'             => User::class,
-                'userGroups'       => UserGroups::class,
-                'logoutRequest'    => LogoutRequest::class,
-                'logoutResponse'   => LogoutResponse::class,
-                'provider'         => Provider::class,
+                'authnRequest' => AuthnRequest::class,
+                'httpPost' => HttpPost::class,
+                'httpRedirect' => HttpRedirect::class,
+                'bindingFactory' => Factory::class,
+                'login' => Login::class,
+                'user' => User::class,
+                'userGroups' => UserGroups::class,
+                'logoutRequest' => LogoutRequest::class,
+                'logoutResponse' => LogoutResponse::class,
+                'provider' => Provider::class,
                 'providerIdentity' => ProviderIdentity::class,
-                'metadata'         => Metadata::class,
-                'response'         => Response::class,
-                'session'          => Session::class,
+                'metadata' => Metadata::class,
+                'response' => Response::class,
+                'session' => Session::class,
             ]
         );
     }
@@ -126,81 +126,18 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
     public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event)
     {
+
         $event->rules = array_merge(
             $event->rules,
-            [
-                'saml-sp/'                          => 'saml-sp/cp/view/general/setup',
-                'saml-sp/settings'                  => 'saml-sp/cp/view/general/settings',
-
-                /**
-                 * Keychain
-                 */
-                'saml-sp/keychain'                  => 'saml-sp/cp/view/keychain/index',
-                'saml-sp/keychain/new'              => 'saml-sp/cp/view/keychain/edit',
-                'saml-sp/keychain/new-openssl'      => 'saml-sp/cp/view/keychain/edit/openssl',
-                'saml-sp/keychain/<keypairId:\d+>'  => 'saml-sp/cp/view/keychain/edit',
-
-                /**
-                 * Metadata
-                 */
-                'saml-sp/metadata'                  => 'saml-sp/cp/view/metadata/default',
-                'saml-sp/metadata/new'              => 'saml-sp/cp/view/metadata/edit',
-                'saml-sp/metadata/new-idp'          => 'saml-sp/cp/view/metadata/edit/new-idp',
-                'saml-sp/metadata/new-sp'           => 'saml-sp/cp/view/metadata/edit/new-sp',
-                'saml-sp/metadata/my-provider'      => 'saml-sp/cp/view/metadata/edit/my-provider',
-                'saml-sp/metadata/<providerId:\d+>' => 'saml-sp/cp/view/metadata/edit',
-            ],
             static::getInstance()->getSettings()->enableCpLoginButtons ?
                 [
                     'login' => 'saml-sp/cp/view/login',
                 ] : []
         );
+
+        parent::onRegisterCpUrlRules($event);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getSettingsResponse()
-    {
-
-        Craft::$app->getResponse()->redirect(
-            UrlHelper::cpUrl('saml-sp/settings')
-        );
-
-        Craft::$app->end();
-    }
-
-    /**
-     * @param RegisterUrlRulesEvent $event
-     */
-    public static function onRegisterSiteUrlRules(RegisterUrlRulesEvent $event)
-    {
-        $event->rules = array_merge(
-            $event->rules,
-            [
-                /**
-                 * LOGIN
-                 */
-                'POST,GET /sso/login'  => 'saml-sp/login',
-                sprintf(
-                    'GET %s',
-                    (string)static::getInstance()->getSettings()->loginRequestEndpoint
-                )                      => 'saml-sp/login/request',
-                sprintf(
-                    'GET %s/<uid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}>',
-                    (string)static::getInstance()->getSettings()->loginRequestEndpoint
-                )                      => 'saml-sp/login/request',
-                /**
-                 * LOGOUT
-                 */
-                'POST,GET /sso/logout' => 'saml-sp/logout',
-                sprintf(
-                    'GET %s',
-                    (string)static::getInstance()->getSettings()->logoutRequestEndpoint
-                )                      => 'saml-sp/logout/request',
-            ]
-        );
-    }
 
 
     /**
@@ -288,17 +225,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
         /** @noinspection PhpUnhandledExceptionInspection */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get('session');
-    }
-
-    /**
-     * @return Factory
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getBindingFactory()
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->get('bindingFactory');
     }
 
     /**

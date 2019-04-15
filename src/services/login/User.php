@@ -124,9 +124,9 @@ class User
     {
         if (! \Craft::$app->getElements()->saveElement($user)) {
             Saml::error(
-                'User save failed: ' . json_encode($user->getErrors())
+                'User save failed: ' . \json_encode($user->getErrors())
             );
-            throw new UserException("User save failed: " . json_encode($user->getErrors()));
+            throw new UserException("User save failed: " . \json_encode($user->getErrors()));
         }
 
         return true;
@@ -179,7 +179,8 @@ class User
     protected function transform(
         SamlResponse $response,
         UserElement $user
-    ) {
+    )
+    {
 
         $assertion = $response->getFirstAssertion();
 
@@ -219,7 +220,8 @@ class User
         UserElement $user,
         Attribute $attribute,
         $craftProperty
-    ) {
+    )
+    {
 
         if (is_string($craftProperty) && property_exists($user, $craftProperty)) {
             Saml::debug(
@@ -286,7 +288,7 @@ class User
              */
             $user = new UserElement(
                 [
-                    'username' => $username
+                    'username' => $username,
                 ]
             );
         }
@@ -306,7 +308,7 @@ class User
                 [
                     'or',
                     ['username' => $usernameOrEmail],
-                    ['email' => $usernameOrEmail]
+                    ['email' => $usernameOrEmail],
                 ]
             )
             ->addSelect(['users.password', 'users.passwordResetRequired'])

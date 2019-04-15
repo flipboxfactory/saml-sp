@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dsmrt
- * Date: 1/10/18
- * Time: 11:23 AM
- */
 
 namespace flipbox\saml\sp\services\messages;
 
@@ -13,7 +7,6 @@ use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\helpers\SecurityHelper;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\services\messages\SamlRequestInterface;
-use flipbox\saml\core\services\traits\Security;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
@@ -34,9 +27,9 @@ class AuthnRequest extends Component implements SamlRequestInterface
     public function create(ProviderInterface $provider, array $config = []): AbstractRequest
     {
         $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService(
-            /**
-            * Just doing post for now
-            */
+        /**
+         * Just doing post for now
+         */
             SamlConstants::BINDING_SAML2_HTTP_POST
         )->getLocation();
 
@@ -47,15 +40,15 @@ class AuthnRequest extends Component implements SamlRequestInterface
         $authnRequest = new \LightSaml\Model\Protocol\AuthnRequest();
 
         $authnRequest->setAssertionConsumerServiceURL(
-            Metadata::getLoginLocation()
+            $samlSettings->getDefaultLoginEndpoint()
         )->setProtocolBinding(
             $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->
             getFirstSingleSignOnService(
-                /**
-                 * Just going to hard code this for now.
-                 * Post binding is really the only thing most
-                 * people support so we are defaulting to this.
-                 */
+            /**
+             * Just going to hard code this for now.
+             * Post binding is really the only thing most
+             * people support so we are defaulting to this.
+             */
                 SamlConstants::BINDING_SAML2_HTTP_POST
             )->getBinding()
         )->setID($requestId = Helper::generateID())

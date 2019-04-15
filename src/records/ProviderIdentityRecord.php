@@ -26,28 +26,6 @@ class ProviderIdentityRecord extends AbstractProviderIdentity
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
-        return array_merge(
-            parent::rules(),
-            [
-            [
-                [
-                    'lastLoginDate',
-                    'sessionId',
-                ],
-                'safe',
-                'on' => [
-                    ModelHelper::SCENARIO_DEFAULT
-                ]
-            ]
-            ]
-        );
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getProvider()
     {
         return $this->hasOne(

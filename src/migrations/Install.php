@@ -26,7 +26,7 @@ class Install extends AbstractInstall
     /**
      * @inheritdoc
      */
-    protected static function getProviderTableName()
+    protected function getProviderTableName(): string
     {
         return ProviderRecord::tableName();
     }
@@ -34,7 +34,7 @@ class Install extends AbstractInstall
     /**
      * @inheritdoc
      */
-    protected static function getIdentityTableName()
+    protected function getIdentityTableName(): string
     {
         return ProviderIdentityRecord::tableName();
     }

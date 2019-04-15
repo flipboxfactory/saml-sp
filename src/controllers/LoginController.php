@@ -9,17 +9,18 @@
 namespace flipbox\saml\sp\controllers;
 
 use Craft;
-use craft\web\Controller;
+use flipbox\saml\core\controllers\messages\AbstractController;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\bindings\Factory;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 use LightSaml\Model\Protocol\AuthnRequest;
 use yii\web\HttpException;
 
-class LoginController extends Controller
+class LoginController extends AbstractController
 {
+    use SamlPluginEnsured;
 
     protected $allowAnonymous = [
         'actionIndex',
@@ -34,6 +35,7 @@ class LoginController extends Controller
      */
     public function beforeAction($action)
     {
+        $this->logRequest();
         if ($action->actionMethod === 'actionIndex') {
             return true;
         }
@@ -80,6 +82,7 @@ class LoginController extends Controller
         $relayState = \Craft::$app->request->getParam('RelayState');
         try {
             $redirect = base64_decode($relayState);
+            Saml::info('RelayState: ' . $redirect);
         } catch (\Exception $e) {
             $redirect = \Craft::$app->getUser()->getReturnUrl();
         }

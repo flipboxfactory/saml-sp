@@ -22,7 +22,6 @@ class LoginController extends GeneralController
         $variables['providers'] = Saml::getInstance()->getProvider()->findByIdp();
         return $this->renderTemplate(
             'saml-sp/_cp/login',
-            //            $this->getTemplateIndex() . static::TEMPLATE_INDEX . DIRECTORY_SEPARATOR . '',
             $variables
         );
     }
