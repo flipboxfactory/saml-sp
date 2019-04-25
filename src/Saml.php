@@ -11,7 +11,6 @@ use Craft;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
-use craft\helpers\UrlHelper;
 use craft\services\Fields;
 use craft\web\UrlManager;
 use flipbox\saml\core\AbstractPlugin;
@@ -31,7 +30,6 @@ use flipbox\saml\sp\services\login\UserGroups;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
 use flipbox\saml\sp\services\messages\LogoutResponse;
-use flipbox\saml\sp\services\messages\Metadata;
 use flipbox\saml\sp\services\messages\Response;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
@@ -41,7 +39,7 @@ use yii\base\Event;
  * Class Saml
  * @package flipbox\saml\sp
  */
-class Saml extends AbstractPlugin implements SamlPluginInterface
+class Saml extends AbstractPlugin
 {
     /**
      * @inheritdoc
@@ -114,7 +112,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
                 'logoutResponse' => LogoutResponse::class,
                 'provider' => Provider::class,
                 'providerIdentity' => ProviderIdentity::class,
-                'metadata' => Metadata::class,
                 'response' => Response::class,
                 'session' => Session::class,
             ]
@@ -153,7 +150,9 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
      */
     protected function createSettingsModel()
     {
-        return new Settings();
+        return new Settings([
+            'myType' => Settings::SP,
+        ]);
     }
 
     /**
@@ -230,11 +229,6 @@ class Saml extends AbstractPlugin implements SamlPluginInterface
     /**
      * Util Methods
      */
-
-    public function getMyType()
-    {
-        return static::SP;
-    }
 
     /**
      * @return string

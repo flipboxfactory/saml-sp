@@ -8,8 +8,8 @@
 
 namespace flipbox\saml\sp\services;
 
+use flipbox\saml\core\EnsureSAMLPlugin;
 use flipbox\saml\core\services\AbstractProviderService;
-use flipbox\saml\core\services\ProviderServiceInterface;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
 
@@ -18,7 +18,7 @@ use flipbox\saml\sp\traits\SamlPluginEnsured;
  *
  * @package flipbox\saml\sp\services
  */
-class Provider extends AbstractProviderService implements ProviderServiceInterface
+class Provider extends AbstractProviderService
 {
     use SamlPluginEnsured;
 

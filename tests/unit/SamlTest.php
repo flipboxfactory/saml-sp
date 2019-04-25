@@ -14,7 +14,7 @@ use flipbox\saml\sp\services\bindings\HttpRedirect;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
 use flipbox\saml\sp\services\messages\LogoutResponse;
-use flipbox\saml\sp\services\messages\Metadata;
+use flipbox\saml\core\services\Metadata;
 use flipbox\saml\sp\services\messages\Response;
 use flipbox\saml\core\services\Session;
 

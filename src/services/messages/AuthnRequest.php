@@ -4,19 +4,20 @@ namespace flipbox\saml\sp\services\messages;
 
 use craft\base\Component;
 use flipbox\keychain\records\KeyChainRecord;
+use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\SecurityHelper;
-use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\services\messages\SamlRequestInterface;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use LightSaml\Helper;
-use LightSaml\Model\Assertion\Issuer;
-use LightSaml\Model\Protocol\AbstractRequest;
-use LightSaml\SamlConstants;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
+use SAML2\Compat\ContainerSingleton;
+use SAML2\Constants;
+use SAML2\HTTPRedirect;
 use yii\base\Event;
 
-class AuthnRequest extends Component implements SamlRequestInterface
+class AuthnRequest extends Component
 {
 
     const EVENT_AFTER_MESSAGE_CREATED = 'eventAfterMessageCreated';
@@ -24,38 +25,56 @@ class AuthnRequest extends Component implements SamlRequestInterface
     /**
      * @inheritdoc
      */
-    public function create(ProviderInterface $provider, array $config = []): AbstractRequest
+    public function create(AbstractProvider $provider)
     {
-        $location = $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->getFirstSingleSignOnService(
+
+        $location = $provider->getFirstIdpSsoService(
         /**
-         * Just doing post for now
+         * @todo support http redirect
          */
-            SamlConstants::BINDING_SAML2_HTTP_POST
+            Constants::BINDING_HTTP_POST
         )->getLocation();
 
         /**
          * @var $samlSettings Settings
          */
         $samlSettings = Saml::getInstance()->getSettings();
-        $authnRequest = new \LightSaml\Model\Protocol\AuthnRequest();
+
+        $authnRequest = new \SAML2\AuthnRequest();
+
+        $authnRequest->setAssertionConsumerServiceIndex(1);
 
         $authnRequest->setAssertionConsumerServiceURL(
             $samlSettings->getDefaultLoginEndpoint()
-        )->setProtocolBinding(
-            $provider->getMetadataModel()->getFirstIdpSsoDescriptor()->
-            getFirstSingleSignOnService(
+        );
+
+        $authnRequest->setProtocolBinding(
+
+            $provider->getFirstIdpSsoService(
             /**
-             * Just going to hard code this for now.
-             * Post binding is really the only thing most
-             * people support so we are defaulting to this.
+             * @todo support http redirect
              */
-                SamlConstants::BINDING_SAML2_HTTP_POST
+                Constants::BINDING_HTTP_POST
             )->getBinding()
-        )->setID($requestId = Helper::generateID())
-            ->setIssueInstant(new \DateTime())
-            ->setDestination($location)
-            ->setRelayState(\Craft::$app->getUser()->getReturnUrl())
-            ->setIssuer(new Issuer($samlSettings->getEntityId()));
+        );
+
+        $authnRequest->setId($requestId = MessageHelper::generateId());
+
+        $authnRequest->setIssueInstant(
+            (new \DateTime())->getTimestamp()
+        );
+
+        $authnRequest->setDestination(
+            $location
+        );
+
+        $authnRequest->setRelayState(
+            \Craft::$app->getUser()->getReturnUrl()
+        );
+
+        $authnRequest->setIssuer(
+            Saml::getInstance()->getSettings()->getEntityId()
+        );
 
         /**
          * @var ProviderRecord $thisSp
@@ -63,13 +82,17 @@ class AuthnRequest extends Component implements SamlRequestInterface
         $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
             Saml::getInstance()->getSettings()->getEntityId()
         )->one();
+
         /**
          * @var KeyChainRecord $pair
          */
         $pair = $thisSp->keychain;
 
         if ($pair && $samlSettings->signAuthnRequest) {
-            SecurityHelper::signMessage($authnRequest, $pair);
+
+            $authnRequest->setSignatureKey(
+                $thisSp->getPrivateXmlSecurityKey()
+            );
         }
 
         /**

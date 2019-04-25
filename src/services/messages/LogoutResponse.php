@@ -9,10 +9,9 @@
 namespace flipbox\saml\sp\services\messages;
 
 use flipbox\saml\core\services\messages\AbstractLogoutResponse;
-use flipbox\saml\core\services\messages\SamlResponseInterface;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
 
-class LogoutResponse extends AbstractLogoutResponse implements SamlResponseInterface
+class LogoutResponse extends AbstractLogoutResponse
 {
     use SamlPluginEnsured;
 }

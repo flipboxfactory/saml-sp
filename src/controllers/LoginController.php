@@ -12,10 +12,12 @@ use Craft;
 use flipbox\saml\core\controllers\messages\AbstractController;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\SerializeHelper;
+use flipbox\saml\core\services\bindings\Factory;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
-use LightSaml\Model\Protocol\AuthnRequest;
+use SAML2\AuthnRequest;
+use SAML2\Response as SamlResponse;
 use yii\web\HttpException;
 
 class LoginController extends AbstractController
@@ -35,7 +37,6 @@ class LoginController extends AbstractController
      */
     public function beforeAction($action)
     {
-        $this->logRequest();
         if ($action->actionMethod === 'actionIndex') {
             return true;
         }
@@ -56,14 +57,15 @@ class LoginController extends AbstractController
     public function actionIndex()
     {
 
-        $response = Saml::getInstance()->getBindingFactory()->receive(
-            Craft::$app->request
-        );
+        /** @var SamlResponse $response */
+        $response = Factory::receive();
 
         if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()) {
             throw new HttpException(400, "Invalid request");
         }
 
+        // Validate
+        // Move to service
         /**
          * Really don't know how we'd get here but just shutting things down now.
          * If you fail login at the idp I'd hope they'd just make you continue to try on their end
@@ -72,10 +74,11 @@ class LoginController extends AbstractController
          * In this case, you may want to have a good custom 403 error page to reach out to someone
          * to figure out why the person is having issues logging in.
          */
-        if (! $response->getStatus() || ! $response->getStatus()->isSuccess()) {
+        if (! $response->getStatus() || ! $response->isSuccess()) {
             throw new HttpException(403, "Login failed!");
         }
 
+        // Login
         Saml::getInstance()->getLogin()->login($response);
 
         //get relay state but don't error!
@@ -141,7 +144,7 @@ class LoginController extends AbstractController
         );
 
 
-        Saml::getInstance()->getBindingFactory()->send(
+        Factory::send(
             $authnRequest,
             $idp
         );

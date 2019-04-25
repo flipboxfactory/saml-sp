@@ -12,7 +12,7 @@ use craft\base\Component;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\sp\events\UserLogin;
 use flipbox\saml\sp\Saml;
-use LightSaml\Model\Protocol\Response as SamlResponse;
+use SAML2\Response as SamlResponse;
 use yii\base\UserException;
 use flipbox\saml\sp\services\login\AssertionTrait;
 

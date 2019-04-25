@@ -147,12 +147,12 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $responseAttributeMap = [
         // "IDP Attribute Name" => "Craft Property Name"
         ClaimTypes::EMAIL_ADDRESS => 'email',
-        ClaimTypes::GIVEN_NAME    => 'firstName',
-        ClaimTypes::SURNAME       => 'lastName',
+        ClaimTypes::GIVEN_NAME => 'firstName',
+        ClaimTypes::SURNAME => 'lastName',
 
-        'email'     => 'email',
+        'email' => 'email',
         'firstName' => 'firstName',
-        'lastName'  => 'lastName',
+        'lastName' => 'lastName',
     ];
 
     /**
@@ -161,3 +161,4 @@ class Settings extends AbstractSettings implements SettingsInterface
      */
     public $relayStateOverrideParam = 'RelayState';
 }
+

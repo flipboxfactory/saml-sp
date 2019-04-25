@@ -7,7 +7,7 @@
 namespace flipbox\saml\sp\events;
 
 use craft\elements\User;
-use LightSaml\Model\Protocol\Response;
+use SAML2\Response;
 use yii\base\Event;
 
 /**
