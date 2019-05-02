@@ -14,25 +14,22 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
 use craft\web\UrlManager;
 use flipbox\saml\core\AbstractPlugin;
+use flipbox\saml\core\containers\Saml2Container;
 use flipbox\saml\core\models\SettingsInterface;
-use flipbox\saml\core\SamlPluginInterface;
 use flipbox\saml\core\services\Session;
 use flipbox\saml\sp\fields\ExternalIdentity;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
-use flipbox\saml\sp\services\bindings\Factory;
-use flipbox\saml\sp\services\bindings\HttpPost;
-use flipbox\saml\sp\services\bindings\HttpRedirect;
 use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\login\User;
 use flipbox\saml\sp\services\login\UserGroups;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\messages\LogoutRequest;
 use flipbox\saml\sp\services\messages\LogoutResponse;
-use flipbox\saml\sp\services\messages\Response;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
+use SAML2\Compat\AbstractContainer;
 use yii\base\Event;
 
 /**
@@ -102,9 +99,6 @@ class Saml extends AbstractPlugin
         $this->setComponents(
             [
                 'authnRequest' => AuthnRequest::class,
-                'httpPost' => HttpPost::class,
-                'httpRedirect' => HttpRedirect::class,
-                'bindingFactory' => Factory::class,
                 'login' => Login::class,
                 'user' => User::class,
                 'userGroups' => UserGroups::class,
@@ -112,7 +106,6 @@ class Saml extends AbstractPlugin
                 'logoutResponse' => LogoutResponse::class,
                 'provider' => Provider::class,
                 'providerIdentity' => ProviderIdentity::class,
-                'response' => Response::class,
                 'session' => Session::class,
             ]
         );
@@ -134,7 +127,6 @@ class Saml extends AbstractPlugin
 
         parent::onRegisterCpUrlRules($event);
     }
-
 
 
     /**
@@ -168,17 +160,6 @@ class Saml extends AbstractPlugin
         /** @noinspection PhpUnhandledExceptionInspection */
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get('authnRequest');
-    }
-
-    /**
-     * @noinspection PhpDocMissingThrowsInspection
-     * @return Response
-     */
-    public function getResponse()
-    {
-        /** @noinspection PhpUnhandledExceptionInspection */
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->get('response');
     }
 
     /**
@@ -229,6 +210,18 @@ class Saml extends AbstractPlugin
     /**
      * Util Methods
      */
+
+    /**
+     * @return Saml2Container
+     */
+    public function loadSaml2Container(): AbstractContainer
+    {
+        $container = new Saml2Container($this);
+
+        \SAML2\Compat\ContainerSingleton::setContainer($container);
+
+        return $container;
+    }
 
     /**
      * @return string

@@ -8,14 +8,13 @@ namespace flipbox\saml\sp\services\login;
 
 use craft\elements\User as UserElement;
 use flipbox\saml\core\exceptions\InvalidMessage;
-use flipbox\saml\sp\helpers\ProviderHelper;
+use flipbox\saml\core\helpers\MessageHelper;
+use flipbox\saml\core\helpers\ProviderHelper;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
-use LightSaml\Error\LightSamlException;
-use LightSaml\Model\Assertion\Attribute;
-use LightSaml\Model\Protocol\Response as SamlResponse;
 use yii\base\UserException;
+use SAML2\Response as SamlResponse;
 
 /**
  * Class User
@@ -31,21 +30,22 @@ class User
      * @throws InvalidMessage
      * @throws UserException
      */
-    public function getByResponse(\LightSaml\Model\Protocol\Response $response)
+    public function getByResponse(SamlResponse $response)
     {
 
         $assertion = $this->getFirstAssertion($response);
 
-        if (! $assertion->getSubject()->getNameID()) {
-            throw new LightSamlException('Name ID is missing.');
+        if (! $assertion->getNameId()) {
+            throw new InvalidMessage('Name ID is missing.');
         }
 
+        Saml::debug('NameId: ' . $assertion->getNameId()->getValue());
         /**
          * Get username from the NameID
          *
          * @todo Give an option to map another attribute value to $username (like email)
          */
-        $username = $assertion->getSubject()->getNameID()->getValue();
+        $username = $assertion->getNameId()->getValue();
 
         return $this->find($username);
     }
@@ -88,27 +88,22 @@ class User
      * @throws \craft\errors\ElementNotFoundException
      * @throws \yii\base\Exception
      */
-    public function sync(UserElement $user, \LightSaml\Model\Protocol\Response $response)
+    public function sync(UserElement $user, SamlResponse $response)
     {
-        /**
-         * enable and transform the user
-         */
+
+        // enable and transform the user
         $this->construct($user, $response);
 
-        /**
-         * Save
-         */
+
+        // Save
         $this->save($user);
 
 
-        /**
-         * Sync groups depending on the plugin setting.
-         */
+        // Sync groups depending on the plugin setting.
         Saml::getInstance()->getUserGroups()->syncByAssertion($user, $this->getFirstAssertion($response));
 
-        /**
-         * Sync defaults
-         */
+
+        // Sync defaults
         Saml::getInstance()->getUserGroups()->assignDefaultGroups($user);
     }
 
@@ -142,7 +137,7 @@ class User
      * @throws UserException
      * @throws \Throwable
      */
-    protected function construct(UserElement $user, \LightSaml\Model\Protocol\Response $response)
+    protected function construct(UserElement $user, SamlResponse $response)
     {
         /**
          * Is User Active?
@@ -156,16 +151,17 @@ class User
 
         $assertion = $this->getFirstAssertion($response);
 
-        if ($assertion->getFirstAttributeStatement()) {
+        $hasAttributes = count($assertion->getAttributes()) > 1;
+        Saml::debug('assertion attributes: ' . \json_encode($assertion->getAttributes()));
+        if ($hasAttributes) {
             $this->transform($response, $user);
         } else {
             /**
              * There doesn't seem to be any attribute statements.
              * Try and use username for the email and move on.
              */
-            \Craft::warning(
-                'No attribute statements found! Trying to assign username as the email.',
-                Saml::getInstance()->getHandle()
+            Saml::warning(
+                'No attribute statements found! Trying to assign username as the email.'
             );
             $user->email = $user->email ?: $user->username;
         }
@@ -182,14 +178,14 @@ class User
     )
     {
 
-        $assertion = $response->getFirstAssertion();
+        $assertion = $this->getFirstAssertion($response);
 
         /**
          * Check the provider first
          */
         $attributeMap = ProviderHelper::providerMappingToKeyValue(
             $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-                $response->getIssuer()->getValue()
+                MessageHelper::getIssuer($response->getIssuer())
             )->one()
         ) ?:
             Saml::getInstance()->getSettings()->responseAttributeMap;
@@ -197,50 +193,56 @@ class User
         /**
          * Loop thru attributes and set to the user
          */
-        foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
-            if (isset($attributeMap[$attribute->getName()])) {
-                $craftProperty = $attributeMap[$attribute->getName()];
+        foreach ($assertion->getAttributes() as $attributeName => $attibuteValue) {
+            if (isset($attributeMap[$attributeName])) {
+                $craftProperty = $attributeMap[$attributeName];
                 $this->assignProperty(
                     $user,
-                    $attribute,
+                    $attributeName,
+                    $attibuteValue,
                     $craftProperty
                 );
+            }else{
+                Saml::debug('No match for: ' . $attributeName);
             }
         }
 
         return $user;
     }
 
-    /**
-     * @param User $user
-     * @param Attribute $attribute
-     * @param mixed $craftProperty
-     */
     protected function assignProperty(
         UserElement $user,
-        Attribute $attribute,
+        $attributeName,
+        $attributeValue,
         $craftProperty
     )
     {
+
+        if (is_array($attributeValue)) {
+            $attributeValue = isset($attributeValue[0]) ? $attributeValue[0] : null;
+        }
 
         if (is_string($craftProperty) && property_exists($user, $craftProperty)) {
             Saml::debug(
                 sprintf(
                     'Attribute %s is scalar and should set value "%s" to user->%s',
-                    $attribute->getName(),
-                    $attribute->getFirstAttributeValue(),
+                    $attributeName,
+                    $attributeValue,
                     $craftProperty
                 )
             );
-            $user->{$craftProperty} = $attribute->getFirstAttributeValue();
+            $user->{$craftProperty} = $attributeValue;
         } elseif (is_callable($craftProperty)) {
             Saml::debug(
                 sprintf(
                     'Attribute %s is handled with a callable.',
-                    $attribute->getName()
+                    $attributeName
                 )
             );
-            call_user_func($craftProperty, $user, $attribute);
+
+            call_user_func($craftProperty, $user, [
+                $attributeName => $attributeValue,
+            ]);
         }
     }
 

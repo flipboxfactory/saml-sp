@@ -10,7 +10,7 @@ use craft\elements\User as UserElement;
 use craft\helpers\StringHelper;
 use craft\models\UserGroup;
 use flipbox\saml\sp\Saml;
-use LightSaml\Model\Assertion\Assertion;
+use SAML2\Assertion;
 use yii\base\UserException;
 
 /**
@@ -19,6 +19,7 @@ use yii\base\UserException;
  */
 class UserGroups
 {
+
     /**
      * @param string $groupName
      * @return UserGroup
@@ -34,7 +35,7 @@ class UserGroups
             if (! \Craft::$app->getUserGroups()->saveGroup(
                 $userGroup = new UserGroup(
                     [
-                        'name'   => $groupName,
+                        'name' => $groupName,
                         'handle' => $groupHandle,
                     ]
                 )
@@ -69,18 +70,18 @@ class UserGroups
         /**
          * Make sure there is an attribute statement
          */
-        if (! $assertion->getFirstAttributeStatement()) {
+        if (! $assertion->getAttributes()) {
             Saml::debug(
                 'No attribute statement found, moving on.'
             );
             return true;
         }
 
-        foreach ($assertion->getFirstAttributeStatement()->getAllAttributes() as $attribute) {
+        foreach ($assertion->getAttributes() as $attributeName => $attributeValue) {
             Saml::debug(
                 sprintf(
                     'Is attribute group? "%s" in %s',
-                    $attribute->getName(),
+                    $attributeName,
                     json_encode($groupNames)
                 )
             );
@@ -88,7 +89,7 @@ class UserGroups
              * Is there a group name match?
              * Match the attribute name to the specified name in the plugin settings
              */
-            if (in_array($attribute->getName(), $groupNames)) {
+            if (in_array($attributeName, $groupNames)) {
                 /**
                  * Loop thru all of the attributes values because they could have multiple values.
                  * Example XML:
@@ -103,8 +104,12 @@ class UserGroups
                  *           </saml2:AttributeValue>
                  * </saml2:Attribute>
                  */
-                foreach ($attribute->getAllAttributeValues() as $value) {
-                    if ($group = $this->findOrCreate($value)) {
+                if (! is_array($attributeValue)) {
+                    $attributeValue = [$attributeValue];
+                }
+
+                foreach ($attributeValue as $values) {
+                    if ($group = $this->findOrCreate($values)) {
                         Saml::debug(
                             sprintf(
                                 'Assigning group: %s',

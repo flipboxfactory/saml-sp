@@ -5,16 +5,11 @@ namespace flipbox\saml\sp\services\messages;
 use craft\base\Component;
 use flipbox\keychain\records\KeyChainRecord;
 use flipbox\saml\core\helpers\MessageHelper;
-use flipbox\saml\core\helpers\SecurityHelper;
 use flipbox\saml\core\records\AbstractProvider;
-use flipbox\saml\core\services\messages\SamlRequestInterface;
 use flipbox\saml\sp\models\Settings;
-use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use RobRichards\XMLSecLibs\XMLSecurityKey;
-use SAML2\Compat\ContainerSingleton;
+use SAML2\AuthnRequest as SamlAuthnRequest;
 use SAML2\Constants;
-use SAML2\HTTPRedirect;
 use yii\base\Event;
 
 class AuthnRequest extends Component
@@ -23,12 +18,18 @@ class AuthnRequest extends Component
     const EVENT_AFTER_MESSAGE_CREATED = 'eventAfterMessageCreated';
 
     /**
-     * @inheritdoc
+     * @param AbstractProvider $myServiceProvider
+     * @param AbstractProvider $identityProvider
+     * @return \SAML2\AuthnRequest
+     * @throws \craft\errors\SiteNotFoundException
      */
-    public function create(AbstractProvider $provider)
+    public function create(
+        AbstractProvider $myServiceProvider,
+        AbstractProvider $identityProvider
+    ): SamlAuthnRequest
     {
 
-        $location = $provider->getFirstIdpSsoService(
+        $location = $identityProvider->firstIdpSsoService(
         /**
          * @todo support http redirect
          */
@@ -42,7 +43,13 @@ class AuthnRequest extends Component
 
         $authnRequest = new \SAML2\AuthnRequest();
 
-        $authnRequest->setAssertionConsumerServiceIndex(1);
+        $authnRequest->setAssertionConsumerServiceURL(
+            $myServiceProvider->firstSpAcsService(Constants::BINDING_HTTP_POST)->getLocation()
+        );
+
+        $authnRequest->setAssertionConsumerServiceIndex(
+            $samlSettings->getDefaultLoginEndpoint()
+        );
 
         $authnRequest->setAssertionConsumerServiceURL(
             $samlSettings->getDefaultLoginEndpoint()
@@ -50,7 +57,7 @@ class AuthnRequest extends Component
 
         $authnRequest->setProtocolBinding(
 
-            $provider->getFirstIdpSsoService(
+            $identityProvider->firstIdpSsoService(
             /**
              * @todo support http redirect
              */
@@ -77,21 +84,14 @@ class AuthnRequest extends Component
         );
 
         /**
-         * @var ProviderRecord $thisSp
-         */
-        $thisSp = Saml::getInstance()->getProvider()->findByEntityId(
-            Saml::getInstance()->getSettings()->getEntityId()
-        )->one();
-
-        /**
          * @var KeyChainRecord $pair
          */
-        $pair = $thisSp->keychain;
+        $pair = $myServiceProvider->keychain;
 
         if ($pair && $samlSettings->signAuthnRequest) {
 
             $authnRequest->setSignatureKey(
-                $thisSp->getPrivateXmlSecurityKey()
+                $myServiceProvider->keychainPrivateXmlSecurityKey()
             );
         }
 

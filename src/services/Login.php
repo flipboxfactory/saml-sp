@@ -10,6 +10,8 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\core\records\AbstractProvider;
+use flipbox\saml\core\validators\Response;
 use flipbox\saml\sp\events\UserLogin;
 use flipbox\saml\sp\Saml;
 use SAML2\Response as SamlResponse;
@@ -37,12 +39,19 @@ class Login extends Component
      * @throws \craft\errors\ElementNotFoundException
      * @throws \yii\base\Exception
      */
-    public function login(SamlResponse $response)
+    public function login(
+        SamlResponse $response,
+        AbstractProvider $identityProvider,
+        AbstractProvider $serviceProvider
+    )
     {
 
+        //validate
+        $validator = new Response($identityProvider, $serviceProvider);
+        $validator->validate($response);
+
+        // TODO switch to SAML2 validators
         $assertion = $this->getFirstAssertion($response);
-        Saml::getInstance()->getResponse()->isValidTimeAssertion($assertion);
-        Saml::getInstance()->getResponse()->isValidAssertion($assertion);
 
         /**
          * Get User

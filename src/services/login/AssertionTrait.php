@@ -8,44 +8,45 @@ namespace flipbox\saml\sp\services\login;
 
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\sp\Saml;
-use LightSaml\Model\Assertion\Assertion;
-use LightSaml\Model\Protocol\Response as SamlResponse;
+use SAML2\Assertion as SamlAssertion;
+use SAML2\Assertion;
+use SAML2\EncryptedAssertion;
+use SAML2\Response as SamlResponse;
 
 trait AssertionTrait
 {
     protected $isAssertionDecrypted = false;
+
     /**
      * @param SamlResponse $response
-     * @return Assertion
+     * @return SamlAssertion
      * @throws InvalidMessage
      */
-    public function getFirstAssertion(\LightSaml\Model\Protocol\Response $response)
+    public function getFirstAssertion(SamlResponse $response)
     {
 
         $ownProvider = Saml::getInstance()->getProvider()->findOwn();
 
-        if ($ownProvider->keychain &&
-            $response->getFirstEncryptedAssertion() &&
-            $this->isAssertionDecrypted === false
-        ) {
-            Saml::getInstance()->getResponse()->decryptAssertions(
-                $response,
+        // grab the first one
+        $assertion = $response->getAssertions()[0];
+
+        // decrypt if needed
+        if ($ownProvider->keychain && $assertion instanceof EncryptedAssertion && $this->isAssertionDecrypted === false) {
+            $assertion = $assertion->getAssertion(
                 $ownProvider->keychain
             );
-            /**
-             * try to only do this once
-             */
+
+            // only do this once
             $this->isAssertionDecrypted = true;
         }
 
-        $assertions = $response->getAllAssertions();
 
-        if (! isset($assertions[0])) {
+        if (! isset($assertion)) {
             throw new InvalidMessage("Invalid message. No assertions found in response.");
         }
-        /**
-         * Just grab the first one for now.
-         */
-        return $assertions[0];
+
+        return $assertion;
     }
+
 }
+

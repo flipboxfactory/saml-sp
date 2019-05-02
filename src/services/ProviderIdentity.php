@@ -10,13 +10,15 @@ namespace flipbox\saml\sp\services;
 
 use craft\elements\User;
 use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\services\AbstractProviderIdentityService;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\login\AssertionTrait;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
-use LightSaml\Model\Protocol\Response as SamlResponse;
+use SAML2\Assertion;
+use SAML2\Response as SamlResponse;
 use yii\base\UserException;
 
 /**
@@ -40,32 +42,26 @@ class ProviderIdentity extends AbstractProviderIdentityService
      * @throws InvalidMessage
      * @throws UserException
      */
-    public function getByUserAndResponse(User $user, \LightSaml\Model\Protocol\Response $response)
+    public function getByUserAndResponse(User $user, SamlResponse $response)
     {
 
         $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-            $response->getIssuer()->getValue()
+            MessageHelper::getIssuer($response->getIssuer())
         )->one();
 
-        /**
-         * Get Identity
-         */
+
+        // Get Identity
         $identity = $this->forceGet(
-            $this->getFirstAssertion($response)->getSubject()->getNameID()->getValue(),
+            $this->getFirstAssertion($response)->getNameID()->getValue(),
             $idpProvider
         );
 
-        /**
-         * Get Session
-         */
-        $sessionIndex = null;
-        if ($response->getFirstAssertion()->hasAnySessionIndex()) {
-            $sessionIndex = $response->getFirstAssertion()->getFirstAuthnStatement()->getSessionIndex();
-        }
 
-        /**
-         * Set Identity Properties
-         */
+        // Get Session
+        $sessionIndex = $this->getFirstAssertion($response)->getSessionIndex();
+
+
+        // Set Identity Properties
         $identity->userId = $user->id;
         $identity->enabled = true;
         $identity->sessionId = $sessionIndex;
@@ -99,7 +95,7 @@ class ProviderIdentity extends AbstractProviderIdentityService
             $identity = new ProviderIdentityRecord(
                 [
                     'providerId' => $provider->id,
-                    'nameId'     => $nameId,
+                    'nameId' => $nameId,
                 ]
             );
         }

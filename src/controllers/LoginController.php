@@ -11,8 +11,10 @@ namespace flipbox\saml\sp\controllers;
 use Craft;
 use flipbox\saml\core\controllers\messages\AbstractController;
 use flipbox\saml\core\exceptions\InvalidMetadata;
+use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\core\services\bindings\Factory;
+use flipbox\saml\core\validators\Response as ResponseValidator;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
@@ -64,22 +66,24 @@ class LoginController extends AbstractController
             throw new HttpException(400, "Invalid request");
         }
 
-        // Validate
-        // Move to service
-        /**
-         * Really don't know how we'd get here but just shutting things down now.
-         * If you fail login at the idp I'd hope they'd just make you continue to try on their end
-         * but just incase.
-         *
-         * In this case, you may want to have a good custom 403 error page to reach out to someone
-         * to figure out why the person is having issues logging in.
-         */
-        if (! $response->getStatus() || ! $response->isSuccess()) {
-            throw new HttpException(403, "Login failed!");
-        }
+        $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
+            MessageHelper::getIssuer($response->getIssuer())
+        )->one();
+        $serviceProvider = Saml::getInstance()->getProvider()->findOwn();
+
+        $validator = new ResponseValidator(
+            $identityProvider,
+            $serviceProvider
+        );
+
+        $validator->validate($response);
 
         // Login
-        Saml::getInstance()->getLogin()->login($response);
+        Saml::getInstance()->getLogin()->login(
+            $response,
+            $identityProvider,
+            $serviceProvider
+        );
 
         //get relay state but don't error!
         $relayState = \Craft::$app->request->getParam('RelayState');
@@ -96,7 +100,9 @@ class LoginController extends AbstractController
 
 
     /**
+     * @param null $uid
      * @throws InvalidMetadata
+     * @throws \craft\errors\SiteNotFoundException
      * @throws \yii\base\ExitException
      * @throws \yii\base\InvalidConfigException
      */
@@ -123,7 +129,10 @@ class LoginController extends AbstractController
         /**
          * @var $authnRequest AuthnRequest
          */
-        $authnRequest = Saml::getInstance()->getAuthnRequest()->create($idp);
+        $authnRequest = Saml::getInstance()->getAuthnRequest()->create(
+            Saml::getInstance()->getProvider()->findOwn(),
+            $idp
+        );
 
         /**
          * Extra layer of security, save the id and check it on the return.

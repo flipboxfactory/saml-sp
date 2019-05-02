@@ -11,6 +11,7 @@ namespace flipbox\saml\sp\records;
 use flipbox\ember\records\traits\StateAttribute;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\Saml;
 
 class ProviderRecord extends AbstractProvider implements ProviderInterface
@@ -28,7 +29,7 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     public function getLoginPath()
     {
-        if ($this->type !== Saml::IDP) {
+        if ($this->type !== Settings::IDP) {
             return null;
         }
         return implode(
@@ -45,7 +46,7 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     public function getLogoutPath()
     {
-        if ($this->type !== Saml::IDP) {
+        if ($this->type !== Settings::IDP) {
             return null;
         }
         return implode(
