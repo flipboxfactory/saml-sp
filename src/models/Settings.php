@@ -10,7 +10,7 @@ namespace flipbox\saml\sp\models;
 
 use flipbox\saml\core\models\AbstractSettings;
 use flipbox\saml\core\models\SettingsInterface;
-use LightSaml\ClaimTypes;
+use flipbox\saml\core\helpers\ClaimTypes;
 
 class Settings extends AbstractSettings implements SettingsInterface
 {
@@ -134,10 +134,19 @@ class Settings extends AbstractSettings implements SettingsInterface
      * ```php
      * 'responseAttributeMap' => [
      *     ClaimTypes::EMAIL_ADDRESS => function(
-     *         \LightSaml\Model\Assertion\Assertion $attribute,
-     *         \craft\elements\User $user
+     *         \craft\elements\User $user,
+     *         array $attribute
      *     ) {
-     *         $user->email = $attribute->getFirstAttributeValue();
+     *
+     *         // $attribute is key/name value (string/array) pair
+     *
+     *         // Could be an array
+     *         $attributeValue = $attribute['Email'];
+     *         if(is_array($attributeValue)){
+     *             $attributeValue = $attributeValue[0];
+     *         }
+     *
+     *         $user->email = $attribute['Email'];
      *     }
      * ],
      * ```

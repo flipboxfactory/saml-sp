@@ -78,11 +78,10 @@ class LoginController extends AbstractController
 
         $validator->validate($response);
 
-        // Login
+        // LOGIN!
+        // TODO - break this up to multiple calls and pass needed idp and sp to the methods
         Saml::getInstance()->getLogin()->login(
-            $response,
-            $identityProvider,
-            $serviceProvider
+            $response
         );
 
         //get relay state but don't error!

@@ -40,19 +40,9 @@ class Login extends Component
      * @throws \yii\base\Exception
      */
     public function login(
-        SamlResponse $response,
-        AbstractProvider $identityProvider,
-        AbstractProvider $serviceProvider
+        SamlResponse $response
     )
     {
-
-        //validate
-        $validator = new Response($identityProvider, $serviceProvider);
-        $validator->validate($response);
-
-        // TODO switch to SAML2 validators
-        $assertion = $this->getFirstAssertion($response);
-
         /**
          * Get User
          */

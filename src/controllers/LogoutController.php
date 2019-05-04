@@ -12,19 +12,15 @@ use craft\web\Request;
 use flipbox\saml\core\controllers\messages\AbstractLogoutController;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\bindings\Factory;
-use flipbox\saml\sp\traits\SamlPluginEnsured;
-use LightSaml\Model\Protocol\SamlMessage;
-use LightSaml\Model\Protocol\StatusResponse;
 
 /**
  * Class LogoutController
  *
  * @package flipbox\saml\sp\controllers
+ * TODO
  */
 class LogoutController extends AbstractLogoutController
 {
-    use SamlPluginEnsured;
 
     /**
      * @param null $uid

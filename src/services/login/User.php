@@ -190,10 +190,13 @@ class User
         ) ?:
             Saml::getInstance()->getSettings()->responseAttributeMap;
 
+        Saml::debug('Attribute Map: ' . json_encode($attributeMap));
+
         /**
          * Loop thru attributes and set to the user
          */
         foreach ($assertion->getAttributes() as $attributeName => $attibuteValue) {
+            Saml::debug('Attributes: ' . $attributeName . ' ' . json_encode($attibuteValue));
             if (isset($attributeMap[$attributeName])) {
                 $craftProperty = $attributeMap[$attributeName];
                 $this->assignProperty(
@@ -202,7 +205,7 @@ class User
                     $attibuteValue,
                     $craftProperty
                 );
-            }else{
+            } else {
                 Saml::debug('No match for: ' . $attributeName);
             }
         }
@@ -218,11 +221,12 @@ class User
     )
     {
 
+        $originalValues = $attributeValue;
         if (is_array($attributeValue)) {
             $attributeValue = isset($attributeValue[0]) ? $attributeValue[0] : null;
         }
 
-        if (is_string($craftProperty) && property_exists($user, $craftProperty)) {
+        if (is_string($craftProperty) && in_array($craftProperty, $user->attributes())) {
             Saml::debug(
                 sprintf(
                     'Attribute %s is scalar and should set value "%s" to user->%s',
@@ -241,7 +245,7 @@ class User
             );
 
             call_user_func($craftProperty, $user, [
-                $attributeName => $attributeValue,
+                $attributeName => $originalValues,
             ]);
         }
     }

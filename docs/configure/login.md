@@ -19,7 +19,7 @@ return [
 If you want to set multiple IDPs by environment, you should be explicit which provider you want to use. 
 
 Under the "Configure" tab there is a "Login/Logout Paths" header which contains read-only properties. Copy the "Login Path"
-and use it as the CraftCMS `loginPath`.
+and use it as the Craft CMS `loginPath`.
 
 
 ```php

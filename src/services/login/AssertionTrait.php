@@ -7,15 +7,16 @@
 namespace flipbox\saml\sp\services\login;
 
 use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\core\helpers\SecurityHelper;
+use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion as SamlAssertion;
-use SAML2\Assertion;
 use SAML2\EncryptedAssertion;
 use SAML2\Response as SamlResponse;
 
 trait AssertionTrait
 {
-    protected $isAssertionDecrypted = false;
+    private $firstDecryptedAssertion;
 
     /**
      * @param SamlResponse $response
@@ -25,19 +26,18 @@ trait AssertionTrait
     public function getFirstAssertion(SamlResponse $response)
     {
 
+        /** @var AbstractProvider $ownProvider */
         $ownProvider = Saml::getInstance()->getProvider()->findOwn();
 
         // grab the first one
         $assertion = $response->getAssertions()[0];
 
         // decrypt if needed
-        if ($ownProvider->keychain && $assertion instanceof EncryptedAssertion && $this->isAssertionDecrypted === false) {
-            $assertion = $assertion->getAssertion(
-                $ownProvider->keychain
-            );
+        if ($ownProvider->keychain && $assertion instanceof EncryptedAssertion && is_null($this->firstDecryptedAssertion)) {
+            $assertion = SecurityHelper::decryptAssertion($assertion, $ownProvider->keychain->getDecryptedCertificate());
 
             // only do this once
-            $this->isAssertionDecrypted = true;
+            $this->firstDecryptedAssertion = $assertion;
         }
 
 
@@ -45,7 +45,7 @@ trait AssertionTrait
             throw new InvalidMessage("Invalid message. No assertions found in response.");
         }
 
-        return $assertion;
+        return $this->firstDecryptedAssertion ?: $assertion;
     }
 
 }
