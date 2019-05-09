@@ -7,8 +7,6 @@
 
 namespace flipbox\saml\sp;
 
-use Craft;
-use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
@@ -25,8 +23,6 @@ use flipbox\saml\sp\services\Login;
 use flipbox\saml\sp\services\login\User;
 use flipbox\saml\sp\services\login\UserGroups;
 use flipbox\saml\sp\services\messages\AuthnRequest;
-use flipbox\saml\sp\services\messages\LogoutRequest;
-use flipbox\saml\sp\services\messages\LogoutResponse;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
 use SAML2\Compat\AbstractContainer;
@@ -48,14 +44,6 @@ class Saml extends AbstractPlugin
         $this->initComponents();
         $this->initEvents();
 
-        // Switch target to console controllers
-        if (Craft::$app instanceof ConsoleApplication) {
-            $this->controllerNamespace = __NAMESPACE__ . '\cli';
-            $this->controllerMap = [
-                'metadata' => \flipbox\saml\sp\cli\Metadata::class,
-                'keychain' => \flipbox\saml\sp\cli\KeyChain::class,
-            ];
-        }
     }
 
     /**
@@ -102,8 +90,6 @@ class Saml extends AbstractPlugin
                 'login' => Login::class,
                 'user' => User::class,
                 'userGroups' => UserGroups::class,
-                'logoutRequest' => LogoutRequest::class,
-                'logoutResponse' => LogoutResponse::class,
                 'provider' => Provider::class,
                 'providerIdentity' => ProviderIdentity::class,
                 'session' => Session::class,

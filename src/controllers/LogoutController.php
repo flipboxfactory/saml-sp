@@ -8,19 +8,19 @@
 
 namespace flipbox\saml\sp\controllers;
 
-use craft\web\Request;
 use flipbox\saml\core\controllers\messages\AbstractLogoutController;
 use flipbox\saml\core\records\ProviderInterface;
-use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 /**
  * Class LogoutController
  *
  * @package flipbox\saml\sp\controllers
- * TODO
  */
 class LogoutController extends AbstractLogoutController
 {
+
+    use SamlPluginEnsured;
 
     /**
      * @param null $uid
@@ -34,35 +34,6 @@ class LogoutController extends AbstractLogoutController
                 'uid' => $uid,
             ];
         }
-        return $this->getSamlPlugin()->getProvider()->findByIdp($condition)->one();
-    }
-
-    /**
-     * @param SamlMessage $samlMessage
-     * @param ProviderInterface $provider
-     * @throws \flipbox\saml\core\exceptions\InvalidMetadata
-     * @throws \yii\base\ExitException
-     * @throws \yii\base\InvalidConfigException
-     */
-    protected function send(SamlMessage $samlMessage, ProviderInterface $provider)
-    {
-        Saml::getInstance()->getBindingFactory()->send(
-            $samlMessage,
-            $provider
-        );
-        \Craft::$app->end();
-    }
-
-    /**
-     * @param Request $request
-     * @return StatusResponse
-     * @throws \flipbox\saml\core\exceptions\InvalidSignature
-     * @throws \yii\base\InvalidConfigException
-     */
-    protected function receive(Request $request): StatusResponse
-    {
-        return Saml::getInstance()->getBindingFactory()->receive(
-            $request
-        );
+        return $this->getPlugin()->getProvider()->findByIdp($condition)->one();
     }
 }
