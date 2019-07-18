@@ -34,7 +34,7 @@ class LoginController extends Controller
      */
     public function beforeAction($action)
     {
-        if ($action->actionMethod === 'actionIndex') {
+        if ($action->actionMethod === 'actionIndex' || $action->actionMethod === 'actionRequest') {
             return true;
         }
 

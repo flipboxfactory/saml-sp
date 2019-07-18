@@ -26,6 +26,26 @@ class LogoutController extends AbstractLogoutController
 {
     use SamlPluginEnsured;
 
+    protected $allowAnonymous = [
+        'actionIndex',
+        'actionRequest',
+    ];
+
+    public $enableCsrfValidation = false;
+
+    /**
+     * @param \yii\base\Action $action
+     * @return bool
+     */
+    public function beforeAction($action)
+    {
+        if ($action->actionMethod === 'actionIndex' || $action->actionMethod === 'actionRequest') {
+            return true;
+        }
+
+        return parent::beforeAction($action);
+    }
+
     /**
      * @param null $uid
      * @return bool|ProviderInterface
