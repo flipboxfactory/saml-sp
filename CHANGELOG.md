@@ -1,10 +1,25 @@
 Changelog
 =========
-# 1.1.0
+# 2.0.0
+> {warning} **THIS UPDATE HAS BREAKING CHANGES.** All existing events have changed. If you have hooked or have a custom `attributeMap` (within `config/saml-sp.php`), please test the upgrade and sso login completely. Changes will most likely be needed.
+
+> {warning} Any references to the [LightSaml](https://github.com/lightSAML/lightSAML) php package need to be changed. LightSAML has been swapped out for the simplesamlphp core package [simplesamlphp](https://github.com/simplesamlphp/saml2)
+
+> {warning} You may have to exchange SAML Metadata again for this version to work. There are Single Logout (SLO) endpoint changes that need to be communicated to the IDP.
+
+> {tip} **Recommended**: 1) upgrade, 2) re-create your Metadata and exchange it with the IDP, 3) then test login in a development environment before pushing to production. Make sure to backup your production database first!
+
 ### Removed
 - Remove static method and associated (deprecated) constants: `\flipbox\saml\sp\services\messages\Metadata::getLoginLocation`. Get this from the settings model now.
 - Remove static method and associated (deprecated) constants: `\flipbox\saml\sp\services\messages\Metadata::getLogoutRequestLocation`. Get this from the settings model now.
 - Remove static method and associated (deprecated) constants: `\flipbox\saml\sp\services\messages\Metadata::getLogoutResponseLocation`. Get this from the settings model now.
+- Removed the LightSaml package
+
+### Changed
+- Switched from the php LightSaml package to the simplesamlphp core lib
+
+### Fixed
+- Typo in attribute map in the provider table (requires migration)
 
 # 1.0.6
 ### Fixed

@@ -29,13 +29,13 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     public function getLoginPath()
     {
-        if ($this->type !== Settings::IDP) {
+        if ($this->providerType !== Settings::IDP) {
             return null;
         }
         return implode(
             DIRECTORY_SEPARATOR,
             [
-                Saml::getInstance()->getSettings()->loginRequestEndpoint,
+                Saml::getInstance()->getSettings()->getDefaultLoginEndpoint(),
                 $this->uid,
             ]
         );
@@ -46,13 +46,13 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     public function getLogoutPath()
     {
-        if ($this->type !== Settings::IDP) {
+        if ($this->providerType !== Settings::IDP) {
             return null;
         }
         return implode(
             DIRECTORY_SEPARATOR,
             [
-                Saml::getInstance()->getSettings()->logoutRequestEndpoint,
+                Saml::getInstance()->getSettings()->getDefaultLogoutEndpoint(),
                 $this->uid,
             ]
         );

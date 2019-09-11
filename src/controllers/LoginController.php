@@ -39,7 +39,7 @@ class LoginController extends AbstractController
      */
     public function beforeAction($action)
     {
-        if ($action->actionMethod === 'actionIndex') {
+        if ($action->actionMethod === 'actionIndex' || $action->actionMethod === 'actionRequest') {
             return true;
         }
 
@@ -62,9 +62,9 @@ class LoginController extends AbstractController
         /** @var SamlResponse $response */
         $response = Factory::receive();
 
-        if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()) {
-            throw new HttpException(400, "Invalid request");
-        }
+//        if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()) {
+//            throw new HttpException(400, "Invalid request");
+//        }
 
         $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
             MessageHelper::getIssuer($response->getIssuer())
@@ -85,7 +85,7 @@ class LoginController extends AbstractController
         );
 
         //get relay state but don't error!
-        $relayState = \Craft::$app->request->getParam('RelayState');
+        $relayState = $response->getRelayState() ?: \Craft::$app->request->getParam('RelayState');
         try {
             $redirect = base64_decode($relayState);
             Saml::info('RelayState: ' . $redirect);
