@@ -28,7 +28,9 @@ modules:
           dsn: 'mysql:host=%DB_SERVER%;dbname=%DB_DATABASE%;'
           user: '%DB_USER%'
           password: '%DB_PASSWORD%'
-          dump: 'tests/_data/dump.sql'
+          dump:
+            - tests/_data/create-dbs.sql
+            - tests/_data/test.sql
           populate: true
           cleanup: true
           reconnect: true
