@@ -22,7 +22,7 @@ class ExternalIdentityTest extends Unit
     {
         $field = new ExternalIdentity();
 
-        $this->assertEquals('External Identity', $field->displayName());
+        $this->assertEquals('SAML External Identity', $field->displayName());
     }
 
     public function testHasContentColumn()

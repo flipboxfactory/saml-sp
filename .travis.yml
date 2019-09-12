@@ -10,7 +10,7 @@ php:
 
 services:
   - mysql
-  
+
 before_install:
   - nvm install 8
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'

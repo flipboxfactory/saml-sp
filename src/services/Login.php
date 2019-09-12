@@ -41,8 +41,7 @@ class Login extends Component
      */
     public function login(
         SamlResponse $response
-    )
-    {
+    ) {
         /**
          * Get User
          */

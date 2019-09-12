@@ -12,4 +12,7 @@ define('CRAFT_CONFIG_PATH', __DIR__.'/_craft/config');
 define('CRAFT_VENDOR_PATH', __DIR__.'/../vendor');
 
 // Load Composer's autoloader
+
+//require_once __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
+//require_once __DIR__ . '/../vendor/craftcms/cms/src/Craft.php';
 require_once CRAFT_VENDOR_PATH.'/autoload.php';

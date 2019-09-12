@@ -26,13 +26,12 @@ class AuthnRequest extends Component
     public function create(
         AbstractProvider $myServiceProvider,
         AbstractProvider $identityProvider
-    ): SamlAuthnRequest
-    {
+    ): SamlAuthnRequest {
 
         $location = $identityProvider->firstIdpSsoService(
-        /**
-         * @todo support http redirect
-         */
+            /**
+            * @todo support http redirect
+            */
             Constants::BINDING_HTTP_POST
         )->getLocation();
 
@@ -58,9 +57,9 @@ class AuthnRequest extends Component
         $authnRequest->setProtocolBinding(
 
             $identityProvider->firstIdpSsoService(
-            /**
-             * @todo support http redirect
-             */
+                /**
+                * @todo support http redirect
+                */
                 Constants::BINDING_HTTP_POST
             )->getBinding()
         );
@@ -89,7 +88,6 @@ class AuthnRequest extends Component
         $pair = $myServiceProvider->keychain;
 
         if ($pair && $samlSettings->signAuthnRequest) {
-
             $authnRequest->setSignatureKey(
                 $myServiceProvider->keychainPrivateXmlSecurityKey()
             );

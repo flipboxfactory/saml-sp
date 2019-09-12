@@ -15,5 +15,4 @@ class m190516_200148_attribute_typo extends \flipbox\saml\core\migrations\m19051
     {
         return ProviderRecord::class;
     }
-
 }

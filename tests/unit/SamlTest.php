@@ -37,15 +37,10 @@ class SamlTest extends Unit
     public function testComponents()
     {
         $this->assertInstanceOf(AuthnRequest::class, $this->module->getAuthnRequest());
-        $this->assertInstanceOf(HttpPost::class, $this->module->getHttpPost());
-        $this->assertInstanceOf(HttpRedirect::class, $this->module->getHttpRedirect());
         $this->assertInstanceOf(Login::class, $this->module->getLogin());
-        $this->assertInstanceOf(LogoutRequest::class, $this->module->getLogoutRequest());
-        $this->assertInstanceOf(LogoutResponse::class, $this->module->getLogoutResponse());
         $this->assertInstanceOf(Provider::class, $this->module->getProvider());
         $this->assertInstanceOf(ProviderIdentity::class, $this->module->getProviderIdentity());
         $this->assertInstanceOf(Metadata::class, $this->module->getMetadata());
-        $this->assertInstanceOf(Response::class, $this->module->getResponse());
         $this->assertInstanceOf(Session::class, $this->module->getSession());
         $this->assertInstanceOf(User::class, $this->module->getUser());
         $this->assertInstanceOf(UserGroups::class, $this->module->getUserGroups());

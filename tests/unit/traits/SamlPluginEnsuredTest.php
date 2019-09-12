@@ -13,6 +13,6 @@ class SamlPluginEnsuredTest extends Unit
     public function testGetSamlPlugin()
     {
         Saml::setInstance(new Saml('saml_sp'));
-        $this->assertInstanceOf(Saml::class, $this->getSamlPlugin());
+        $this->assertInstanceOf(Saml::class, $this->getPlugin());
     }
 }

@@ -43,7 +43,6 @@ class Saml extends AbstractPlugin
 
         $this->initComponents();
         $this->initEvents();
-
     }
 
     /**

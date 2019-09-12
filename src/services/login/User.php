@@ -175,8 +175,7 @@ class User
     protected function transform(
         SamlResponse $response,
         UserElement $user
-    )
-    {
+    ) {
 
         $assertion = $this->getFirstAssertion($response);
 
@@ -218,8 +217,7 @@ class User
         $attributeName,
         $attributeValue,
         $craftProperty
-    )
-    {
+    ) {
 
         $originalValues = $attributeValue;
         if (is_array($attributeValue)) {

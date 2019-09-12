@@ -33,8 +33,14 @@ trait AssertionTrait
         $assertion = $response->getAssertions()[0];
 
         // decrypt if needed
-        if ($ownProvider->keychain && $assertion instanceof EncryptedAssertion && is_null($this->firstDecryptedAssertion)) {
-            $assertion = SecurityHelper::decryptAssertion($assertion, $ownProvider->keychain->getDecryptedCertificate());
+        if ($ownProvider->keychain &&
+            $assertion instanceof EncryptedAssertion &&
+            is_null($this->firstDecryptedAssertion)
+        ) {
+            $assertion = SecurityHelper::decryptAssertion(
+                $assertion,
+                $ownProvider->keychain->getDecryptedCertificate()
+            );
 
             // only do this once
             $this->firstDecryptedAssertion = $assertion;
@@ -47,6 +53,4 @@ trait AssertionTrait
 
         return $this->firstDecryptedAssertion ?: $assertion;
     }
-
 }
-
