@@ -1,13 +1,13 @@
 <?php
 
-namespace flipbox\saml\core\migrations;
+namespace flipbox\saml\sp\migrations;
 
 use flipbox\saml\sp\records\ProviderRecord;
 
 /**
  * m190502_200148_encryption_settings migration.
  */
-class m180812_200148_add_label_and_mapping extends \flipbox\saml\core\migrations\m190502_200148_encryption_settings
+class m190502_200148_encryption_settings extends \flipbox\saml\core\migrations\m190502_200148_encryption_settings
 {
 
     protected static function getProviderTableName()
