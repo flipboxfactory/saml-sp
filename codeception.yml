@@ -6,8 +6,10 @@ paths:
 actor_suffix: Tester
 params:
   - env
+bootstrap: _bootstrap.php
 settings:
-  bootstrap: _bootstrap.php
+  colors: true
+  memory_limit: 2048M
 coverage:
   enabled: true
   include:
@@ -22,10 +24,11 @@ extensions:
     - Codeception\Extension\RunFailed
 modules:
   config:
-    Yii2:
+    \craft\test\Craft:
       configFile: 'tests/_craft/config/test.php'
       edition: 1
-      setupDb:
+      dbSetup:
+        clean: true
         setupCraft: true
       plugins:
         - class: \flipbox\saml\sp\Saml

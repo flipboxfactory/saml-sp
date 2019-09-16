@@ -1,18 +1,14 @@
 <?php
+use craft\test\TestSetup;
+ini_set('date.timezone', 'UTC');
+date_default_timezone_set('UTC');
+// Use the current installation of Craft
+define('CRAFT_STORAGE_PATH', __DIR__ . DIRECTORY_SEPARATOR . '_craft' . DIRECTORY_SEPARATOR . 'storage');
+define('CRAFT_TEMPLATES_PATH', __DIR__ . DIRECTORY_SEPARATOR . '_craft' . DIRECTORY_SEPARATOR . 'templates');
+define('CRAFT_CONFIG_PATH', __DIR__ . DIRECTORY_SEPARATOR . '_craft' . DIRECTORY_SEPARATOR . 'config');
+define('CRAFT_MIGRATIONS_PATH', __DIR__ . DIRECTORY_SEPARATOR . '_craft' . DIRECTORY_SEPARATOR . 'migrations');
+define('CRAFT_TRANSLATIONS_PATH', __DIR__ . DIRECTORY_SEPARATOR . '_craft' . DIRECTORY_SEPARATOR . 'translations');
+define('CRAFT_VENDOR_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor');
+$devMode = true;
+TestSetup::configureCraft();
 
-define('CRAFT_ENVIRONMENT', 'test');
-define('YII_ENV', 'test');
-define('YII_DEBUG', true);
-
-// Set path constants
-define('CRAFT_BASE_PATH', __DIR__.'/_craft');
-define('CRAFT_STORAGE_PATH', __DIR__.'/_craft/storage');
-define('CRAFT_TEMPLATES_PATH', __DIR__.'/_craft/templates');
-define('CRAFT_CONFIG_PATH', __DIR__.'/_craft/config');
-define('CRAFT_VENDOR_PATH', __DIR__.'/../vendor');
-
-// Load Composer's autoloader
-
-//require_once __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
-//require_once __DIR__ . '/../vendor/craftcms/cms/src/Craft.php';
-require_once CRAFT_VENDOR_PATH.'/autoload.php';
