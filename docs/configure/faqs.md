@@ -29,4 +29,8 @@ This should not create any problems. If the appearance is a aesthetic issue for 
 use the Primary site when creating "My Provider". You can also override the default Entity Id if desired.  
 ::: 
 
+## Error: Trying to get property 'keychain' of non-object
+Answer: This usually means "My Provider", the sites metadata/provider can't be found, or possibly, hasn't 
+been created. Go to `https://<your domain>/admin/saml-sp/metadata/my-provider` and create a new provider
+for your site.
 
