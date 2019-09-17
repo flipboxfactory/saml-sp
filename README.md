@@ -18,6 +18,9 @@ To install, use composer:
 composer require flipboxfactory/saml-sp
 ```
 
+## Upgrade from 1.0 to 2.0
+[Read the docs](https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0)
+
 ## Testing
 
 ``` bash
