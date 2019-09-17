@@ -62,10 +62,6 @@ class LoginController extends AbstractController
         /** @var SamlResponse $response */
         $response = Factory::receive();
 
-//        if (Saml::getInstance()->getSession()->getRequestId() !== $response->getInResponseTo()) {
-//            throw new HttpException(400, "Invalid request");
-//        }
-
         $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
             MessageHelper::getIssuer($response->getIssuer())
         )->one();
