@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML Service Provider",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [
@@ -15,6 +15,7 @@
     "yii2"
   ],
   "require": {
+    "craftcms/cms": "^3.2.0",
     "flipboxfactory/saml-core": "^2.0.10"
   },
   "require-dev": {
@@ -40,7 +41,7 @@
   },
   "extra": {
     "name": "SAML Service Provider",
-    "version":"2.0.1",
+    "version":"2.0.2",
     "schemaVersion":"2.0.0",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
