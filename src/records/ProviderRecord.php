@@ -27,6 +27,39 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
     /**
      * @inheritdoc
      */
+    public function getLoginRequestPath()
+    {
+        if ($this->providerType !== Settings::IDP) {
+            return null;
+        }
+        return implode(
+            DIRECTORY_SEPARATOR,
+            [
+                Saml::getInstance()->getSettings()->getDefaultLoginRequestPath(),
+                $this->uid,
+            ]
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLogoutRequestPath()
+    {
+        if ($this->providerType !== Settings::IDP) {
+            return null;
+        }
+        return implode(
+            DIRECTORY_SEPARATOR,
+            [
+                Saml::getInstance()->getSettings()->getDefaultLogoutRequestPath(),
+                $this->uid,
+            ]
+        );
+    }
+    /**
+     * @inheritdoc
+     */
     public function getLoginPath()
     {
         if ($this->providerType !== Settings::IDP) {

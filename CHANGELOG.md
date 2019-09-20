@@ -1,7 +1,20 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+
+## 2.0.3 - 2019-09-20
+> {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. Please reference: https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0
+
+### Fixed
+- Issue with the `Via` buttons on the login page pointing to the incorrect endpoint. https://github.com/flipboxfactory/saml-sp/issues/31
+
+## 2.0.2 - 2019-09-18
+> {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. Please reference: https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0
+
+## 2.0.1 - 2019-09-17
+> {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. Please reference: https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0
+
 ## 2.0.0 - 2019-09-17
-> {warning} **THIS UPDATE HAS BREAKING CHANGES.** All existing events have changed. If you have hooked or have a custom `attributeMap` (within `config/saml-sp.php`), please test the upgrade and sso login completely. Changes will most likely be needed.
+> {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. If you have hooked or have a custom `attributeMap` (within `config/saml-sp.php`), please test the upgrade and sso login completely. Changes will most likely be needed.
 
 > {warning} Any references to the [LightSaml](https://github.com/lightSAML/lightSAML) php package need to be changed. LightSAML has been swapped out for the simplesamlphp core package [simplesamlphp](https://github.com/simplesamlphp/saml2)
 
