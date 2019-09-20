@@ -62,10 +62,15 @@ class LoginController extends AbstractController
         /** @var SamlResponse $response */
         $response = Factory::receive();
 
-        $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
+        if (! $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
             MessageHelper::getIssuer($response->getIssuer())
-        )->one();
-        $serviceProvider = Saml::getInstance()->getProvider()->findOwn();
+        )->one()) {
+            $this->throwIdpNotFoundWithResponse($response);
+        }
+
+        if (! $serviceProvider = Saml::getInstance()->getProvider()->findOwn()) {
+            $this->throwSpNotFound();
+        }
 
         $validator = new ResponseValidator(
             $identityProvider,
@@ -93,9 +98,55 @@ class LoginController extends AbstractController
         return $this->redirect($redirect);
     }
 
+    /**
+     * @param SamlResponse $response
+     * @throws HttpException
+     */
+    protected function throwIdpNotFoundWithResponse(SamlResponse $response)
+    {
+        throw new HttpException(
+            400,
+            sprintf(
+                'Identity Provider is not found. Possibly a configuration problem. Issuer/EntityId: %s',
+                MessageHelper::getIssuer($response->getIssuer()) ?: 'IS NULL'
+            )
+        );
+    }
+
+    /**
+     * @param SamlResponse $response
+     * @throws HttpException
+     */
+    protected function throwIdpNotFoundWithUid($uid)
+    {
+        throw new HttpException(
+            400,
+            sprintf(
+                'Identity Provider is not found with UID: %s',
+                $uid
+            )
+        );
+    }
+
+    /**
+     * @throws HttpException
+     * @throws \craft\errors\SiteNotFoundException
+     */
+    protected function throwSpNotFound()
+    {
+        throw new HttpException(
+            400,
+            sprintf(
+                'Service Provider is not found. Possibly a configuration problem. My Provider/Current EntityId: %s',
+                Saml::getInstance()->getSettings()->getEntityId() ?: 'IS NULL'
+            )
+        );
+    }
+
 
     /**
      * @param null $uid
+     * @throws HttpException
      * @throws InvalidMetadata
      * @throws \craft\errors\SiteNotFoundException
      * @throws \yii\base\ExitException
@@ -118,14 +169,18 @@ class LoginController extends AbstractController
             $uidCondition
         )->one()
         ) {
-            throw new InvalidMetadata('IDP Metadata Not found!');
+            $this->throwIdpNotFoundWithUid($uid);
+        }
+
+        if (! $sp = Saml::getInstance()->getProvider()->findOwn()) {
+            $this->throwSpNotFound();
         }
 
         /**
          * @var $authnRequest AuthnRequest
          */
         $authnRequest = Saml::getInstance()->getAuthnRequest()->create(
-            Saml::getInstance()->getProvider()->findOwn(),
+            $sp,
             $idp
         );
 

@@ -47,7 +47,7 @@ class AuthnRequest extends Component
         );
 
         $authnRequest->setAssertionConsumerServiceIndex(
-            $samlSettings->getDefaultLoginEndpoint()
+            "0"
         );
 
         $authnRequest->setAssertionConsumerServiceURL(

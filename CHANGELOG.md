@@ -1,5 +1,12 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.4 - 2019-09-20
+> {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. Please reference: https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0
+### Fixed
+- Fixed AssertionConsumerServiceIndex type. Made it an int like it's intended to be.
+
+### Added
+- More friendly exceptions when there are configuration issues with IdP or SP, therefore not being found.
 
 ## 2.0.3 - 2019-09-20
 > {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. Please reference: https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0
