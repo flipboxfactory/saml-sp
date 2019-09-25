@@ -10,13 +10,11 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use flipbox\saml\core\exceptions\InvalidMessage;
-use flipbox\saml\core\records\AbstractProvider;
-use flipbox\saml\core\validators\Response;
 use flipbox\saml\sp\events\UserLogin;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\services\login\AssertionTrait;
 use SAML2\Response as SamlResponse;
 use yii\base\UserException;
-use flipbox\saml\sp\services\login\AssertionTrait;
 
 /**
  * Class Consumer
