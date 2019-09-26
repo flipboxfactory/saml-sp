@@ -1,6 +1,12 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
-## 2.0.5 - 2019-09-20
+
+# 2.0.6 - 2019-09-25
+### Fixed
+- Fixing more xsd schema compatibility. Changed message ids to be compatible.
+- Fixed exception when the user tries to logout (SLO) when they are already logged out.
+
+## 2.0.5 - 2019-09-25
 > {warning} **THE 2.0 UPGRADE HAS BREAKING CHANGES.** All existing events have changed. Please reference: https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0
 ### Fixed
 - Added protocolSupportEnumeration in the metadata. That is required by SAML and stricter IdPs will complain.
