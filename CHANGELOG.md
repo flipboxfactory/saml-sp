@@ -1,7 +1,7 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
 
-# 2.0.6 - 2019-09-25
+## 2.0.6 - 2019-09-25
 ### Fixed
 - Fixing more xsd schema compatibility. Changed message ids to be compatible.
 - Fixed exception when the user tries to logout (SLO) when they are already logged out.
