@@ -1,5 +1,8 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.7 - 2019-09-26
+### Fixed
+- Fixed issue with decrypting assertions
 
 ## 2.0.6 - 2019-09-25
 ### Fixed

@@ -39,7 +39,7 @@ trait AssertionTrait
         ) {
             $assertion = SecurityHelper::decryptAssertion(
                 $assertion,
-                $ownProvider->keychain->getDecryptedCertificate()
+                $ownProvider->keychain->getDecryptedKey()
             );
 
             // only do this once
