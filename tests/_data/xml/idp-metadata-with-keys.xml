@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://www.flipboxlabs.com/idp">
+    <md:IDPSSODescriptor WantAuthnRequestsSigned="false"
+                         protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:KeyDescriptor use="encryption">
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIIDajCCAlICCQCXsBKJ8e4chjANBgkqhkiG9w0BAQsFADB3MQswCQYDVQQGEwJH
+                        QjEPMA0GA1UECAwGTG9uZG9uMQ8wDQYDVQQHDAZMb25kb24xGDAWBgNVBAoMD0ds
+                        b2JhbCBTZWN1cml0eTEWMBQGA1UECwwNSVQgRGVwYXJ0bWVudDEUMBIGA1UEAwwL
+                        ZXhhbXBsZS5jb20wHhcNMTkwNDI1MTUzNTI1WhcNMjkwNDIyMTUzNTI1WjB3MQsw
+                        CQYDVQQGEwJHQjEPMA0GA1UECAwGTG9uZG9uMQ8wDQYDVQQHDAZMb25kb24xGDAW
+                        BgNVBAoMD0dsb2JhbCBTZWN1cml0eTEWMBQGA1UECwwNSVQgRGVwYXJ0bWVudDEU
+                        MBIGA1UEAwwLZXhhbXBsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+                        AoIBAQDWPcvi9SkoOKVQsurojc/mLSGP1CjfHzir11VhihRlWXyGcdEden57ozOR
+                        0qLDstNKAyJ9zM5hp1F43S5/teQNMsV9yXk2ZLdz0Qg5vj1lL8fAQF0VvGUqFJHM
+                        CRO2MX91y5PCLf2D4xVZY+BHjYWeZI+Xt5cdzWe8RJPP+odFgMoZR+ga9ts+uSki
+                        JNC70My9lDvvjae8ZuY1e2mHP7Ca3TE0Phwjlh3PiJZxcZFiDHZnLpGx4AD6c5GM
+                        9UcCGbyqSnmtTKNbXEAEXzXszkdAxzeIk7BxVZJlFzrVoa5yDYyFiewNpFBacDVK
+                        1yHKuQFLCV9/TWQtR8GZIk5WZD7xAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAINH
+                        4IxL2q40xOawdgpGp+1bRvc5VjGX5U7v32nPGJ16bbyrPNJzfzlswTI2nhOqmtxb
+                        Tg7IQftxUyAtMYUN2VD5LhI4VHawSxQJwIWziNTsgbYlcwirjBjqyqzpZ08OQYEN
+                        d4lMf3qOhrhYCkf+jd4631Uzcsg/OMw5E1gPHYHjnjx9gvDBzfVl6M34CkJH8sqr
+                        KyaDOoA5aeNQuH6coJL2vint/Sv6CX4duCIYkqvw2a0lhhAJQ1kE6DOs/8Vko37S
+                        4GFDb0zLq8qmm7KQXypKHhbyR7K4skw3DGFOg8nj2P1Prm2XNmA82uPEyXgI9MJi
+                        +R4D/2blCfwQgr+lFig=
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:KeyDescriptor use="signing">
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIIDajCCAlICCQCXsBKJ8e4chjANBgkqhkiG9w0BAQsFADB3MQswCQYDVQQGEwJH
+                        QjEPMA0GA1UECAwGTG9uZG9uMQ8wDQYDVQQHDAZMb25kb24xGDAWBgNVBAoMD0ds
+                        b2JhbCBTZWN1cml0eTEWMBQGA1UECwwNSVQgRGVwYXJ0bWVudDEUMBIGA1UEAwwL
+                        ZXhhbXBsZS5jb20wHhcNMTkwNDI1MTUzNTI1WhcNMjkwNDIyMTUzNTI1WjB3MQsw
+                        CQYDVQQGEwJHQjEPMA0GA1UECAwGTG9uZG9uMQ8wDQYDVQQHDAZMb25kb24xGDAW
+                        BgNVBAoMD0dsb2JhbCBTZWN1cml0eTEWMBQGA1UECwwNSVQgRGVwYXJ0bWVudDEU
+                        MBIGA1UEAwwLZXhhbXBsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+                        AoIBAQDWPcvi9SkoOKVQsurojc/mLSGP1CjfHzir11VhihRlWXyGcdEden57ozOR
+                        0qLDstNKAyJ9zM5hp1F43S5/teQNMsV9yXk2ZLdz0Qg5vj1lL8fAQF0VvGUqFJHM
+                        CRO2MX91y5PCLf2D4xVZY+BHjYWeZI+Xt5cdzWe8RJPP+odFgMoZR+ga9ts+uSki
+                        JNC70My9lDvvjae8ZuY1e2mHP7Ca3TE0Phwjlh3PiJZxcZFiDHZnLpGx4AD6c5GM
+                        9UcCGbyqSnmtTKNbXEAEXzXszkdAxzeIk7BxVZJlFzrVoa5yDYyFiewNpFBacDVK
+                        1yHKuQFLCV9/TWQtR8GZIk5WZD7xAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAINH
+                        4IxL2q40xOawdgpGp+1bRvc5VjGX5U7v32nPGJ16bbyrPNJzfzlswTI2nhOqmtxb
+                        Tg7IQftxUyAtMYUN2VD5LhI4VHawSxQJwIWziNTsgbYlcwirjBjqyqzpZ08OQYEN
+                        d4lMf3qOhrhYCkf+jd4631Uzcsg/OMw5E1gPHYHjnjx9gvDBzfVl6M34CkJH8sqr
+                        KyaDOoA5aeNQuH6coJL2vint/Sv6CX4duCIYkqvw2a0lhhAJQ1kE6DOs/8Vko37S
+                        4GFDb0zLq8qmm7KQXypKHhbyR7K4skw3DGFOg8nj2P1Prm2XNmA82uPEyXgI9MJi
+                        +R4D/2blCfwQgr+lFig=
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                                Location="http://www.flipboxlabs.com/idp/slo"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                                Location="http://www.flipboxlabs.com/idp/slo"/>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                                Location="http://www.flipboxlabs.com/idp/sso"/>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                                Location="http://www.flipboxlabs.com/idp/sso"/>
+    </md:IDPSSODescriptor>
+</md:EntityDescriptor>

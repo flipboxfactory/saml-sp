@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="1c5a2469-b34f-4731-99da-f2f97cd8fa9e" Version="2.0" IssueInstant="2019-04-25T22:06:12Z" Destination="http://www.flipboxlabs.com/idp/sso" AssertionConsumerServiceIndex="http://localhost/sso/login"><saml:Issuer>http://localhost/</saml:Issuer></samlp:AuthnRequest>

@@ -4,12 +4,16 @@
 
 version: '3'
 services:
-    web:
-        image: 'flipbox/php:72-apache'
+    php:
+        build:
+            context: .
+            args:
+                PHP_IMAGE: flipbox/php:72-apache
         depends_on:
             - db
         volumes:
-            - '.:/var/www/html/'
+            - './src:/var/www/html/src'
+#            - './tests:/var/www/html/tests'
         environment:
             XDEBUG_ON: "yes"
             XDEBUG_HOST: "host.docker.internal"
@@ -19,6 +23,7 @@ services:
             DB_PASSWORD: password
             DB_DATABASE: test
             DB_DRIVER: mysql
+        command: php ./vendor/bin/codecept run -vv --coverage --coverage-html
     db:
         image: 'mysql:5.7'
         environment:
