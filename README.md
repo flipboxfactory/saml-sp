@@ -24,7 +24,7 @@ composer require flipboxfactory/saml-sp
 ## Testing
 
 ``` bash
-$ make test
+$ docker-compose run --rm test
 ```
 
 ## Contributing

@@ -4,7 +4,7 @@
 
 version: '3'
 services:
-    php:
+    test:
         build:
             context: .
             args:
@@ -13,7 +13,7 @@ services:
             - db
         volumes:
             - './src:/var/www/html/src'
-#            - './tests:/var/www/html/tests'
+            - './tests:/var/www/html/tests'
         environment:
             XDEBUG_ON: "yes"
             XDEBUG_HOST: "host.docker.internal"
