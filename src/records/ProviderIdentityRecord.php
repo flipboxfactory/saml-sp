@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\records;
 
-use flipbox\ember\helpers\ModelHelper;
 use flipbox\saml\core\records\AbstractProviderIdentity;
 
 /**

@@ -59,7 +59,6 @@ class Saml extends AbstractPlugin
             [self::class, 'onRegisterCpUrlRules']
         );
 
-
         /**
          * Clean Frontend Endpoints
          */

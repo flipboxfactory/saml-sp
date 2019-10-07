@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.9 - 2019-10-07
+### Removed
+- Removed flipboxfactory/craft-ember package for easier updates with dependancies.
+
 ## 2.0.7 - 2019-09-26
 ### Fixed
 - Fixed issue with decrypting assertions
