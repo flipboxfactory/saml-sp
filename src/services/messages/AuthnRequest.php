@@ -55,7 +55,6 @@ class AuthnRequest extends Component
         );
 
         $authnRequest->setProtocolBinding(
-
             $identityProvider->firstIdpSsoService(
                 /**
                 * @todo support http redirect
