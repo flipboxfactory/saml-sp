@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.11 - 2019-11-18
+### Added
+- Added support for parsing multiple assertions. Possibly related to https://github.com/flipboxfactory/saml-sp/issues/40
+
 ## 2.0.9 - 2019-10-07
 ### Removed
 - Removed flipboxfactory/craft-ember package for easier updates with dependancies.

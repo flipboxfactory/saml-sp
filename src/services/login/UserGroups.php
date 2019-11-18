@@ -11,6 +11,7 @@ use craft\helpers\StringHelper;
 use craft\models\UserGroup;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
+use SAML2\Response;
 use yii\base\UserException;
 
 /**
@@ -19,6 +20,7 @@ use yii\base\UserException;
  */
 class UserGroups
 {
+    use AssertionTrait;
 
     /**
      * @param string $groupName
@@ -48,11 +50,27 @@ class UserGroups
         return $userGroup;
     }
 
+    /**
+     * @param UserElement $user
+     * @param Response $response
+     * @return bool
+     * @throws UserException
+     * @throws \craft\errors\WrongEditionException
+     */
+    public function sync(UserElement $user, Response $response)
+    {
+        foreach ($this->getAssertions($response) as $assertion) {
+            $this->syncByAssertion($user, $assertion);
+        }
+
+        return true;
+    }
 
     /**
      * @param UserElement $user
      * @param Assertion $assertion
      * @return bool
+     * @deprecated Use sync. Will remove 2.1
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */

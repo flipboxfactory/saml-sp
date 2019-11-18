@@ -100,7 +100,7 @@ class User
 
 
         // Sync groups depending on the plugin setting.
-        Saml::getInstance()->getUserGroups()->syncByAssertion($user, $this->getFirstAssertion($response));
+        Saml::getInstance()->getUserGroups()->sync($user, $response);
 
 
         // Sync defaults
@@ -149,21 +149,21 @@ class User
             UserHelper::enableUser($user);
         }
 
-        $assertion = $this->getFirstAssertion($response);
-
-        $hasAttributes = count($assertion->getAttributes()) > 1;
-        Saml::debug('assertion attributes: ' . \json_encode($assertion->getAttributes()));
-        if ($hasAttributes) {
-            $this->transform($response, $user);
-        } else {
-            /**
-             * There doesn't seem to be any attribute statements.
-             * Try and use username for the email and move on.
-             */
-            Saml::warning(
-                'No attribute statements found! Trying to assign username as the email.'
-            );
-            $user->email = $user->email ?: $user->username;
+        foreach ($this->getAssertions($response) as $assertion) {
+            $hasAttributes = count($assertion->getAttributes()) > 1;
+            Saml::debug('assertion attributes: ' . \json_encode($assertion->getAttributes()));
+            if ($hasAttributes) {
+                $this->transform($response, $user);
+            } else {
+                /**
+                 * There doesn't seem to be any attribute statements.
+                 * Try and use username for the email and move on.
+                 */
+                Saml::warning(
+                    'No attribute statements found! Trying to assign username as the email.'
+                );
+                $user->email = $user->email ?: $user->username;
+            }
         }
     }
 
@@ -177,35 +177,35 @@ class User
         UserElement $user
     ) {
 
-        $assertion = $this->getFirstAssertion($response);
+        foreach ($this->getAssertions($response) as $assertion) {
+            /**
+             * Check the provider first
+             */
+            $attributeMap = ProviderHelper::providerMappingToKeyValue(
+                $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
+                    MessageHelper::getIssuer($response->getIssuer())
+                )->one()
+            ) ?:
+                Saml::getInstance()->getSettings()->responseAttributeMap;
 
-        /**
-         * Check the provider first
-         */
-        $attributeMap = ProviderHelper::providerMappingToKeyValue(
-            $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-                MessageHelper::getIssuer($response->getIssuer())
-            )->one()
-        ) ?:
-            Saml::getInstance()->getSettings()->responseAttributeMap;
+            Saml::debug('Attribute Map: ' . json_encode($attributeMap));
 
-        Saml::debug('Attribute Map: ' . json_encode($attributeMap));
-
-        /**
-         * Loop thru attributes and set to the user
-         */
-        foreach ($assertion->getAttributes() as $attributeName => $attibuteValue) {
-            Saml::debug('Attributes: ' . $attributeName . ' ' . json_encode($attibuteValue));
-            if (isset($attributeMap[$attributeName])) {
-                $craftProperty = $attributeMap[$attributeName];
-                $this->assignProperty(
-                    $user,
-                    $attributeName,
-                    $attibuteValue,
-                    $craftProperty
-                );
-            } else {
-                Saml::debug('No match for: ' . $attributeName);
+            /**
+             * Loop thru attributes and set to the user
+             */
+            foreach ($assertion->getAttributes() as $attributeName => $attributeValue) {
+                Saml::debug('Attributes: ' . $attributeName . ' ' . json_encode($attributeValue));
+                if (isset($attributeMap[$attributeName])) {
+                    $craftProperty = $attributeMap[$attributeName];
+                    $this->assignProperty(
+                        $user,
+                        $attributeName,
+                        $attributeValue,
+                        $craftProperty
+                    );
+                } else {
+                    Saml::debug('No match for: ' . $attributeName);
+                }
             }
         }
 

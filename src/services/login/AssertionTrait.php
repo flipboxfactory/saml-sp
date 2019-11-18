@@ -16,7 +16,7 @@ use SAML2\Response as SamlResponse;
 
 trait AssertionTrait
 {
-    private $firstDecryptedAssertion;
+    private $decryptedAssertions = [];
 
     /**
      * @param SamlResponse $response
@@ -26,31 +26,47 @@ trait AssertionTrait
     public function getFirstAssertion(SamlResponse $response)
     {
 
-        /** @var AbstractProvider $ownProvider */
-        $ownProvider = Saml::getInstance()->getProvider()->findOwn();
 
-        // grab the first one
-        $assertion = $response->getAssertions()[0];
+        $assertions = $this->getAssertions($response);
 
-        // decrypt if needed
-        if ($ownProvider->keychain &&
-            $assertion instanceof EncryptedAssertion &&
-            is_null($this->firstDecryptedAssertion)
-        ) {
-            $assertion = SecurityHelper::decryptAssertion(
-                $assertion,
-                $ownProvider->keychain->getDecryptedKey()
-            );
-
-            // only do this once
-            $this->firstDecryptedAssertion = $assertion;
-        }
-
-
-        if (! isset($assertion)) {
+        if (! count($assertions)) {
             throw new InvalidMessage("Invalid message. No assertions found in response.");
         }
 
-        return $this->firstDecryptedAssertion ?: $assertion;
+        return $assertions[0];
+    }
+
+    /**
+     * @param SamlResponse $response
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getAssertions(SamlResponse $response)
+    {
+        /** @var AbstractProvider $ownProvider */
+        $ownProvider = Saml::getInstance()->getProvider()->findOwn();
+
+        // is there a cache already?
+        if (count($this->decryptedAssertions)) {
+            return $this->decryptedAssertions;
+        }
+
+        // grab the first one
+        foreach ($response->getAssertions() as $assertion) {
+            if ($ownProvider->keychain &&
+                $assertion instanceof EncryptedAssertion
+            ) {
+                $assertion = SecurityHelper::decryptAssertion(
+                    $assertion,
+                    $ownProvider->keychain->getDecryptedKey()
+                );
+
+                $this->decryptedAssertions[] = $assertion;
+            } else {
+                $this->decryptedAssertions[] = $assertion;
+            }
+        }
+
+        return $this->decryptedAssertions;
     }
 }

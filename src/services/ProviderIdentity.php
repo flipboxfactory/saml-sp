@@ -49,16 +49,17 @@ class ProviderIdentity extends AbstractProviderIdentityService
             MessageHelper::getIssuer($response->getIssuer())
         )->one();
 
+        $firstAssertion = $this->getFirstAssertion($response);
 
         // Get Identity
         $identity = $this->forceGet(
-            $this->getFirstAssertion($response)->getNameID()->getValue(),
+            $firstAssertion->getNameID()->getValue(),
             $idpProvider
         );
 
 
         // Get Session
-        $sessionIndex = $this->getFirstAssertion($response)->getSessionIndex();
+        $sessionIndex = $firstAssertion->getSessionIndex();
 
 
         // Set Identity Properties
