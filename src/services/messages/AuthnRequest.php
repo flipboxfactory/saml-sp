@@ -4,18 +4,38 @@ namespace flipbox\saml\sp\services\messages;
 
 use craft\base\Component;
 use flipbox\keychain\records\KeyChainRecord;
+use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\Saml;
 use SAML2\AuthnRequest as SamlAuthnRequest;
 use SAML2\Constants;
+use SAML2\XML\md\EndpointType;
 use yii\base\Event;
 
 class AuthnRequest extends Component
 {
 
     const EVENT_AFTER_MESSAGE_CREATED = 'eventAfterMessageCreated';
+
+    /**
+     * @param AbstractProvider $identityProvider
+     * @return \SAML2\XML\md\IndexedEndpointType|null
+     * @throws InvalidMetadata
+     */
+    private function firstIdpSsoService(AbstractProvider $identityProvider): EndpointType
+    {
+        if (!($service = $identityProvider->firstIdpSsoService(Constants::BINDING_HTTP_POST))) {
+            $service = $identityProvider->firstIdpSsoService();
+        }
+
+        if (!$service) {
+            throw new InvalidMetadata("IdP Metadata is missing SSO Service");
+        }
+
+        return $service;
+    }
 
     /**
      * @param AbstractProvider $myServiceProvider
@@ -28,12 +48,9 @@ class AuthnRequest extends Component
         AbstractProvider $identityProvider
     ): SamlAuthnRequest {
 
-        $location = $identityProvider->firstIdpSsoService(
-            /**
-            * @todo support http redirect
-            */
-            Constants::BINDING_HTTP_POST
-        )->getLocation();
+        $idpSsoService = $this->firstIdpSsoService($identityProvider);
+
+        $location = $idpSsoService->getLocation();
 
         /**
          * @var $samlSettings Settings
@@ -55,12 +72,7 @@ class AuthnRequest extends Component
         );
 
         $authnRequest->setProtocolBinding(
-            $identityProvider->firstIdpSsoService(
-                /**
-                * @todo support http redirect
-                */
-                Constants::BINDING_HTTP_POST
-            )->getBinding()
+            $idpSsoService->getBinding()
         );
 
         $authnRequest->setId($requestId = MessageHelper::generateId());

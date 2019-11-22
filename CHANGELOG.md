@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.13 - 2019-11-21
+### Added
+- Added support for HTTP-Redirect https://github.com/flipboxfactory/saml-sp/issues/41
+
 ## 2.0.12 - 2019-11-21
 ### Fixed
 - Fixed issue with too many redirects when the site is set to offline. https://github.com/flipboxfactory/saml-sp/issues/42
