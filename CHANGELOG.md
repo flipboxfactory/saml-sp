@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.12 - 2019-11-21
+### Fixed
+- Fixed issue with too many redirects when the site is set to offline. https://github.com/flipboxfactory/saml-sp/issues/42
+
 ## 2.0.11 - 2019-11-18
 ### Added
 - Added support for parsing multiple assertions. Possibly related to https://github.com/flipboxfactory/saml-sp/issues/40

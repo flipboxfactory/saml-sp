@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML Service Provider",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [
@@ -41,7 +41,7 @@
   },
   "extra": {
     "name": "SAML Service Provider",
-    "version":"2.0.11",
+    "version":"2.0.12",
     "schemaVersion":"2.0.0",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",

@@ -100,15 +100,15 @@ class Saml extends AbstractPlugin
      */
     public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event)
     {
-
-        $event->rules = array_merge(
-            $event->rules,
-            static::getInstance()->getSettings()->enableCpLoginButtons ?
-                [
-                    'login' => 'saml-sp/cp/view/login',
-                ] : []
-        );
-
+        if (\Craft::$app->getIsLive()) {
+            $event->rules = array_merge(
+                $event->rules,
+                static::getInstance()->getSettings()->enableCpLoginButtons ?
+                    [
+                        'login' => 'saml-sp/cp/view/login',
+                    ] : []
+            );
+        }
         parent::onRegisterCpUrlRules($event);
     }
 
