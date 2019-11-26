@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.14 - 2019-11-26
+### Added
+- Fixed admin login `Via <IdP>` button relay state, redirecting properly now.
+
 ## 2.0.13 - 2019-11-21
 ### Added
 - Added support for HTTP-Redirect https://github.com/flipboxfactory/saml-sp/issues/41
