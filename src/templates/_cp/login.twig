@@ -57,7 +57,7 @@
             {% if providers %}
             {% for provider in providers.all %}
             '<div class="buttons">'+
-            '<a href="{{ provider.getLoginRequestPath }}" class="btn submit">Via {{ provider.label ? provider.label : provider.entityId }}</a>'+
+            '<a href="{{ provider.getLoginRequestPath }}?RelayState={{ craft.app.user.returnUrl() }}" class="btn submit">Via {{ provider.label ? provider.label : provider.entityId }}</a>'+
             '</div>'+
             {% endfor %}
             {% endif %}
