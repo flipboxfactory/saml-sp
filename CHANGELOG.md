@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+## 2.0.15 - 2020-01-03
+### Fixed
+- RelayState when going directly to `/admin/login`. If the siteUrl matches the returnUrl, the user will now be redirected to the dashboard (`cpUrl('dashboard')`).
+
 ## 2.0.14 - 2019-11-26
 ### Added
 - Fixed admin login `Via <IdP>` button relay state, redirecting properly now.
