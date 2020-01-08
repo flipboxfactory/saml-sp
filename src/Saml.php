@@ -7,6 +7,7 @@
 
 namespace flipbox\saml\sp;
 
+use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
@@ -34,6 +35,7 @@ use yii\base\Event;
  */
 class Saml extends AbstractPlugin
 {
+
     /**
      * @inheritdoc
      */
@@ -43,6 +45,11 @@ class Saml extends AbstractPlugin
 
         $this->initComponents();
         $this->initEvents();
+
+        // Switch target to console controllers
+        if (\Craft::$app instanceof ConsoleApplication) {
+            $this->controllerNamespace = __NAMESPACE__ . '\commands';
+        }
     }
 
     /**
@@ -112,7 +119,6 @@ class Saml extends AbstractPlugin
         parent::onRegisterCpUrlRules($event);
     }
 
-
     /**
      * @return Settings
      */
@@ -134,6 +140,28 @@ class Saml extends AbstractPlugin
     /**
      * Components
      */
+
+    /**
+     * @noinspection PhpDocMissingThrowsInspection
+     * @return Provider
+     */
+    public function getProvider()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->get('provider');
+    }
+
+    /**
+     * @noinspection PhpDocMissingThrowsInspection
+     * @return ProviderIdentity
+     */
+    public function getProviderIdentity()
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->get('providerIdentity');
+    }
 
     /**
      * @noinspection PhpDocMissingThrowsInspection

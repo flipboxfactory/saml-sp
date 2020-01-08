@@ -33,6 +33,19 @@ This should not create any problems. If the appearance is a aesthetic issue for 
 use the Primary site when creating "My Provider". You can also override the default Entity Id if desired.  
 ::: 
 
+## Does the plugin support a metadata URL?
+Answer: Yes, as of version 2.1. If you use providers like ADFS who periodically renew their metadata and certificates, 
+you can automate the syncing by running the following command: 
+
+```shell script
+php craft saml-sp/metadata/refresh-with-url <uid>
+```
+
+An example cronjob would look like this:
+```shell script
+0 0 * * * php craft saml-sp/metadata/refresh-with-url <uid> || /opt/notify-admins-on-fail.sh
+```
+
 ## Error: Trying to get property 'keychain' of non-object
 Answer: This usually means "My Provider", the sites metadata/provider can't be found, or possibly, hasn't 
 been created. Go to `https://<your domain>/admin/saml-sp/metadata/my-provider` and create a new provider

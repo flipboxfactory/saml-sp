@@ -1,5 +1,15 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.0 - 2020-01-07
+### Fixed
+- Fixing issue with requiring admin when project config when `allowAdminChanges` general config is set.
+- Duplicate `metadata` html attribute id on the edit page
+- Fixed issue with large Metadata too big for the db metadata column (requires migration) https://github.com/flipboxfactory/saml-sp/issues/48
+
+### Added
+- Support for Saving Metadata via url (requires migration) https://github.com/flipboxfactory/saml-sp/issues/47
+- Support for 3.4 login page
+
 ## 2.0.15 - 2020-01-03
 ### Fixed
 - RelayState when going directly to `/admin/login`. If the siteUrl matches the returnUrl, the user will now be redirected to the dashboard (`cpUrl('dashboard')`).
