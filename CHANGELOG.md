@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.1 - 2020-01-08
+### Fixed
+- Fixing issue with postgres uid - https://github.com/flipboxfactory/saml-sp/issues/49
+
 # 2.1.0 - 2020-01-07
 ### Fixed
 - Fixing issue with requiring admin when project config when `allowAdminChanges` general config is set.
