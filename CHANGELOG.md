@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.1.1 - 2020-01-08
+### Fixed
+- Fixing table name for craft installs with prefixes.
+
 # 2.1.1 - 2020-01-08
 ### Fixed
 - Fixing issue with postgres uid - https://github.com/flipboxfactory/saml-sp/issues/49

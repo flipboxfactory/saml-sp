@@ -9,6 +9,6 @@ class m200107_200148_metadata_options extends \flipbox\saml\core\migrations\m200
 
     protected static function getProviderTableName()
     {
-        return ProviderRecord::tableAlias();
+        return ProviderRecord::tableName();
     }
 }
