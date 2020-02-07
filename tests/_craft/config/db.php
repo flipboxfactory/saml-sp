@@ -11,6 +11,7 @@
 return [
     'driver' => getenv('DB_DRIVER'),
     'server' => getenv('DB_SERVER'),
+    'dsn' => getenv('DB_DSN'),
     'user' => getenv('DB_USER'),
     'password' => getenv('DB_PASSWORD'),
     'database' => getenv('DB_DATABASE'),
