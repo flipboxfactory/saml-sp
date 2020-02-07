@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.2 - 2020-02-06
+### Fixed
+- Fixing issue with migration from 1.x to 2.x. Fixes: https://github.com/flipboxfactory/saml-sp/issues/51
+
 # 2.1.1.2 - 2020-01-08
 ### Fixed
 - Fixing issue with Craft 3.2 twig error within the editableTable
