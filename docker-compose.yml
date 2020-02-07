@@ -19,11 +19,12 @@ services:
             XDEBUG_ON: "yes"
             XDEBUG_HOST: "host.docker.internal"
             XDEBUG_IDEKEY: "PHPSTORM"
-            DB_SERVER: db
+            DB_DSN: 'mysql:host=db;dbname=test'
+            # DB_SERVER: db
             DB_USER: root
             DB_PASSWORD: password
-            DB_DATABASE: test
-            DB_DRIVER: mysql
+            # DB_DATABASE: test
+            # DB_DRIVER: mysql
         command: php ./vendor/bin/codecept run -vv --coverage --coverage-html
     db:
         image: 'mysql:5.7'
