@@ -1,4 +1,4 @@
-ARG PHP_IMAGE=flipbox/php:72-apache
+ARG PHP_IMAGE=flipbox/php:73-apache
 FROM ${PHP_IMAGE} AS composer
 
 COPY ./composer.json /var/www/html/

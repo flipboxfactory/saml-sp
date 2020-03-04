@@ -12,17 +12,16 @@ class HelperTest extends Unit
 {
     /** @var User */
     private $user;
+
     protected function _before()
     {
-        \Craft::$app->elements->saveElement(
-            $this->user = new User([
-                'email' => 'test@example.com',
-                'username' => 'tester',
-                'firstName' => 'Test First Name',
-                'lastName' => 'Test Last Name',
-            ])
-        );
-        UserHelper::enableUser($this->user);
+        parent::_before();
+        $this->user = new User([
+            'email' => 'test@example.com',
+            'username' => 'tester',
+            'firstName' => 'Test First Name',
+            'lastName' => 'Test Last Name',
+        ]);
     }
 
     public function testUserHelper()

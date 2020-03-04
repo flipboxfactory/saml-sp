@@ -7,9 +7,8 @@ services:
     test:
         build:
             context: .
-            dockerfile: tests/Dockerfile
             args:
-                PHP_IMAGE: flipbox/php:72-apache
+                PHP_IMAGE: flipbox/php:73-apache
         depends_on:
             - db
         volumes:
