@@ -13,3 +13,6 @@ phpcs: composer-install
 phpcbf: composer-install
 	docker run --rm -it -v "${PWD}:/var/www/html" \
 	    flipbox/php:72-apache sh -c "./vendor/bin/phpcbf --standard=psr2 ./src"
+
+test:
+	docker-compose run test

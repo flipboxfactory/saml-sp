@@ -10,42 +10,46 @@ use flipbox\saml\sp\helpers\UserHelper;
 
 class HelperTest extends Unit
 {
-
-    public function testUserHelper()
+    /** @var User */
+    private $user;
+    protected function _before()
     {
         \Craft::$app->elements->saveElement(
-            $user = new User([
+            $this->user = new User([
                 'email' => 'test@example.com',
                 'username' => 'tester',
                 'firstName' => 'Test First Name',
                 'lastName' => 'Test Last Name',
             ])
         );
+        UserHelper::enableUser($this->user);
+    }
 
-        UserHelper::enableUser($user);
+    public function testUserHelper()
+    {
         $this->assertTrue(
             UserHelper::isUserActive(
-                $user
+                $this->user
             )
         );
         $this->assertFalse(
             UserHelper::isUserArchived(
-                $user
+                $this->user
             )
         );
         $this->assertFalse(
             UserHelper::isUserLocked(
-                $user
+                $this->user
             )
         );
         $this->assertFalse(
             UserHelper::isUserSuspended(
-                $user
+                $this->user
             )
         );
         $this->assertFalse(
             UserHelper::isUserPending(
-                $user
+                $this->user
             )
         );
 
