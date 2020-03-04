@@ -1,5 +1,10 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.3 - 2020-03-04
+### Fixed
+- Fixes issue with `GeneralConfig::headlessMode` by explicitly setting response to HTML. Fixes: https://github.com/flipboxfactory/saml-sp/issues/53
+- Fixed issue with setting custom fields in Craft 3.4. Now using `setFieldValue`. Fixes: https://github.com/flipboxfactory/saml-sp/issues/53
+
 # 2.1.2 - 2020-02-06
 ### Fixed
 - Fixing issue with migration from 1.x to 2.x. Fixes: https://github.com/flipboxfactory/saml-sp/issues/51

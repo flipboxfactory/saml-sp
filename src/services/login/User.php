@@ -233,7 +233,7 @@ class User
                     $craftProperty
                 )
             );
-            $user->{$craftProperty} = $attributeValue;
+            $user->setFieldValue($craftProperty, $attributeValue);
         } elseif (is_callable($craftProperty)) {
             Saml::debug(
                 sprintf(
