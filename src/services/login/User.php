@@ -6,15 +6,17 @@
 
 namespace flipbox\saml\sp\services\login;
 
+use craft\base\Field;
 use craft\elements\User as UserElement;
+use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\ProviderHelper;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
-use yii\base\UserException;
 use SAML2\Response as SamlResponse;
+use yii\base\UserException;
 
 /**
  * Class User
@@ -23,6 +25,14 @@ use SAML2\Response as SamlResponse;
 class User
 {
     use AssertionTrait;
+    /**
+     * @var FieldLayout|null
+     */
+    private $fieldLayout;
+    /**
+     * @var Field[]
+     */
+    private $fields = [];
 
     /**
      * @param SamlResponse $response
@@ -150,7 +160,7 @@ class User
         }
 
         foreach ($this->getAssertions($response) as $assertion) {
-            $hasAttributes = count($assertion->getAttributes()) > 1;
+            $hasAttributes = count($assertion->getAttributes()) > 0;
             Saml::debug('assertion attributes: ' . \json_encode($assertion->getAttributes()));
             if ($hasAttributes) {
                 $this->transform($response, $user);
@@ -212,6 +222,12 @@ class User
         return $user;
     }
 
+    /**
+     * @param UserElement $user
+     * @param $attributeName
+     * @param $attributeValue
+     * @param $craftProperty
+     */
     protected function assignProperty(
         UserElement $user,
         $attributeName,
@@ -233,7 +249,8 @@ class User
                     $craftProperty
                 )
             );
-            $user->setFieldValue($craftProperty, $attributeValue);
+
+            $this->setSimpleProperty($user, $craftProperty, $attributeValue);
         } elseif (is_callable($craftProperty)) {
             Saml::debug(
                 sprintf(
@@ -245,6 +262,52 @@ class User
             call_user_func($craftProperty, $user, [
                 $attributeName => $originalValues,
             ]);
+        }
+    }
+
+    /**
+     * @param UserElement $user
+     * @return Field|null
+     */
+    protected function getFieldLayoutField(UserElement $user, $fieldHandle)
+    {
+        if (! $this->fieldLayout) {
+            $this->fieldLayout = $user->getFieldLayout();
+        }
+        if (is_null($this->fieldLayout)) {
+            return null;
+        }
+
+        if (! isset($this->fields[$fieldHandle])) {
+            $this->fields[$fieldHandle] = $this->fieldLayout->getFieldByHandle($fieldHandle);
+        }
+
+
+        return $this->fields[$fieldHandle];
+    }
+
+    /**
+     * @param UserElement $user
+     * @param string $name
+     * @param mixed $value
+     */
+    private function setSimpleProperty(UserElement $user, $name, $value)
+    {
+        $field = $this->getFieldLayoutField($user, $name);
+
+        Saml::info(
+            sprintf(
+                '%s as %s. Is Field? %s',
+                $name,
+                $value,
+                $field instanceof Field ? $field->id : 'Nope'
+            )
+        );
+
+        if (! is_null($field)) {
+            $user->setFieldValue($name, $value);
+        } else {
+            $user->{$name} = $value;
         }
     }
 
