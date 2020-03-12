@@ -7,6 +7,7 @@ use craft\console\Controller;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use yii\console\ExitCode;
+use yii\console\widgets\Table;
 
 /**
  * Automate Provider Operations
@@ -15,6 +16,37 @@ use yii\console\ExitCode;
  */
 class MetadataController extends Controller
 {
+
+    public function actionIndex()
+    {
+        $providerQuery = ProviderRecord::find();
+
+        $rows = [];
+        foreach ($providerQuery->all() as $provider) {
+            /** @var ProviderRecord $provider */
+
+            $rows[] = [
+                $provider->id,
+                $provider->getType(),
+                $provider->label,
+                $provider->entityId,
+                $provider->uid,
+                $provider->enabled ? 'enabled' : 'disabled',
+            ];
+        }
+        $this->stdout(Table::widget([
+            'headers' => [
+                'ID',
+                'TYPE',
+                'LABEL',
+                'ENTITY ID',
+                'UID',
+                'ENABLED/DISABLED',
+            ],
+            'rows' => $rows,
+        ]));
+        return ExitCode::OK;
+    }
 
     /**
      * Refresh and save the metadata from the URL saved on the provider.
@@ -57,6 +89,7 @@ class MetadataController extends Controller
         $entityDescriptor = Saml::getInstance()->getMetadata()->fetchByUrl($url);
 
         $provider->metadata = $entityDescriptor->toXML()->ownerDocument->saveXML();
+        $provider->setMetadataModel($entityDescriptor);
 
         Saml::getInstance()->getProvider()->save($provider);
         $message = sprintf('Provider %s saved! (%s)', $uid, $entityDescriptor->getEntityID());

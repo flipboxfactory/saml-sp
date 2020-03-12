@@ -1,5 +1,12 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.5 - 2020-03-12
+### Fixed
+- Fixed issue with Metadata URL not overwriting the metadata correctly via the control panel and cli.
+
+### Added
+- CLI command for listing all providers. See `./craft saml-sp/metadata`.
+
 # 2.1.4 - 2020-03-05
 ### Fixed
 - Fixed issue introduced in 2.1.3 Fixes: https://github.com/flipboxfactory/saml-sp/issues/53
