@@ -60,14 +60,6 @@ class AuthnRequest extends Component
         $authnRequest = new \SAML2\AuthnRequest();
 
         $authnRequest->setAssertionConsumerServiceURL(
-            $myServiceProvider->firstSpAcsService(Constants::BINDING_HTTP_POST)->getLocation()
-        );
-
-        $authnRequest->setAssertionConsumerServiceIndex(
-            "0"
-        );
-
-        $authnRequest->setAssertionConsumerServiceURL(
             $samlSettings->getDefaultLoginEndpoint()
         );
 
