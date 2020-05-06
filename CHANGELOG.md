@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.7 - 2020-05-06
+### Fixed
+- Missed a spot with https://github.com/flipboxfactory/saml-sp/issues/57
+
 # 2.1.6 - 2020-05-05
 ### Fixed
 - Issue with missing Assertion Consumer Service URL: Fixing https://github.com/flipboxfactory/saml-sp/issues/58
