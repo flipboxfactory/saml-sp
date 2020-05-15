@@ -89,7 +89,7 @@ class LoginController extends AbstractController
         $relayState = $response->getRelayState() ?: \Craft::$app->request->getParam('RelayState');
         try {
             $redirect = $relayState;
-            if(Saml::getInstance()->getSettings()->encodeRelayState) {
+            if (Saml::getInstance()->getSettings()->encodeRelayState) {
                 $redirect = base64_decode($relayState);
             }
 
@@ -206,7 +206,7 @@ class LoginController extends AbstractController
                 null
             )
         );
-        if(Saml::getInstance()->getSettings()->encodeRelayState) {
+        if (Saml::getInstance()->getSettings()->encodeRelayState) {
             $relayState = base64_encode($relayState);
         }
 
@@ -221,6 +221,4 @@ class LoginController extends AbstractController
 
         Craft::$app->end();
     }
-
-
 }

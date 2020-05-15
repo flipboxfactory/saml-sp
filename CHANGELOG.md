@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.8 - 2020-05-15
+### Added
+- Adding setting to turn off base64 encoding of the RelayState: `encodeRelayState`. 
+
 # 2.1.7 - 2020-05-06
 ### Fixed
 - Missed a spot with https://github.com/flipboxfactory/saml-sp/issues/57
