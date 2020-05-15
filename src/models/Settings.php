@@ -169,4 +169,10 @@ class Settings extends AbstractSettings implements SettingsInterface
      * @var string
      */
     public $relayStateOverrideParam = 'RelayState';
+
+    /**
+     * Whether to base64_encode the relay state or not
+     * @var bool
+     */
+    public $encodeRelayState = true;
 }

@@ -1,8 +1,8 @@
 # DOCS
 docs-build:
-	npm run docs:build
+	yarn docs:build
 docs-dev:
-	npm run docs:dev
+	yarn docs:dev
 
 composer-install:
 	docker run --rm -it -v "${PWD}:/var/www/html/" flipbox/php:72-apache sh -c "composer install"

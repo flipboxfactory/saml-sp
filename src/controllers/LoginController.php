@@ -88,7 +88,11 @@ class LoginController extends AbstractController
         //get relay state but don't error!
         $relayState = $response->getRelayState() ?: \Craft::$app->request->getParam('RelayState');
         try {
-            $redirect = base64_decode($relayState);
+            $redirect = $relayState;
+            if(Saml::getInstance()->getSettings()->encodeRelayState) {
+                $redirect = base64_decode($relayState);
+            }
+
             Saml::info('RelayState: ' . $redirect);
         } catch (\Exception $e) {
             $redirect = \Craft::$app->getUser()->getReturnUrl();
@@ -191,17 +195,24 @@ class LoginController extends AbstractController
             $authnRequest->getID()
         );
 
-        $authnRequest->setRelayState(
-            SerializeHelper::toBase64(
-                Craft::$app->getUser()->getReturnUrl(
-                    Craft::$app->request->getParam(
-                        Saml::getInstance()->getSettings()->relayStateOverrideParam,
-                        null
-                    )
-                )
+
+        // Grab the return URL, or use a param sent as a default
+        // TODO - seems like if there's a parameter sent, that should be used as an override.
+        $relayState = Craft::$app->getUser()->getReturnUrl(
+            // Is RelayState set on this request?
+            // You can override the param within settings
+            Craft::$app->request->getParam(
+                Saml::getInstance()->getSettings()->relayStateOverrideParam,
+                null
             )
         );
+        if(Saml::getInstance()->getSettings()->encodeRelayState) {
+            $relayState = base64_encode($relayState);
+        }
 
+        $authnRequest->setRelayState(
+            $relayState
+        );
 
         Factory::send(
             $authnRequest,
@@ -210,4 +221,6 @@ class LoginController extends AbstractController
 
         Craft::$app->end();
     }
+
+
 }
