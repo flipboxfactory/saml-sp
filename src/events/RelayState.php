@@ -3,7 +3,6 @@
 
 namespace flipbox\saml\sp\events;
 
-
 use flipbox\saml\sp\records\ProviderRecord;
 use yii\base\Event;
 
@@ -35,5 +34,4 @@ class RelayState extends Event
      * @var string
      */
     public $redirect;
-
 }
