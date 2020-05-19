@@ -15,16 +15,30 @@ use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\core\services\bindings\Factory;
 use flipbox\saml\core\validators\Response as ResponseValidator;
+use flipbox\saml\sp\events\RelayState;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
 use SAML2\AuthnRequest;
 use SAML2\Response as SamlResponse;
+use yii\base\Event;
 use yii\web\HttpException;
 
 class LoginController extends AbstractController
 {
     use SamlPluginEnsured;
+
+    /**
+     * Happens before the RelayState is used to redirect the user to where they were
+     * initially trying to go.
+     */
+    const EVENT_BEFORE_RELAYSTATE_REDIRECT = 'eventBeforeRelayStateRedirect';
+    /**
+     * Happens after the RelayState is created and before the AuthNRequest
+     * is sent off to the IdP. Use this event if you want to modify the
+     * RelyState before it's sent to the IdP.
+     */
+    const EVENT_AFTER_RELAYSTATE_CREATION = 'eventBeforeRelayStateCreation';
 
     protected $allowAnonymous = [
         'actionIndex',
@@ -98,8 +112,19 @@ class LoginController extends AbstractController
             $redirect = \Craft::$app->getUser()->getReturnUrl();
         }
 
+        Event::trigger(
+            self::class,
+            self::EVENT_BEFORE_RELAYSTATE_REDIRECT,
+            $event = new RelayState([
+                'idp' => $identityProvider,
+                'sp' => $serviceProvider,
+                'relayState' => $relayState,
+                'redirect' => $redirect,
+            ])
+        );
+
         Craft::$app->user->removeReturnUrl();
-        return $this->redirect($redirect);
+        return $this->redirect($event->redirect);
     }
 
     /**
@@ -210,8 +235,18 @@ class LoginController extends AbstractController
             $relayState = base64_encode($relayState);
         }
 
+        Event::trigger(
+            self::class,
+            self::EVENT_AFTER_RELAYSTATE_CREATION,
+            $event = new RelayState([
+                'idp' => $idp,
+                'sp' => $sp,
+                'relayState' => $relayState,
+            ])
+        );
+
         $authnRequest->setRelayState(
-            $relayState
+            $event->relayState
         );
 
         Factory::send(

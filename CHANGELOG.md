@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.9 - 2020-05-18
+### Added
+- Adding Yii events to allow devs to modify RelayState 
+
 # 2.1.8 - 2020-05-15
 ### Added
 - Adding setting to turn off base64 encoding of the RelayState: `encodeRelayState`. 

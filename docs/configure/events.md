@@ -11,8 +11,11 @@ There are events within the plugin that developers can hook into.
 `\flipbox\saml\sp\services\Login::EVENT_BEFORE_RESPONSE_TO_USER`
 
 - Modify the user after they've been synced with Saml response attributes and saved.
-<br>
  `\flipbox\saml\sp\services\Login::EVENT_AFTER_RESPONSE_TO_USER`
+- Modify where the user is redirected (the resulting value the RelayState).
+`\flipbox\saml\sp\controllers\LoginController::EVENT_BEFORE_RELAYSTATE_REDIRECT` 
+- Modify the RelayState after it's created and before it's sent off to the IdP (to be returned back to the SP/Craft)
+`\flipbox\saml\sp\controllers\LoginController::EVENT_AFTER_RELAYSTATE_CREATION`
     
 ## Examples
 
@@ -66,4 +69,25 @@ Event::on(
     }
 );
 ``` 
+### Modify the Redirect After Successful Login
+```php
+    use flipbox\saml\sp\controllers\LoginController;
+    use flipbox\saml\sp\events\RelayState;
+    use yii\base\Event;
+    Event::on(
+        LoginController::class,
+        LoginController::EVENT_BEFORE_RELAYSTATE_REDIRECT,
+        function(RelayState $event) {
+            // This value will be used to redirect the user
+            $event->redirect = $event->redirect. '?logged-in-via=sso';
+            \flipbox\saml\sp\Saml::info('Raw RelayState: ' . $event->relayState);
+            \flipbox\saml\sp\Saml::info('User will be redirect to: ' . $event->redirect);
+
+            
+            // Other fun stuff in this event ...
+            \flipbox\saml\sp\Saml::info('IdP: ' . $event->idp->getEntityId());
+            \flipbox\saml\sp\Saml::info('SP: ' . $event->sp->getEntityId());
+        }
+    );
+```
 
