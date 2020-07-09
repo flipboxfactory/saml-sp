@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.10 - 2020-07-09
+### Fixed
+- Issue with saving groups with non-ascii conforming groups.
+
 # 2.1.9 - 2020-05-18
 ### Added
 - Adding Yii events to allow devs to modify RelayState 

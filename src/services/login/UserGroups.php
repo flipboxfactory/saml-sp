@@ -34,15 +34,17 @@ class UserGroups
         $groupHandle = StringHelper::camelCase($groupName);
 
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
+            $userGroup = new UserGroup(
+                [
+                    'name' => $groupName,
+                    'handle' => StringHelper::toAscii($groupHandle),
+                ]
+            );
             if (! \Craft::$app->getUserGroups()->saveGroup(
-                $userGroup = new UserGroup(
-                    [
-                        'name' => $groupName,
-                        'handle' => $groupHandle,
-                    ]
-                )
+                $userGroup
             )
             ) {
+                Saml::error(json_encode($userGroup->getErrors()));
                 throw new UserException("Error saving new group {$groupHandle}");
             }
         }
