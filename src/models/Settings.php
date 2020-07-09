@@ -44,7 +44,7 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $wantsSignedAssertions = true;
 
     /**
-     * When a user logs into the IDP and is in Craft, that user will be created.
+     * When true, if the user is not found in Craft (after the user logs in successfully), the user will be created.
      * If this is false, a user exception will be thrown.
      *
      * @var bool
