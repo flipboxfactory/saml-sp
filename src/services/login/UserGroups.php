@@ -24,16 +24,19 @@ class UserGroups
 
     /**
      * @param string $groupName
-     * @return UserGroup
+     * @return UserGroup|null
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */
-    protected function findOrCreate($groupName): UserGroup
+    protected function findOrCreate($groupName)
     {
 
         $groupHandle = StringHelper::camelCase($groupName);
 
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
+            if (Saml::getInstance()->getSettings()->autoCreateGroups !== true) {
+                return null;
+            }
             $userGroup = new UserGroup(
                 [
                     'name' => $groupName,
@@ -128,8 +131,8 @@ class UserGroups
                     $attributeValue = [$attributeValue];
                 }
 
-                foreach ($attributeValue as $values) {
-                    if ($group = $this->findOrCreate($values)) {
+                foreach ($attributeValue as $groupName) {
+                    if ($group = $this->findOrCreate($groupName)) {
                         Saml::debug(
                             sprintf(
                                 'Assigning group: %s',
@@ -137,6 +140,13 @@ class UserGroups
                             )
                         );
                         $groups[] = $group->id;
+                    } else {
+                        Saml::debug(
+                            sprintf(
+                                'Group not found or created for %s',
+                                $groupName
+                            )
+                        );
                     }
                 }
             }

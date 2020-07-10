@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.11 - 2020-07-10
+### Fixed
+- Issue with `autoCreateGroups` plugin setting not doing what it's supposed to do. #65
+
 # 2.1.10 - 2020-07-09
 ### Fixed
 - Issue with saving groups with non-ascii conforming groups.
