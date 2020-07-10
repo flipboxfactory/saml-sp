@@ -27,6 +27,9 @@ class Provider extends AbstractProviderService
      */
     public function findOwn()
     {
-        return $this->findByEntityId(Saml::getInstance()->getSettings()->getEntityId())->one();
+        return $this->findByEntityId(Saml::getInstance()->getSettings()->getEntityId())->andWhere([
+            /** By Definition this needs to be a provider that is enabled. */
+            'enabled' => 1,
+        ])->one();
     }
 }

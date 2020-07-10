@@ -12,6 +12,7 @@ use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\ProviderHelper;
+use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
@@ -188,23 +189,25 @@ class User
     ) {
 
         foreach ($this->getAssertions($response) as $assertion) {
+            /** @var ProviderInterface $idpProvider */
+            $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
+                MessageHelper::getIssuer($response->getIssuer())
+            )->one();
             /**
              * Check the provider first
              */
             $attributeMap = ProviderHelper::providerMappingToKeyValue(
-                $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-                    MessageHelper::getIssuer($response->getIssuer())
-                )->one()
+                $idpProvider
             ) ?:
                 Saml::getInstance()->getSettings()->responseAttributeMap;
 
-            Saml::debug('Attribute Map: ' . json_encode($attributeMap));
+            Saml::debug('Attribute Map: ' . \json_encode($attributeMap));
 
             /**
              * Loop thru attributes and set to the user
              */
             foreach ($assertion->getAttributes() as $attributeName => $attributeValue) {
-                Saml::debug('Attributes: ' . $attributeName . ' ' . json_encode($attributeValue));
+                Saml::debug('Attributes: ' . $attributeName . ' ' . \json_encode($attributeValue));
                 if (isset($attributeMap[$attributeName])) {
                     $craftProperty = $attributeMap[$attributeName];
                     $this->assignProperty(
@@ -364,10 +367,11 @@ class User
     }
 
     /**
-     * @param $emailOrUsername
-     * @return UserElement|null
+     * @param $usernameOrEmail
+     * @param bool $archived
+     * @return array|bool|\craft\base\ElementInterface|UserElement|null
      */
-    protected function getByUsernameOrEmail($usernameOrEmail, bool $archived = false)
+    protected function getByUsernameOrEmail($usernameOrEmail, $archived = false)
     {
 
         return UserElement::find()

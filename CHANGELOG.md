@@ -1,5 +1,9 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.1.12 - 2020-07-10
+### Fixed
+- Issue with diabled provider (My Provider) being picked as own provider when there's an enabled and disable provider with the same EntityId #68
+
 # 2.1.11 - 2020-07-10
 ### Fixed
 - Issue with `autoCreateGroups` plugin setting not doing what it's supposed to do. #65

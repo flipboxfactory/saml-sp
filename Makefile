@@ -1,4 +1,4 @@
-PHP_IMAGE := flipbox/php:73-apache
+PHP_IMAGE := flipbox/php:74-apache
 #
 # DOCS
 docs-build:
