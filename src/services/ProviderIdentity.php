@@ -48,8 +48,7 @@ class ProviderIdentity extends AbstractProviderIdentityService
         SamlResponse $response,
         ProviderRecord $serviceProvider,
         ProviderRecord $idpProvider
-    )
-    {
+    ) {
 
         $firstAssertion = $this->getFirstAssertion($response, $serviceProvider);
 
