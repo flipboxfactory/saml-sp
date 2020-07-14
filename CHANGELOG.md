@@ -1,6 +1,6 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
-# 2.2.0 - TBD
+# 2.2.0 - 2020-07-14
 
 ### Added
 - More unit testing!
