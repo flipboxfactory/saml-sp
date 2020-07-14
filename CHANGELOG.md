@@ -1,8 +1,23 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
+# 2.2.0 - TBD
+
+### Added
+- More unit testing!
+
+### Changed
+- Updated saml-core which upgraded the `simplesamlphp/saml2` library.
+- `\flipbox\saml\sp\services\login\UserGroups::assignDefaultGroups` to a protected method
+- `\flipbox\saml\sp\services\login\UserGroups::syncByAssertion` to a protected method
+- `\flipbox\saml\sp\services\login\UserGroups::getDefaultGroups` to a protected method
+
+### Removed
+- `\flipbox\saml\sp\services\Login::login`
+
 # 2.1.12 - 2020-07-10
 ### Fixed
-- Issue with diabled provider (My Provider) being picked as own provider when there's an enabled and disable provider with the same EntityId #68
+- Issue with diabled provider (My Provider) being picked as own provider when there's an enabled and disable provider 
+with the same EntityId #68
 
 # 2.1.11 - 2020-07-10
 ### Fixed

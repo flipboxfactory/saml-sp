@@ -14,7 +14,9 @@ use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\ProviderHelper;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\helpers\UserHelper;
+use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Response as SamlResponse;
 use yii\base\UserException;
@@ -41,10 +43,10 @@ class User
      * @throws InvalidMessage
      * @throws UserException
      */
-    public function getByResponse(SamlResponse $response)
+    public function getByResponse(SamlResponse $response, ProviderRecord $serviceProvider)
     {
 
-        $assertion = $this->getFirstAssertion($response);
+        $assertion = $this->getFirstAssertion($response, $serviceProvider);
 
         if (! $assertion->getNameId()) {
             throw new InvalidMessage('Name ID is missing.');
@@ -94,28 +96,32 @@ class User
     /**
      * @param UserElement $user
      * @param SamlResponse $response
+     * @param ProviderRecord $idp
+     * @param Settings $settings
      * @throws UserException
      * @throws \Throwable
      * @throws \craft\errors\ElementNotFoundException
      * @throws \yii\base\Exception
      */
-    public function sync(UserElement $user, SamlResponse $response)
-    {
+    public function sync(
+        UserElement $user,
+        SamlResponse $response,
+        ProviderRecord $idp,
+        ProviderRecord $sp,
+        Settings $settings
+    ) {
 
         // enable and transform the user
-        $this->construct($user, $response);
-
+        $this->construct(
+            $user,
+            $response,
+            $idp,
+            $sp,
+            $settings
+        );
 
         // Save
         $this->save($user);
-
-
-        // Sync groups depending on the plugin setting.
-        Saml::getInstance()->getUserGroups()->sync($user, $response);
-
-
-        // Sync defaults
-        Saml::getInstance()->getUserGroups()->assignDefaultGroups($user);
     }
 
     /**
@@ -145,26 +151,39 @@ class User
     /**
      * @param UserElement $user
      * @param SamlResponse $response
+     * @param ProviderRecord $idp
+     * @param Settings $settings
      * @throws UserException
      * @throws \Throwable
      */
-    protected function construct(UserElement $user, SamlResponse $response)
-    {
+    protected function construct(
+        UserElement $user,
+        SamlResponse $response,
+        ProviderRecord $idp,
+        ProviderRecord $sp,
+        Settings $settings
+    ) {
         /**
          * Is User Active?
          */
         if (! UserHelper::isUserActive($user)) {
-            if (! Saml::getInstance()->getSettings()->enableUsers) {
+            if (! $settings->enableUsers) {
                 throw new UserException('User access denied.');
             }
             UserHelper::enableUser($user);
         }
 
-        foreach ($this->getAssertions($response) as $assertion) {
+        foreach ($this->getAssertions($response, $sp) as $assertion) {
             $hasAttributes = count($assertion->getAttributes()) > 0;
             Saml::debug('assertion attributes: ' . \json_encode($assertion->getAttributes()));
             if ($hasAttributes) {
-                $this->transform($response, $user);
+                $this->transform(
+                    $user,
+                    $response,
+                    $idp,
+                    $sp,
+                    $settings
+                );
             } else {
                 /**
                  * There doesn't seem to be any attribute statements.
@@ -179,27 +198,26 @@ class User
     }
 
     /**
-     * @param SamlResponse $response
      * @param UserElement $user
+     * @param SamlResponse $response
      * @return UserElement
      */
     protected function transform(
+        UserElement $user,
         SamlResponse $response,
-        UserElement $user
+        ProviderRecord $idp,
+        ProviderRecord $sp,
+        Settings $settings
     ) {
 
-        foreach ($this->getAssertions($response) as $assertion) {
-            /** @var ProviderInterface $idpProvider */
-            $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-                MessageHelper::getIssuer($response->getIssuer())
-            )->one();
+        foreach ($this->getAssertions($response, $sp) as $assertion) {
             /**
              * Check the provider first
              */
             $attributeMap = ProviderHelper::providerMappingToKeyValue(
-                $idpProvider
+                $idp
             ) ?:
-                Saml::getInstance()->getSettings()->responseAttributeMap;
+                $settings->responseAttributeMap;
 
             Saml::debug('Attribute Map: ' . \json_encode($attributeMap));
 

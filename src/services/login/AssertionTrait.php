@@ -9,6 +9,7 @@ namespace flipbox\saml\sp\services\login;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\SecurityHelper;
 use flipbox\saml\core\records\AbstractProvider;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion as SamlAssertion;
 use SAML2\EncryptedAssertion;
@@ -23,11 +24,11 @@ trait AssertionTrait
      * @return SamlAssertion
      * @throws InvalidMessage
      */
-    public function getFirstAssertion(SamlResponse $response)
+    public function getFirstAssertion(SamlResponse $response, ProviderRecord $serviceProvider)
     {
 
 
-        $assertions = $this->getAssertions($response);
+        $assertions = $this->getAssertions($response, $serviceProvider);
 
         if (! count($assertions)) {
             throw new InvalidMessage("Invalid message. No assertions found in response.");
@@ -41,11 +42,8 @@ trait AssertionTrait
      * @return mixed
      * @throws \Exception
      */
-    public function getAssertions(SamlResponse $response)
+    private function getAssertions(SamlResponse $response, ProviderRecord $ownProvider)
     {
-        /** @var AbstractProvider $ownProvider */
-        $ownProvider = Saml::getInstance()->getProvider()->findOwn();
-
         // is there a cache already?
         if (count($this->decryptedAssertions)) {
             return $this->decryptedAssertions;

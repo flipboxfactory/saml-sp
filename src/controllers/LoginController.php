@@ -12,7 +12,6 @@ use Craft;
 use flipbox\saml\core\controllers\messages\AbstractController;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\MessageHelper;
-use flipbox\saml\core\helpers\SerializeHelper;
 use flipbox\saml\core\services\bindings\Factory;
 use flipbox\saml\core\validators\Response as ResponseValidator;
 use flipbox\saml\sp\events\RelayState;
@@ -93,11 +92,36 @@ class LoginController extends AbstractController
 
         $validator->validate($response);
 
-        // LOGIN!
-        // TODO - break this up to multiple calls and pass needed idp and sp to the methods
-        Saml::getInstance()->getLogin()->login(
-            $response
+        // Transform to User START!
+        Saml::getInstance()->getLogin()->transformToUser(
+            $user = Saml::getInstance()->getUser()->getByResponse($response, $serviceProvider),
+            $response,
+            $identityProvider,
+            $serviceProvider,
+            $settings = Saml::getInstance()->getSettings()
         );
+        // Transform to User END!
+
+        // User Group Start
+        Saml::getInstance()->getUserGroups()->sync(
+            $user,
+            $response,
+            $serviceProvider,
+            $settings
+        );
+        // User Group End
+
+        // Identity START
+        $identity = Saml::getInstance()->getProviderIdentity()->getByUserAndResponse(
+            $user,
+            $response,
+            $serviceProvider,
+            $identityProvider
+        );
+
+        // LOGIN
+        Saml::getInstance()->getLogin()->byIdentity($identity);
+        // Identity END
 
         //get relay state but don't error!
         $relayState = $response->getRelayState() ?: \Craft::$app->request->getParam('RelayState');

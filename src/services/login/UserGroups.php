@@ -9,6 +9,8 @@ namespace flipbox\saml\sp\services\login;
 use craft\elements\User as UserElement;
 use craft\helpers\StringHelper;
 use craft\models\UserGroup;
+use flipbox\saml\sp\models\Settings;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
 use SAML2\Response;
@@ -62,11 +64,20 @@ class UserGroups
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */
-    public function sync(UserElement $user, Response $response)
+    public function sync(UserElement $user, Response $response, ProviderRecord $serviceProvider, Settings $settings)
     {
-        foreach ($this->getAssertions($response) as $assertion) {
-            $this->syncByAssertion($user, $assertion);
+        foreach ($this->getAssertions($response, $serviceProvider) as $assertion) {
+            $this->syncByAssertion(
+                $user,
+                $assertion,
+                $settings
+            );
         }
+
+        $this->assignDefaultGroups(
+            $user,
+            $settings
+        );
 
         return true;
     }
@@ -75,20 +86,22 @@ class UserGroups
      * @param UserElement $user
      * @param Assertion $assertion
      * @return bool
-     * @deprecated Use sync. Will remove 2.1
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */
-    public function syncByAssertion(UserElement $user, Assertion $assertion)
-    {
+    protected function syncByAssertion(
+        UserElement $user,
+        Assertion $assertion,
+        Settings $settings
+    ) {
         /**
          * Nothing to do, move on
          */
-        if (false === Saml::getInstance()->getSettings()->syncGroups) {
+        if (false === $settings->syncGroups) {
             return true;
         }
 
-        $groupNames = Saml::getInstance()->getSettings()->groupAttributeNames;
+        $groupNames = $settings->groupAttributeNames;
         $groups = [];
         /**
          * Make sure there is an attribute statement
@@ -183,7 +196,7 @@ class UserGroups
      * @param UserElement $user
      * @return bool|null
      */
-    public function assignDefaultGroups(\craft\elements\User $user)
+    protected function assignDefaultGroups(\craft\elements\User $user, Settings $settings)
     {
         $groups = array_merge(
             $user->getGroups(),
@@ -212,7 +225,7 @@ class UserGroups
     /**
      * @return array
      */
-    public function getDefaultGroups()
+    protected function getDefaultGroups()
     {
         $groups = [];
         foreach (Saml::getInstance()->getSettings()->defaultGroupAssignments as $groupId) {

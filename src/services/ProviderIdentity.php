@@ -14,6 +14,7 @@ use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\services\AbstractProviderIdentityService;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\login\AssertionTrait;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
@@ -42,14 +43,15 @@ class ProviderIdentity extends AbstractProviderIdentityService
      * @throws InvalidMessage
      * @throws UserException
      */
-    public function getByUserAndResponse(User $user, SamlResponse $response)
+    public function getByUserAndResponse(
+        User $user,
+        SamlResponse $response,
+        ProviderRecord $serviceProvider,
+        ProviderRecord $idpProvider
+    )
     {
 
-        $idpProvider = Saml::getInstance()->getProvider()->findByEntityId(
-            MessageHelper::getIssuer($response->getIssuer())
-        )->one();
-
-        $firstAssertion = $this->getFirstAssertion($response);
+        $firstAssertion = $this->getFirstAssertion($response, $serviceProvider);
 
         // Get Identity
         $identity = $this->forceGet(
@@ -57,10 +59,8 @@ class ProviderIdentity extends AbstractProviderIdentityService
             $idpProvider
         );
 
-
         // Get Session
         $sessionIndex = $firstAssertion->getSessionIndex();
-
 
         // Set Identity Properties
         $identity->userId = $user->id;

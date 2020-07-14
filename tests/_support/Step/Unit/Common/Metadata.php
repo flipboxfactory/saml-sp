@@ -41,6 +41,24 @@ class Metadata extends \UnitTester
         return $keypair;
     }
 
+    public function idpPrivateKey($type = XMLSecurityKey::RSA_SHA256)
+    {
+
+        $key = new XMLSecurityKey(
+            $type,
+            [
+                'type' => 'private',
+            ]
+        );
+
+        $key->loadKey(
+            codecept_data_dir() . '/keypairs/saml-idp.pem',
+            true
+        );
+
+        return $key;
+    }
+
     public function spPrivateKey($type = XMLSecurityKey::RSA_SHA256)
     {
 

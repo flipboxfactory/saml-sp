@@ -12,6 +12,7 @@ use flipbox\saml\sp\Saml;
 use SAML2\AuthnRequest as SamlAuthnRequest;
 use SAML2\Constants;
 use SAML2\XML\md\EndpointType;
+use SAML2\XML\saml\Issuer;
 use yii\base\Event;
 
 class AuthnRequest extends Component
@@ -82,6 +83,10 @@ class AuthnRequest extends Component
         );
 
         $authnRequest->setIssuer(
+            $issuer = new Issuer()
+        );
+
+        $issuer->setValue(
             Saml::getInstance()->getSettings()->getEntityId()
         );
 

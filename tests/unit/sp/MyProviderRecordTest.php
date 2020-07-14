@@ -129,6 +129,25 @@ class MyProviderRecordTest extends Unit
 
     }
 
+    public function testOwnProvider(){
+
+        $this->pluginHelper->installIfNeeded();
+        $metadata = $this->metadataFactory->createMyEntityDescriptorWithKey();
+        $provider = new ProviderRecord();
+        $provider->setMetadataModel($metadata);
+        $provider->entityId = 'localhost';
+        $provider->save();
+
+        Saml::getInstance()->getSettings()->setEntityId('localhost');
+
+        $own = Saml::getInstance()->getProvider()->findOwn();
+
+        $this->assertSame(
+            $own->getEntityId(),
+            $provider->getEntityId()
+        );
+    }
+
     public function testEntityDescriptorTrait()
     {
         $this->pluginHelper->installIfNeeded();
