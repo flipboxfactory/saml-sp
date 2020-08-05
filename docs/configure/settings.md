@@ -20,8 +20,8 @@ Set the Entity ID there which will save it to the db
 
 ### Group Configuration/Group Assignment
 #### Group Attribute Name/Group Attribute Mapping
-Many IdPs will send groups as an attribute within the SAML Response. When configured, the plugin use that attribute to 
-automatically create (if needed) and assign the user properly. To achieve this,  add a `config/saml-sp.php` then use the
+Many IdPs will send groups as an attribute within the SAML Response. When configured, the plugin use that attribute to
+ assign the user to the group properly. To achieve this,  add a `config/saml-sp.php` then use the
  following configuration.
 ##### Example
 ```php
