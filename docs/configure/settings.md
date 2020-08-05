@@ -33,25 +33,17 @@ return [
 
 Make sure the value matches the attribute name sent from the IdP. 
 
-#### Auto-Create Group
-By default the plugin will create the group if the group attribute name is mapped correctly. You can 
-turn this off if desired using `autoCreateGroups`.
+#### Auto-Create Groups Removed (version 2.3.0)
+Due to the release of Craft CMS 3.5, the project config has become more prevalant. Therefore, we've decided 
+to remove the support for `autoCreateGroups` in version 2.3.0. Production environments shouldn't be saving user 
+groups when following the project config workflow. This should be done at the lower level environments.
 
-##### Example
-```php
-return [
-    'groupAttributeNames' => 'groups',
-    // this will turn off the automatic creation of groups
-    'autoCreateGroups' => false,
-];
-```
+Please use an event as shown below.
 
 #### Managing Permissions
 Managing permissions ** is not supported ** automatically. There are a few options on how to manually manage 
 permissions:
-1. Create the groups before the SAML Plugin creates them, then configure the permissions on the group.
-Know that the plugin will take the name of the group and camel case (refer to: `\craft\helpers\StringHelper::camelCase`)
-the name before saving it (or look up).
-2. Let the plugin create the groups, then add the needed permissions
-3. Use an event! See the [EVENT_AFTER_RESPONSE_TO_USER](/configure/events.html#assign-user-to-a-user-group-based-on-a-property) example.
+1. Create the groups before implementing the plugin. Make sure you know all of the groups needed to assign the users
+properly.
+2. Use an event! See the [EVENT_AFTER_RESPONSE_TO_USER](/configure/events.html#assign-user-to-a-user-group-based-on-a-property) example.
 
