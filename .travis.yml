@@ -13,6 +13,7 @@ services:
 before_install:
   - nvm install 8
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - mysql -e 'SET innodb_lock_wait_timeout = 180;'
 
 install:
   - composer install
