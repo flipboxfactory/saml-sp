@@ -38,7 +38,8 @@ class UserGroups
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
             Saml::warning(
                 sprintf(
-                    "Group handle %s not found. This group must be created by an admin users before user can be assigned to it.",
+                    "Group handle %s not found.".
+                    " This group must be created by an admin users before user can be assigned to it.",
                     $groupHandle
                 )
             );
