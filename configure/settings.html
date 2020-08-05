@@ -7,7 +7,7 @@
     <meta name="generator" content="VuePress 1.5.0">
     
     <meta name="description" content="SAML SSO Service Provider plugin for Craft CMS">
-    <link rel="preload" href="/assets/css/0.styles.8409cfa8.css" as="style"><link rel="preload" href="/assets/js/app.601303b8.js" as="script"><link rel="preload" href="/assets/js/2.6be87606.js" as="script"><link rel="preload" href="/assets/js/11.2e40a000.js" as="script"><link rel="prefetch" href="/assets/js/10.b925624f.js"><link rel="prefetch" href="/assets/js/12.27381ea9.js"><link rel="prefetch" href="/assets/js/13.8d62b382.js"><link rel="prefetch" href="/assets/js/14.81523958.js"><link rel="prefetch" href="/assets/js/3.6f398410.js"><link rel="prefetch" href="/assets/js/4.5f1386ba.js"><link rel="prefetch" href="/assets/js/5.db07329b.js"><link rel="prefetch" href="/assets/js/6.edc710a7.js"><link rel="prefetch" href="/assets/js/7.c1c4221f.js"><link rel="prefetch" href="/assets/js/8.1b54c9e1.js"><link rel="prefetch" href="/assets/js/9.e7a951c2.js">
+    <link rel="preload" href="/assets/css/0.styles.8409cfa8.css" as="style"><link rel="preload" href="/assets/js/app.0d0135df.js" as="script"><link rel="preload" href="/assets/js/2.6be87606.js" as="script"><link rel="preload" href="/assets/js/11.08bd0c3d.js" as="script"><link rel="prefetch" href="/assets/js/10.b925624f.js"><link rel="prefetch" href="/assets/js/12.27381ea9.js"><link rel="prefetch" href="/assets/js/13.8d62b382.js"><link rel="prefetch" href="/assets/js/14.81523958.js"><link rel="prefetch" href="/assets/js/3.6f398410.js"><link rel="prefetch" href="/assets/js/4.5f1386ba.js"><link rel="prefetch" href="/assets/js/5.db07329b.js"><link rel="prefetch" href="/assets/js/6.edc710a7.js"><link rel="prefetch" href="/assets/js/7.c1c4221f.js"><link rel="prefetch" href="/assets/js/8.1b54c9e1.js"><link rel="prefetch" href="/assets/js/9.e7a951c2.js">
     <link rel="stylesheet" href="/assets/css/0.styles.8409cfa8.css">
   </head>
   <body>
@@ -27,7 +27,7 @@
    <span class="token single-quoted-string string">'entityId'</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token single-quoted-string string">'https://my-entity-id'</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 </code></pre></div><h4 id="_2-edit-from-the-admin-goto-the-plugin-in-craft-then-click-on-the-settings-menu-item-under-the-plugins-sub-nav"><a href="#_2-edit-from-the-admin-goto-the-plugin-in-craft-then-click-on-the-settings-menu-item-under-the-plugins-sub-nav" class="header-anchor">#</a> 2. Edit from the admin (Goto the plugin in craft, then click on the &quot;Settings&quot; menu item under the plugins sub nav).</h4> <p>Set the Entity ID there which will save it to the db</p> <h3 id="group-configuration-group-assignment"><a href="#group-configuration-group-assignment" class="header-anchor">#</a> Group Configuration/Group Assignment</h3> <h4 id="group-attribute-name-group-attribute-mapping"><a href="#group-attribute-name-group-attribute-mapping" class="header-anchor">#</a> Group Attribute Name/Group Attribute Mapping</h4> <p>Many IdPs will send groups as an attribute within the SAML Response. When configured, the plugin use that attribute to
-automatically create (if needed) and assign the user properly. To achieve this,  add a <code>config/saml-sp.php</code> then use the
+assign the user to the group properly. To achieve this,  add a <code>config/saml-sp.php</code> then use the
 following configuration.</p> <h5>Example</h5> <div class="language-php extra-class"><pre class="language-php"><code><span class="token keyword">return</span> <span class="token punctuation">[</span>
     <span class="token comment">// change the value as needed</span>
     <span class="token single-quoted-string string">'groupAttributeNames'</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token single-quoted-string string">'groups'</span>
@@ -45,6 +45,6 @@ properly.</li> <li>Use an event! See the <a href="/configure/events.html#assign-
       </a>
       →
     </span></p></div> </main></div><div class="global-ui"></div></div>
-    <script src="/assets/js/app.601303b8.js" defer></script><script src="/assets/js/2.6be87606.js" defer></script><script src="/assets/js/11.2e40a000.js" defer></script>
+    <script src="/assets/js/app.0d0135df.js" defer></script><script src="/assets/js/2.6be87606.js" defer></script><script src="/assets/js/11.08bd0c3d.js" defer></script>
   </body>
 </html>
