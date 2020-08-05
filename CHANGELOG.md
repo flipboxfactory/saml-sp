@@ -1,6 +1,6 @@
 # Release Notes for Craft CMS Plugin SAML SP
 
-# 2.2.0 - 2020-07-14
+## 2.2.0 - 2020-07-14
 
 ### Added
 - More unit testing!
@@ -14,70 +14,70 @@
 ### Removed
 - `\flipbox\saml\sp\services\Login::login`
 
-# 2.1.12 - 2020-07-10
+## 2.1.12 - 2020-07-10
 ### Fixed
 - Issue with diabled provider (My Provider) being picked as own provider when there's an enabled and disable provider 
 with the same EntityId #68
 
-# 2.1.11 - 2020-07-10
+## 2.1.11 - 2020-07-10
 ### Fixed
 - Issue with `autoCreateGroups` plugin setting not doing what it's supposed to do. #65
 
-# 2.1.10 - 2020-07-09
+## 2.1.10 - 2020-07-09
 ### Fixed
 - Issue with saving groups with non-ascii conforming groups.
 
-# 2.1.9 - 2020-05-18
+## 2.1.9 - 2020-05-18
 ### Added
 - Adding Yii events to allow devs to modify RelayState 
 
-# 2.1.8 - 2020-05-15
+## 2.1.8 - 2020-05-15
 ### Added
 - Adding setting to turn off base64 encoding of the RelayState: `encodeRelayState`. 
 
-# 2.1.7 - 2020-05-06
+## 2.1.7 - 2020-05-06
 ### Fixed
 - Missed a spot with https://github.com/flipboxfactory/saml-sp/issues/57
 
-# 2.1.6 - 2020-05-05
+## 2.1.6 - 2020-05-05
 ### Fixed
 - Issue with missing Assertion Consumer Service URL: Fixing https://github.com/flipboxfactory/saml-sp/issues/58
 - Issue CP panel presenting the SLO endpoint, fixing: https://github.com/flipboxfactory/saml-sp/issues/57
 
-# 2.1.5 - 2020-03-12
+## 2.1.5 - 2020-03-12
 ### Fixed
 - Fixed issue with Metadata URL not overwriting the metadata correctly via the control panel and cli.
 
 ### Added
 - CLI command for listing all providers. See `./craft saml-sp/metadata`.
 
-# 2.1.4 - 2020-03-05
+## 2.1.4 - 2020-03-05
 ### Fixed
 - Fixed issue introduced in 2.1.3 Fixes: https://github.com/flipboxfactory/saml-sp/issues/53
 - Fixed issue with attributes statements with one attribute (they'd be skipped over). Fixes: https://github.com/flipboxfactory/saml-sp/issues/54
 
-# 2.1.3 - 2020-03-04
+## 2.1.3 - 2020-03-04
 ### Fixed
 - Fixes issue with `GeneralConfig::headlessMode` by explicitly setting response to HTML. Fixes: https://github.com/flipboxfactory/saml-sp/issues/53
 - Fixed issue with setting custom fields in Craft 3.4. Now using `setFieldValue`. Fixes: https://github.com/flipboxfactory/saml-sp/issues/53
 
-# 2.1.2 - 2020-02-06
+## 2.1.2 - 2020-02-06
 ### Fixed
 - Fixing issue with migration from 1.x to 2.x. Fixes: https://github.com/flipboxfactory/saml-sp/issues/51
 
-# 2.1.1.2 - 2020-01-08
+## 2.1.1.2 - 2020-01-08
 ### Fixed
 - Fixing issue with Craft 3.2 twig error within the editableTable
 
-# 2.1.1.1 - 2020-01-08
+## 2.1.1.1 - 2020-01-08
 ### Fixed
 - Fixing table name for craft installs with prefixes.
 
-# 2.1.1 - 2020-01-08
+## 2.1.1 - 2020-01-08
 ### Fixed
 - Fixing issue with postgres uid - https://github.com/flipboxfactory/saml-sp/issues/49
 
-# 2.1.0 - 2020-01-07
+## 2.1.0 - 2020-01-07
 ### Fixed
 - Fixing issue with requiring admin when project config when `allowAdminChanges` general config is set.
 - Duplicate `metadata` html attribute id on the edit page
