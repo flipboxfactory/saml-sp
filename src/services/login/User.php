@@ -47,19 +47,19 @@ class User
 
         $username = null;
 
-        if(!is_null($settings->nameIdAttributeOverride)) {
+        if (!is_null($settings->nameIdAttributeOverride)) {
             // use override
-            foreach($this->getAssertions(
+            foreach ($this->getAssertions(
                 $response,
                 $serviceProvider
             ) as $assertion) {
                 $attributes = $assertion->getAttributes();
-                if(isset($attributes[$settings->nameIdAttributeOverride])) {
+                if (isset($attributes[$settings->nameIdAttributeOverride])) {
                     $attributeValue = $attributes[$settings->nameIdAttributeOverride];
                     $username = $this->getAttributeValue($attributeValue);
                 }
             }
-        }else{
+        } else {
             // use nameid
             $assertion = $this->getFirstAssertion($response, $serviceProvider);
 
@@ -369,7 +369,6 @@ class User
          * Is there a user that exists already?
          */
         if (!($user = $this->getByUsernameOrEmail($username))) {
-
             // Should we create a new user? what's the setting say?
             if (! Saml::getInstance()->getSettings()->createUser) {
                 throw new UserException("System doesn't have permission to create a new user.");
@@ -407,7 +406,8 @@ class User
             ->one();
     }
 
-    private function getAttributeValue($attributeValue) {
+    private function getAttributeValue($attributeValue)
+    {
 
         if (is_array($attributeValue)) {
             $attributeValue = isset($attributeValue[0]) ? $attributeValue[0] : null;
