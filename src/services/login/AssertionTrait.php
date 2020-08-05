@@ -11,6 +11,7 @@ use flipbox\saml\core\helpers\SecurityHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
+use SAML2\Assertion;
 use SAML2\Assertion as SamlAssertion;
 use SAML2\EncryptedAssertion;
 use SAML2\Response as SamlResponse;
@@ -39,7 +40,7 @@ trait AssertionTrait
 
     /**
      * @param SamlResponse $response
-     * @return mixed
+     * @return Assertion[]
      * @throws \Exception
      */
     private function getAssertions(SamlResponse $response, ProviderRecord $ownProvider)

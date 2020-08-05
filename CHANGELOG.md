@@ -1,4 +1,28 @@
-# Release Notes for Craft CMS Plugin SAML SP
+# Release Notes for SAML SP
+
+## 2.3.0 - 2020-08-05
+
+> {warning} ** `autoCreateGroups` functionality has been removed. Automatic creation of user groups, has been removed. ** This is due to the project
+>config changes in Craft CMS 3.5. Users are still assigned to a user group when the group
+>match one existing within Craft. If a user group is not in Craft, the group is logged (as a warning)
+>and no error is thrown.
+
+> {warning} `responseAttributeMap` functionality has been removed. Please use the admin panel interface.
+
+### Added
+- Added `nameIdAttributeOverride` setting. This is a system level setting override allowing you to map a username 
+to a different assertion attribute, besides the NameID.
+
+### Fixed
+- Issue with the `createUser` setting which allowed the user to be created but not login. 
+The user will no longer be created.
+
+### Removed / Deprecated
+- The following settings have been deprecated while the functionality of the those 
+settings have been removed:
+    - `mergeLocalUsers`
+    - `autoCreateGroups`
+    - `responseAttributeMap`
 
 ## 2.2.0 - 2020-07-14
 

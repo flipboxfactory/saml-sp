@@ -30,28 +30,18 @@ class UserGroups
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */
-    protected function findOrCreate($groupName)
+    protected function find($groupName)
     {
 
         $groupHandle = StringHelper::camelCase($groupName);
 
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
-            if (Saml::getInstance()->getSettings()->autoCreateGroups !== true) {
-                return null;
-            }
-            $userGroup = new UserGroup(
-                [
-                    'name' => $groupName,
-                    'handle' => StringHelper::toAscii($groupHandle),
-                ]
+            Saml::warning(
+                sprintf(
+                    "Group handle %s not found. This group must be created by an admin users before user can be assigned to it.",
+                    $groupHandle
+                )
             );
-            if (! \Craft::$app->getUserGroups()->saveGroup(
-                $userGroup
-            )
-            ) {
-                Saml::error(json_encode($userGroup->getErrors()));
-                throw new UserException("Error saving new group {$groupHandle}");
-            }
         }
 
         return $userGroup;
@@ -145,7 +135,7 @@ class UserGroups
                 }
 
                 foreach ($attributeValue as $groupName) {
-                    if ($group = $this->findOrCreate($groupName)) {
+                    if ($group = $this->find($groupName)) {
                         Saml::debug(
                             sprintf(
                                 'Assigning group: %s',
@@ -156,7 +146,7 @@ class UserGroups
                     } else {
                         Saml::debug(
                             sprintf(
-                                'Group not found or created for %s',
+                                'Group not found: %s',
                                 $groupName
                             )
                         );

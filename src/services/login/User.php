@@ -10,15 +10,14 @@ use craft\base\Field;
 use craft\elements\User as UserElement;
 use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
-use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\helpers\ProviderHelper;
-use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Response as SamlResponse;
+use SAML2\XML\saml\Attribute;
 use yii\base\UserException;
 
 /**
@@ -43,22 +42,34 @@ class User
      * @throws InvalidMessage
      * @throws UserException
      */
-    public function getByResponse(SamlResponse $response, ProviderRecord $serviceProvider)
+    public function getByResponse(SamlResponse $response, ProviderRecord $serviceProvider, Settings $settings)
     {
 
-        $assertion = $this->getFirstAssertion($response, $serviceProvider);
+        $username = null;
 
-        if (! $assertion->getNameId()) {
-            throw new InvalidMessage('Name ID is missing.');
+        if(!is_null($settings->nameIdAttributeOverride)) {
+            // use override
+            foreach($this->getAssertions(
+                $response,
+                $serviceProvider
+            ) as $assertion) {
+                $attributes = $assertion->getAttributes();
+                if(isset($attributes[$settings->nameIdAttributeOverride])) {
+                    $attributeValue = $attributes[$settings->nameIdAttributeOverride];
+                    $username = $this->getAttributeValue($attributeValue);
+                }
+            }
+        }else{
+            // use nameid
+            $assertion = $this->getFirstAssertion($response, $serviceProvider);
+
+            if (! $assertion->getNameId()) {
+                throw new InvalidMessage('Name ID is missing.');
+            }
+            $username = $assertion->getNameId()->getValue();
+
+            Saml::debug('NameId: ' . $assertion->getNameId()->getValue());
         }
-
-        Saml::debug('NameId: ' . $assertion->getNameId()->getValue());
-        /**
-         * Get username from the NameID
-         *
-         * @todo Give an option to map another attribute value to $username (like email)
-         */
-        $username = $assertion->getNameId()->getValue();
 
         return $this->find($username);
     }
@@ -357,23 +368,14 @@ class User
         /**
          * Is there a user that exists already?
          */
-        if ($user = $this->getByUsernameOrEmail($username)) {
-            /**
-             * System check for whether we are allowed merge with this this user
-             */
-            if (! Saml::getInstance()->getSettings()->mergeLocalUsers) {
-                //don't continue
-                throw new UserException(
-                    sprintf(
-                        "User (%s) already exists.",
-                        $username
-                    )
-                );
+        if (!($user = $this->getByUsernameOrEmail($username))) {
+
+            // Should we create a new user? what's the setting say?
+            if (! Saml::getInstance()->getSettings()->createUser) {
+                throw new UserException("System doesn't have permission to create a new user.");
             }
-        } else {
-            /**
-             * New UserElement
-             */
+
+            // new user!
             $user = new UserElement(
                 [
                     'username' => $username,
@@ -400,9 +402,17 @@ class User
                     ['email' => $usernameOrEmail],
                 ]
             )
-            ->addSelect(['users.password', 'users.passwordResetRequired'])
             ->status(null)
             ->archived($archived)
             ->one();
+    }
+
+    private function getAttributeValue($attributeValue) {
+
+        if (is_array($attributeValue)) {
+            $attributeValue = isset($attributeValue[0]) ? $attributeValue[0] : null;
+        }
+
+        return $attributeValue;
     }
 }

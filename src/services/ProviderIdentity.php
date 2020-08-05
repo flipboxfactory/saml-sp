@@ -83,9 +83,6 @@ class ProviderIdentity extends AbstractProviderIdentityService
             $provider
         )->one()
         ) {
-            if (! Saml::getInstance()->getSettings()->createUser) {
-                throw new UserException("System doesn't have permission to create a new user.");
-            }
 
             /**
              * Create the new identity if one wasn't found above.

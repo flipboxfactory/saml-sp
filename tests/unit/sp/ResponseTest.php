@@ -7,6 +7,7 @@ use Codeception\Scenario;
 use Codeception\Test\Unit;
 use craft\elements\User;
 use flipbox\saml\core\exceptions\InvalidMessage;
+use flipbox\saml\core\helpers\ClaimTypes;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\login\AssertionTrait;
@@ -162,20 +163,30 @@ class ResponseTest extends Unit
 
         $user = Saml::getInstance()->getUser()->getByResponse(
             $response,
-            $sp
+            $sp,
+            $this->module->getSettings()
         );
 
         $this->assertInstanceOf(
             User::class,
             $user
         );
+
         $response->getAssertions()[0]->setNameId(null);
         $this->expectException(InvalidMessage::class);
         Saml::getInstance()->getUser()->getByResponse(
             $response,
-            $sp
+            $sp,
+            $this->module->getSettings()
         );
 
+        $setting = clone $this->module->getSettings();
+        $setting->nameIdAttributeOverride = ClaimTypes::EMAIL_ADDRESS;
+        Saml::getInstance()->getUser()->getByResponse(
+            $response,
+            $sp,
+            $setting
+        );
     }
     public function testAssertionTrait(){
 

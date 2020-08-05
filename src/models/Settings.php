@@ -48,6 +48,7 @@ class Settings extends AbstractSettings implements SettingsInterface
      * If this is false, a user exception will be thrown.
      *
      * @var bool
+     * @deprecated
      */
     public $mergeLocalUsers = true;
 
@@ -60,9 +61,27 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $createUser = true;
 
     /**
+     * Override the use of the NameID to set and looking-up the username. Set this to the name of the assertion
+     * attribute you would like.
+     *
+     * When this is null, the NameID will be used.
+     *
+     * For example, if your IdP sends the NameID as a uuid and you don't want that as username,
+     * set `nameIdAttributeOverride` to another assertion attribute name coming from the IdP (ie,
+     * `'nameIdAttributeOverride' => 'Email',` or `'nameIdAttributeOverride' => ClaimTypes::EMAIL_ADDRESS,`).
+     *
+     * @var null|string
+     */
+    public $nameIdAttributeOverride;
+
+    /**
      * When a group is found that does not exist in Craft, it will be created.
      *
+     * Deprecated due to Craft CMS 3.5 making the project config more prevalent. Since these changes won't be
+     * protected from being overwritten on production, we need to remove this feature.
+     *
      * @var bool
+     * @deprecated
      */
     public $autoCreateGroups = true;
 
@@ -152,6 +171,7 @@ class Settings extends AbstractSettings implements SettingsInterface
      * ```
      *
      * @var array
+     * @deprecated
      */
     public $responseAttributeMap = [
         // "IDP Attribute Name" => "Craft Property Name"

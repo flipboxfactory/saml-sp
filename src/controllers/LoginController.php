@@ -91,14 +91,14 @@ class LoginController extends AbstractController
         );
 
         $validator->validate($response);
-
+        $settings = Saml::getInstance()->getSettings();
         // Transform to User START!
         Saml::getInstance()->getLogin()->transformToUser(
-            $user = Saml::getInstance()->getUser()->getByResponse($response, $serviceProvider),
+            $user = Saml::getInstance()->getUser()->getByResponse($response, $serviceProvider, $settings),
             $response,
             $identityProvider,
             $serviceProvider,
-            $settings = Saml::getInstance()->getSettings()
+            $settings
         );
         // Transform to User END!
 
@@ -248,8 +248,8 @@ class LoginController extends AbstractController
         // Grab the return URL, or use a param sent as a default
         // TODO - seems like if there's a parameter sent, that should be used as an override.
         $relayState = Craft::$app->getUser()->getReturnUrl(
-            // Is RelayState set on this request?
-            // You can override the param within settings
+        // Is RelayState set on this request?
+        // You can override the param within settings
             Craft::$app->request->getParam(
                 Saml::getInstance()->getSettings()->relayStateOverrideParam,
                 null
