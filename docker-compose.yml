@@ -24,7 +24,7 @@ services:
             DB_PASSWORD: password
             # DB_DATABASE: test
             # DB_DRIVER: mysql
-        command: php ./vendor/bin/codecept run -vv --coverage --coverage-html
+        command: php ./vendor/bin/codecept run -vvv --coverage --coverage-html
     db:
         image: 'mysql:5.7'
         environment:

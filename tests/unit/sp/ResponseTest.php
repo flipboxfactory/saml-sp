@@ -8,14 +8,13 @@ use Codeception\Test\Unit;
 use craft\elements\User;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\ClaimTypes;
+use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\login\AssertionTrait;
 use SAML2\Assertion;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
-use yii\base\UserException;
 
 class ResponseTest extends Unit
 {
@@ -88,6 +87,13 @@ class ResponseTest extends Unit
             'username' => 'damien@flipboxdigital.com',
         ]);
     }
+    protected static function getMethod(string $class, string $name) {
+        $class = new \ReflectionClass($class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method;
+    }
+
 
     public function testUserSync()
     {
@@ -104,13 +110,19 @@ class ResponseTest extends Unit
 
         $user = $this->getUser();
 
-        $this->module->getLogin()->transformToUser(
-            $user,
-            $response,
-            $idp,
-            $sp,
-            $this->module->getSettings()
+        $foo = self::getMethod(\flipbox\saml\sp\services\login\User::class, 'construct');
+        $obj = new \flipbox\saml\sp\services\login\User();
+        
+        $foo->invokeArgs($obj,
+            [
+                $user,
+                $response,
+                $idp,
+                $sp,
+                $this->module->getSettings()
+            ]
         );
+
 
         $this->assertSame(
             $user->firstName,
@@ -127,18 +139,37 @@ class ResponseTest extends Unit
             $this->responseFactory->getEmail()
         );
 
-        $identity =
-            Saml::getInstance()->getProviderIdentity()->getByUserAndResponse(
-            $user,
-            $response,
-            $sp,
-            $idp
-        );
+//        $identity =
+//            Saml::getInstance()->getProviderIdentity()->getByUserAndResponse(
+//            $user,
+//            $response,
+//            $sp,
+//            $idp
+//        );
 
 
 //        // TODO fix this
 //        $this->expectException(UserException::class);
 //        Saml::getInstance()->getLogin()->byIdentity($identity);
+
+    }
+    public function testGetByUserAndResponse(){
+        $this->pluginHelper->installIfNeeded();
+        $this->module->loadSaml2Container();
+
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp
+        );
+        Saml::getInstance()->getProviderIdentity()->getByUserAndResponse(
+            $this->getUser(),
+            $response,
+            $sp,
+            $idp
+        );
 
     }
 
@@ -153,18 +184,19 @@ class ResponseTest extends Unit
             $sp
         );
 
-        \Craft::$app->elements->saveElement(new User([
-            'email'=>$this->responseFactory->getEmail(),
-            'username'=>$this->responseFactory->getEmail(),
-            'firstName'=>$this->responseFactory->getFirstName(),
-            'lastName'=>$this->responseFactory->getLastName(),
-        ]));
+//        \Craft::$app->elements->saveElement(new User([
+//            'email'=>$this->responseFactory->getEmail(),
+//            'username'=>$this->responseFactory->getEmail(),
+//            'firstName'=>$this->responseFactory->getFirstName(),
+//            'lastName'=>$this->responseFactory->getLastName(),
+//        ]));
 
+        $settings = new Settings();
 
         $user = Saml::getInstance()->getUser()->getByResponse(
             $response,
             $sp,
-            $this->module->getSettings()
+            $settings
         );
 
         $this->assertInstanceOf(
@@ -177,15 +209,14 @@ class ResponseTest extends Unit
         Saml::getInstance()->getUser()->getByResponse(
             $response,
             $sp,
-            $this->module->getSettings()
+            $settings
         );
 
-        $setting = clone $this->module->getSettings();
-        $setting->nameIdAttributeOverride = ClaimTypes::EMAIL_ADDRESS;
+        $settings->nameIdAttributeOverride = ClaimTypes::EMAIL_ADDRESS;
         Saml::getInstance()->getUser()->getByResponse(
             $response,
             $sp,
-            $setting
+            $settings
         );
     }
     public function testAssertionTrait(){
@@ -228,13 +259,15 @@ class ResponseTest extends Unit
             $serviceProvider
         );
 
-        \Craft::$app->elements->saveElement($user);
+//        \Craft::$app->elements->saveElement($user);
+
+        $settings = new Settings();
 
         Saml::getInstance()->getUserGroups()->sync(
             $user,
             $response,
             $serviceProvider,
-            Saml::getInstance()->getSettings()
+            $settings
         );
     }
 }
