@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.3.1 - 2020-08-06
+
+### Fixed
+- Issue with constraint on the Provider Identity table when the user's NameID changes.
+
 ## 2.3.0 - 2020-08-05
 
 > {warning} ** `autoCreateGroups` functionality has been removed. Automatic creation of user groups, has been removed. ** This is due to the project
