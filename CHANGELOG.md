@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## 2.4.1 - 2020-08-25
+## 2.4.0 - 2020-08-25
 
 > {warning} Breaking changes: Changed `\flipbox\saml\sp\services\messages\AuthnRequest::EVENT_AFTER_MESSAGE_CREATED` event to use
 new class `\flipbox\saml\sp\events\AuthnRequest` instead of `\yii\base\Event`
