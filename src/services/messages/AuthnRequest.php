@@ -104,8 +104,8 @@ class AuthnRequest extends Component
         /**
          * Kick off event here so people can manipulate this object if needed
          */
-        $event = new Event();
-        $event->data = $authnRequest;
+        $event = new \flipbox\saml\sp\events\AuthnRequest();
+        $event->message = $authnRequest;
         $this->trigger(static::EVENT_AFTER_MESSAGE_CREATED, $event);
 
         return $authnRequest;
