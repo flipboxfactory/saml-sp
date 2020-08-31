@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.4.1 - 2020-08-31
+
+### Fixed
+- Missing event `EVENT_AFTER_RESPONSE_TO_USER`. Event was added back in.
+
 ## 2.4.0 - 2020-08-25
 
 > {warning} Breaking changes: Changed `\flipbox\saml\sp\services\messages\AuthnRequest::EVENT_AFTER_MESSAGE_CREATED` event to use

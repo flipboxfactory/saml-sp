@@ -68,7 +68,7 @@ class Login extends Component
         $event->user = $user;
 
         $this->trigger(
-            static::EVENT_BEFORE_RESPONSE_TO_USER,
+            static::EVENT_AFTER_RESPONSE_TO_USER,
             $event
         );
 
