@@ -1,5 +1,15 @@
 # Release Notes for SAML SP
 
+## 2.5.0 - 2020-08-31
+> {warning} Breaking changes
+
+### Changed
+- Breaking change: Changed `\flipbox\saml\sp\services\login\User::getByResponse` parameters. 
+
+### Added
+- Added ability to set NameId Override per IdP provider in the backend.
+- Added event for before user save, `\flipbox\saml\sp\services\login\User::EVENT_BEFORE_USER_SAVE`.
+
 ## 2.4.1 - 2020-08-31
 
 ### Fixed

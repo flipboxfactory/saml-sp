@@ -6,8 +6,10 @@
 
 namespace flipbox\saml\sp\services\login;
 
+use craft\base\Component;
 use craft\base\Field;
 use craft\elements\User as UserElement;
+use craft\events\ElementEvent;
 use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\ProviderHelper;
@@ -17,16 +19,18 @@ use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Response as SamlResponse;
-use SAML2\XML\saml\Attribute;
 use yii\base\UserException;
 
 /**
  * Class User
  * @package flipbox\saml\sp\services
  */
-class User
+class User extends Component
 {
     use AssertionTrait;
+
+    const EVENT_BEFORE_USER_SAVE = 'eventBeforeUserSave';
+
     /**
      * @var FieldLayout|null
      */
@@ -42,20 +46,27 @@ class User
      * @throws InvalidMessage
      * @throws UserException
      */
-    public function getByResponse(SamlResponse $response, ProviderRecord $serviceProvider, Settings $settings)
+    public function getByResponse(
+        SamlResponse $response,
+        ProviderRecord $serviceProvider,
+        ProviderRecord $identityProvider,
+        Settings $settings
+    )
     {
 
         $username = null;
 
-        if (!is_null($settings->nameIdAttributeOverride)) {
+        $nameIdOverride = $settings->nameIdAttributeOverride ?? $identityProvider->nameIdOverride;
+
+        if (!is_null($nameIdOverride)) {
             // use override
             foreach ($this->getAssertions(
                 $response,
                 $serviceProvider
             ) as $assertion) {
                 $attributes = $assertion->getAttributes();
-                if (isset($attributes[$settings->nameIdAttributeOverride])) {
-                    $attributeValue = $attributes[$settings->nameIdAttributeOverride];
+                if (isset($attributes[$nameIdOverride])) {
+                    $attributeValue = $attributes[$nameIdOverride];
                     $username = $this->getAttributeValue($attributeValue);
                 }
             }
@@ -145,6 +156,16 @@ class User
      */
     protected function save(UserElement $user)
     {
+
+        $event = new ElementEvent();
+        $event->element = $user;
+        $event->isNew = !$user->id;
+
+        $this->trigger(
+            static::EVENT_BEFORE_USER_SAVE,
+            $event
+        );
+
         if (! \Craft::$app->getElements()->saveElement($user)) {
             Saml::error(
                 'User save failed: ' . \json_encode($user->getErrors())

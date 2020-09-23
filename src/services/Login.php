@@ -40,7 +40,7 @@ class Login extends Component
         Settings $settings
     ) {
         /**
-         * Before user save
+         * Before user transformation
          */
         $event = new UserLogin();
         $event->response = $response;

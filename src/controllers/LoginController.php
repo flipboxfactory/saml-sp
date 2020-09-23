@@ -94,7 +94,12 @@ class LoginController extends AbstractController
         $settings = Saml::getInstance()->getSettings();
         // Transform to User START!
         Saml::getInstance()->getLogin()->transformToUser(
-            $user = Saml::getInstance()->getUser()->getByResponse($response, $serviceProvider, $settings),
+            $user = Saml::getInstance()->getUser()->getByResponse(
+                $response,
+                $serviceProvider,
+                $identityProvider,
+                $settings
+            ),
             $response,
             $identityProvider,
             $serviceProvider,
