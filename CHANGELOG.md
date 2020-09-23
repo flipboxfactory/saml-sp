@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## 2.5.0 - 2020-08-31
+## 2.5.0 - 2020-09-22
 > {warning} Breaking changes
 
 ### Changed
