@@ -196,6 +196,7 @@ class ResponseTest extends Unit
         $user = Saml::getInstance()->getUser()->getByResponse(
             $response,
             $sp,
+            $idp,
             $settings
         );
 
@@ -209,6 +210,7 @@ class ResponseTest extends Unit
         Saml::getInstance()->getUser()->getByResponse(
             $response,
             $sp,
+            $idp,
             $settings
         );
 
@@ -216,6 +218,7 @@ class ResponseTest extends Unit
         Saml::getInstance()->getUser()->getByResponse(
             $response,
             $sp,
+            $idp,
             $settings
         );
     }
