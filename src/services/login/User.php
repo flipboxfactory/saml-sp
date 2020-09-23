@@ -51,8 +51,7 @@ class User extends Component
         ProviderRecord $serviceProvider,
         ProviderRecord $identityProvider,
         Settings $settings
-    )
-    {
+    ) {
 
         $username = null;
 
