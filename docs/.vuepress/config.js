@@ -42,6 +42,7 @@ module.exports = {
                         ['/configure/keychain', 'KeyChain'],
                         ['/configure/settings', 'Settings'],
                         ['/configure/events', 'Events'],
+                        ['/configure/idps/', 'IdPs'],
                         ['/configure/faqs', 'FAQs'],
                     ]
                 },
