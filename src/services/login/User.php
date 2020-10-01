@@ -57,7 +57,7 @@ class User extends Component
 
         $nameIdOverride = $settings->nameIdAttributeOverride ?? $identityProvider->nameIdOverride;
 
-        if (!is_null($nameIdOverride)) {
+        if ($nameIdOverride) {
             // use override
             foreach ($this->getAssertions(
                 $response,
