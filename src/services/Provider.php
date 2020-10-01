@@ -24,6 +24,7 @@ class Provider extends AbstractProviderService
 
     /**
      * @inheritdoc
+     * @deprecated
      */
     public function findOwn()
     {

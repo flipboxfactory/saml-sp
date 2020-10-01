@@ -69,7 +69,7 @@ class LoginController extends AbstractController
      * @throws \yii\base\Exception
      * @throws \yii\base\UserException
      */
-    public function actionIndex()
+    public function actionIndex($uid = null)
     {
 
         /** @var SamlResponse $response */
@@ -81,7 +81,20 @@ class LoginController extends AbstractController
             $this->throwIdpNotFoundWithResponse($response);
         }
 
-        if (! $serviceProvider = Saml::getInstance()->getProvider()->findOwn()) {
+        // get the plugin settings
+        $settings = Saml::getInstance()->getSettings();
+
+        $condition = [
+            'enabled' => 1
+        ];
+
+        if($uid) {
+            $condition['uid'] = $uid;
+        }else{
+            $condition['entityId'] = $settings->getEntityId();
+        }
+
+        if (! $serviceProvider = Saml::getInstance()->getProvider()->findBySp($condition)->one()) {
             $this->throwSpNotFound();
         }
 
@@ -91,7 +104,6 @@ class LoginController extends AbstractController
         );
 
         $validator->validate($response);
-        $settings = Saml::getInstance()->getSettings();
         // Transform to User START!
         Saml::getInstance()->getLogin()->transformToUser(
             $user = Saml::getInstance()->getUser()->getByResponse(
