@@ -1,5 +1,9 @@
 # Release Notes for SAML SP
 
+## 2.5.2 - 2020-10-29
+### Fixed
+- Issue where SP and IdP plugin couldn't be installed on the same craft db due to table conflicts.
+
 ## 2.5.1 - 2020-10-01
 
 ### Fixed
