@@ -1,5 +1,5 @@
 # GitHub Action for Craft CMS
-name: Build and Test
+name: test
 on:
   push:
   pull_request:
