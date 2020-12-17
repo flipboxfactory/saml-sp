@@ -401,7 +401,6 @@ class User extends Component
                 ]
             );
         }
-
         return $user;
     }
 

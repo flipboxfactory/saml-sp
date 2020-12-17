@@ -39,13 +39,13 @@ class AuthnRequest extends Component
     }
 
     /**
-     * @param AbstractProvider $myServiceProvider
+     * @param AbstractProvider $serviceProvider
      * @param AbstractProvider $identityProvider
      * @return \SAML2\AuthnRequest
      * @throws \craft\errors\SiteNotFoundException
      */
     public function create(
-        AbstractProvider $myServiceProvider,
+        AbstractProvider $serviceProvider,
         AbstractProvider $identityProvider
     ): SamlAuthnRequest {
 
@@ -61,7 +61,7 @@ class AuthnRequest extends Component
         $authnRequest = new \SAML2\AuthnRequest();
 
         $authnRequest->setAssertionConsumerServiceURL(
-            $samlSettings->getDefaultLoginEndpoint()
+            $serviceProvider->getLoginEndpoint()
         );
 
         $authnRequest->setProtocolBinding(
@@ -93,11 +93,11 @@ class AuthnRequest extends Component
         /**
          * @var KeyChainRecord $pair
          */
-        $pair = $myServiceProvider->keychain;
+        $pair = $serviceProvider->keychain;
 
         if ($pair && $samlSettings->signAuthnRequest) {
             $authnRequest->setSignatureKey(
-                $myServiceProvider->keychainPrivateXmlSecurityKey()
+                $serviceProvider->keychainPrivateXmlSecurityKey()
             );
         }
 

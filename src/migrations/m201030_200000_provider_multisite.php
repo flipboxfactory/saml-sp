@@ -3,7 +3,7 @@
 namespace flipbox\saml\sp\migrations;
 
 use flipbox\saml\core\migrations\m201030_200000_provider_multisite as AbstractMigration;
-use flipbox\saml\idp\records\ProviderRecord;
+use flipbox\saml\sp\records\ProviderRecord;
 
 /**
  */

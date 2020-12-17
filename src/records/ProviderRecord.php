@@ -8,6 +8,7 @@
 
 namespace flipbox\saml\sp\records;
 
+use flipbox\saml\core\helpers\UrlHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\models\Settings;
@@ -21,6 +22,18 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     const TABLE_ALIAS = 'saml_sp_providers';
 
+    public function getLoginEndpoint()
+    {
+        if ($this->providerType !== Settings::IDP) {
+            return null;
+        }
+        return UrlHelper::buildEndpointUrl(
+            Saml::getInstance()->getSettings(),
+            UrlHelper::LOGIN_ENDPOINT,
+            $this
+        );
+    }
+
     /**
      * @inheritdoc
      */
@@ -29,12 +42,11 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
         if ($this->providerType !== Settings::IDP) {
             return null;
         }
-        return implode(
-            DIRECTORY_SEPARATOR,
-            [
-                Saml::getInstance()->getSettings()->getDefaultLoginRequestPath(),
-                $this->uid,
-            ]
+        return UrlHelper::buildEndpointUrl(
+            Saml::getInstance()->getSettings(),
+            UrlHelper::LOGIN_REQUEST_ENDPOINT,
+            $this,
+            false
         );
     }
 
@@ -46,12 +58,11 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
         if ($this->providerType !== Settings::IDP) {
             return null;
         }
-        return implode(
-            DIRECTORY_SEPARATOR,
-            [
-                Saml::getInstance()->getSettings()->getDefaultLogoutRequestPath(),
-                $this->uid,
-            ]
+        return UrlHelper::buildEndpointUrl(
+            Saml::getInstance()->getSettings(),
+            UrlHelper::LOGOUT_REQUEST_ENDPOINT,
+            $this,
+            false
         );
     }
     /**
@@ -62,12 +73,11 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
         if ($this->providerType !== Settings::IDP) {
             return null;
         }
-        return implode(
-            DIRECTORY_SEPARATOR,
-            [
-                Saml::getInstance()->getSettings()->getDefaultLoginEndpoint(),
-                $this->uid,
-            ]
+        return UrlHelper::buildEndpointUrl(
+            Saml::getInstance()->getSettings(),
+            UrlHelper::LOGIN_ENDPOINT,
+            $this,
+            false
         );
     }
 
@@ -79,12 +89,11 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
         if ($this->providerType !== Settings::IDP) {
             return null;
         }
-        return implode(
-            DIRECTORY_SEPARATOR,
-            [
-                Saml::getInstance()->getSettings()->getDefaultLogoutEndpoint(),
-                $this->uid,
-            ]
+        return UrlHelper::buildEndpointUrl(
+            Saml::getInstance()->getSettings(),
+            UrlHelper::LOGOUT_ENDPOINT,
+            $this,
+            false
         );
     }
 }
