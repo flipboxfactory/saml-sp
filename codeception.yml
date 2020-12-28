@@ -36,7 +36,7 @@ modules:
 
   enabled:
     - Db:
-        dsn: 'mysql:host=%DB_SERVER%;dbname=%DB_DATABASE%;'
+        dsn: '%DB_DSN%'
         user: '%DB_USER%'
         password: '%DB_PASSWORD%'
         populate: true

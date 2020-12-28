@@ -1,5 +1,18 @@
 # Release Notes for SAML SP
 
+## 2.5.3 - 2020-12-16
+### Added
+- Github Actions CICD! 🚀
+
+## 2.5.2 - 2020-10-29
+### Fixed
+- Issue where SP and IdP plugin couldn't be installed on the same craft db due to table conflicts.
+
+## 2.5.1 - 2020-10-01
+
+### Fixed
+- Issue with EntityID override (added in 2.5.0), fixing https://github.com/flipboxfactory/saml-sp/issues/84
+
 ## 2.5.0 - 2020-09-22
 > {warning} Breaking changes
 

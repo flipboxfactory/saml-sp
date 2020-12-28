@@ -27,7 +27,7 @@ Many IdPs will send groups as an attribute within the SAML Response. When config
 ```php
 return [
     // change the value as needed
-    'groupAttributeNames' => 'groups'
+    'groupAttributeNames' => [ 'groups' ]
 ];
 ```
 
