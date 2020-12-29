@@ -1,5 +1,9 @@
 # Release Notes for SAML SP
 
+## 2.6.0 - TBA
+### Added
+- Better multisite support.
+
 ## 2.5.3 - 2020-12-16
 ### Added
 - Github Actions CICD! 🚀
