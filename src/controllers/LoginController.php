@@ -12,6 +12,7 @@ use Craft;
 use flipbox\saml\core\controllers\messages\AbstractController;
 use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\MessageHelper;
+use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\services\bindings\Factory;
 use flipbox\saml\core\validators\Response as ResponseValidator;
 use flipbox\saml\sp\events\RelayState;
@@ -75,6 +76,7 @@ class LoginController extends AbstractController
         /** @var SamlResponse $response */
         $response = Factory::receive();
 
+        /** @var $identityProvider AbstractProvider */
         if (! $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
             MessageHelper::getIssuer($response->getIssuer())
         )->one()) {
@@ -94,6 +96,7 @@ class LoginController extends AbstractController
             $condition['entityId'] = $settings->getEntityId();
         }
 
+        /** @var $serviceProvider AbstractProvider */
         if (! $serviceProvider = Saml::getInstance()->getProvider()->findBySp($condition)->one()) {
             $this->throwSpNotFound();
         }

@@ -8,6 +8,7 @@ use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\models\Settings;
+use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\AuthnRequest as SamlAuthnRequest;
 use SAML2\Constants;
@@ -45,7 +46,7 @@ class AuthnRequest extends Component
      * @throws \craft\errors\SiteNotFoundException
      */
     public function create(
-        AbstractProvider $serviceProvider,
+        ProviderRecord $serviceProvider,
         AbstractProvider $identityProvider
     ): SamlAuthnRequest {
 

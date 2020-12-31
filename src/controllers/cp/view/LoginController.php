@@ -23,7 +23,7 @@ class LoginController extends GeneralController
      */
     public function actionIndex()
     {
-        $variables = $this->getBaseVariables();
+        $variables = $this->getPlugin()->getEditProvider()->getBaseVariables();
 
         $variables['providers'] = Saml::getInstance()->getProvider()->findByIdp();
         return $this->renderTemplate(

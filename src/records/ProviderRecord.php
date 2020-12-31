@@ -9,6 +9,7 @@
 namespace flipbox\saml\sp\records;
 
 use flipbox\saml\core\helpers\UrlHelper;
+use flipbox\saml\core\models\AbstractSettings;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\models\Settings;
@@ -22,16 +23,12 @@ class ProviderRecord extends AbstractProvider implements ProviderInterface
      */
     const TABLE_ALIAS = 'saml_sp_providers';
 
-    public function getLoginEndpoint()
+    /**
+     * @return AbstractSettings
+     */
+    protected function getDefaultSettings(): AbstractSettings
     {
-        if ($this->providerType !== Settings::IDP) {
-            return null;
-        }
-        return UrlHelper::buildEndpointUrl(
-            Saml::getInstance()->getSettings(),
-            UrlHelper::LOGIN_ENDPOINT,
-            $this
-        );
+        return Saml::getInstance()->getSettings();
     }
 
     /**
