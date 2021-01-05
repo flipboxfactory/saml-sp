@@ -10,9 +10,10 @@ RUN composer install --no-interaction --prefer-dist --no-scripts && \
 FROM ${PHP_IMAGE} AS phpcs
 
 COPY ./src ./src
+COPY ./Makefile ./Makefile
 COPY --from=composer /var/www/html/vendor ./vendor
 
-RUN ./vendor/bin/phpcbf --standard=psr2 ./src
+RUN make phpcs
 
 FROM ${PHP_IMAGE} AS tests
 

@@ -12,6 +12,7 @@ use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
+use SAML2\EncryptedAssertion;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
@@ -71,11 +72,12 @@ class ResponseTest extends Unit
         return $this->metadataFactory->createMyProviderWithKey($this->module);
     }
 
-    private function getResponse(ProviderRecord $idp, ProviderRecord $sp)
+    private function getResponse(ProviderRecord $idp, ProviderRecord $sp, $encrypted = false)
     {
         return $this->responseFactory->createSuccessfulResponse(
             $idp,
-            $sp
+            $sp,
+            $encrypted
         );
     }
 
@@ -170,7 +172,47 @@ class ResponseTest extends Unit
             $sp,
             $idp
         );
+    }
 
+    public function testEmptyAssertion()
+    {
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp,
+        );
+        $response->setAssertions([]);
+
+        $this->expectException(InvalidMessage::class);
+
+        Saml::getInstance()->getUser()->getFirstAssertion(
+            $response,
+            $sp
+        );
+    }
+
+    public function testEncryptedResponse()
+    {
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp,
+            true
+        );
+
+        $assertion = $this->module->getUser()->getFirstAssertion(
+            $response,
+            $sp
+        );
+
+        $this->assertInstanceOf(
+            Assertion::class,
+            $assertion
+        );
     }
 
     public function testGetByResponse()

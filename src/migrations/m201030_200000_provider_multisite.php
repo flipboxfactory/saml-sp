@@ -9,7 +9,8 @@ use flipbox\saml\sp\records\ProviderRecord;
  */
 class m201030_200000_provider_multisite extends AbstractMigration
 {
-    protected function providerRecordTable():string {
+    protected function providerRecordTable():string
+    {
         return ProviderRecord::tableName();
     }
 }

@@ -10,6 +10,8 @@ use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
+use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\services\Provider;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use SAML2\DOMDocumentFactory;
 use SAML2\XML\md\EntityDescriptor;
@@ -17,7 +19,7 @@ use SAML2\XML\md\EntityDescriptor;
 class Metadata extends \UnitTester
 {
     /**
-     * @var AbstractPlugin
+     * @var Saml
      */
     private $module;
 
@@ -137,21 +139,39 @@ class Metadata extends \UnitTester
 
         $settings = $this->module->getSettings();
 
-        if ($entityId) {
-            $settings->setEntityId($entityId);
-        }
-
-        $service = $this->module->getMetadata();
-
-        $keypair = null;
-        if ($withKey) {
-            $keypair = $withKey;
-        }
-
-        $metadata = $service->create(
-            $settings,
-            $keypair
+        $doc = DOMDocumentFactory::fromFile(
+            codecept_data_dir() . '/xml/sp-metadata-without-keys.xml'
         );
+
+        $metadata =  new EntityDescriptor($doc->documentElement);
+
+        if($withKey) {
+            foreach($metadata->getRoleDescriptor() as $descriptor){
+                $this->module->getMetadata()->updateDescriptorCertificates(
+                    $descriptor,
+                    $withKey
+                );
+            }
+        }
+
+        if($entityId) {
+            $metadata->setEntityID($entityId);
+            $settings->setEntityId($entityId);
+        }else{
+            $settings->setEntityId($metadata->getEntityID());
+        }
+
+//        $service = $this->module->getMetadata();
+//
+//        $keypair = null;
+//        if ($withKey) {
+//            $keypair = $withKey;
+//        }
+//
+//        $metadata = $service->create(
+//            $settings,
+//            $provider
+//        );
 
         $I->assertEquals(
             $settings->getEntityId(),
@@ -280,6 +300,7 @@ class Metadata extends \UnitTester
                 $ed
             );
         }
+
     }
 
     /**

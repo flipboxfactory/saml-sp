@@ -4,6 +4,7 @@
 namespace Step\Unit\Common;
 
 use Codeception\Scenario;
+use craft\test\Craft;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\core\helpers\ClaimTypes;
 use flipbox\saml\core\helpers\MessageHelper;
@@ -12,6 +13,7 @@ use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
 use SAML2\Assertion;
 use SAML2\Constants;
+use SAML2\EncryptedAssertion;
 use SAML2\Response as SamlResponse;
 use SAML2\XML\saml\Issuer;
 use SAML2\XML\saml\NameID;
@@ -94,7 +96,8 @@ class Response extends \UnitTester
 
     public function createSuccessfulResponse(
         ProviderRecord $identityProvider,
-        ProviderRecord $serviceProvider
+        ProviderRecord $serviceProvider,
+        $encrypted = false
     )
     {
         $response = new SamlResponse();
@@ -115,15 +118,7 @@ class Response extends \UnitTester
                 'Message' => Constants::STATUS_SUCCESS,
             ]
         );
-        $response->setSignatureKey(
-            $this->metadataFactory->idpPrivateKey()
-        );
 
-        $response->setCertificates(
-            [
-                $identityProvider->signingXMLSecurityKey(),
-            ]
-        );
         $response->setIssueInstant(
             (new \DateTime())->getTimestamp()
         );
@@ -174,7 +169,6 @@ class Response extends \UnitTester
             ))->getTimestamp()
         );
 
-
         $sessionEnd = (new \DateTime())->setTimestamp(
             (new \DateTime('+1 hour'))->getTimestamp()
         );
@@ -201,15 +195,46 @@ class Response extends \UnitTester
 
         $assertion->setCertificates(
             [
-                $identityProvider->signingXMLSecurityKey(),
+                file_get_contents(
+                    codecept_data_dir() . '/keypairs/saml-idp.pem'
+                ),
             ]
         );
 
         $assertion->setAttributes($this->userAttributes);
 
-        $response->setAssertions([
-            $assertion,
-        ]);
+        // Encrypt Assertions
+        if ($encrypted) {
+            $unencrypted = $assertion;
+
+            if (is_null($serviceProvider->encryptionKey())) {
+                throw new \Exception('No encryption key found for the service provider.');
+            }
+            $unencrypted->setEncryptionKey(
+                $serviceProvider->encryptionKey()
+            );
+
+            $assertion = new EncryptedAssertion();
+            $assertion->setAssertion(
+                $unencrypted,
+                $serviceProvider->encryptionKey()
+            );
+        }
+
+        $response->setAssertions(
+            [
+                $assertion,
+            ]
+        );
+        $response->setSignatureKey(
+            $this->metadataFactory->idpPrivateKey()
+        );
+
+        $response->setCertificates(
+            [
+                $identityProvider->signingXMLSecurityKey(),
+            ]
+        );
 
         return $response;
     }

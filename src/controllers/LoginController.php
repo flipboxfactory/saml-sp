@@ -90,9 +90,9 @@ class LoginController extends AbstractController
             'enabled' => 1
         ];
 
-        if($uid) {
+        if ($uid) {
             $condition['uid'] = $uid;
-        }else{
+        } else {
             $condition['entityId'] = $settings->getEntityId();
         }
 

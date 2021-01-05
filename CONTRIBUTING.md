@@ -36,7 +36,7 @@ $ ./vendor/bin/phpunit
 ## Running PHP Code Sniffer
 
 ``` bash
-$ ./vendor/bin/phpcs src --standard=psr2 -sp
+$ make phpcs
 ```
 
 **Happy coding**!
