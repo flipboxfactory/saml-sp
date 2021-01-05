@@ -181,7 +181,7 @@ class ResponseTest extends Unit
 
         $response = $this->getResponse(
             $idp,
-            $sp,
+            $sp
         );
         $response->setAssertions([]);
 
