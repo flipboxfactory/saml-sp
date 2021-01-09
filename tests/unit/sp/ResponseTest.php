@@ -6,6 +6,7 @@ namespace tests\unit\sp;
 use Codeception\Scenario;
 use Codeception\Test\Unit;
 use craft\elements\User;
+use craft\models\UserGroup;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\ClaimTypes;
 use flipbox\saml\sp\models\Settings;
@@ -15,6 +16,7 @@ use SAML2\Assertion;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
+use yii\db\Exception;
 
 class ResponseTest extends Unit
 {
@@ -339,6 +341,53 @@ class ResponseTest extends Unit
             $response,
             $serviceProvider,
             $settings
+        );
+    }
+    public function testUserDefaultGroups(){
+        $user = \Craft::$app->users->getUserByUsernameOrEmail('damien@flipboxdigital.com') ??
+            $this->getUser();
+
+        $identityProvider = $this->getIdp();
+        $serviceProvider = $this->getSp();
+
+        $response = $this->getResponse(
+            $identityProvider,
+            $serviceProvider
+        );
+
+        if(!$user->getId()){
+            if(!\Craft::$app->elements->saveElement($user)) {
+                throw new \Exception('Error saving user ' . \json_encode($user->getErrors()));
+            }
+        }
+
+        \Craft::$app->userGroups->saveGroup(
+            $userGroup = new UserGroup([
+                'name' => 'Default Group',
+                'handle' => 'defaultGroup',
+            ])
+        );
+        $settings = $this->module->getSettings();
+        Saml::debug($userGroup->id);
+
+        $settings->defaultGroupAssignments = [
+            $userGroup->id
+        ];
+
+        Saml::getInstance()->getUserGroups()->sync(
+            $user,
+            $response,
+            $serviceProvider,
+            $settings
+        );
+
+        $user = \Craft::$app->elements->getElementById($user->getId());
+        $this->assertGreaterThan(0, count($user->getGroups()));
+        $userGroupAfter = $user->getGroups()[0];
+
+        $this->assertEquals(
+            $userGroup->id,
+            $userGroupAfter->id
         );
     }
 }
