@@ -8,6 +8,7 @@
 
 namespace flipbox\saml\sp\records;
 
+use craft\elements\User;
 use flipbox\saml\core\records\AbstractProviderIdentity;
 
 /**
@@ -34,4 +35,5 @@ class ProviderIdentityRecord extends AbstractProviderIdentity
             ]
         );
     }
+
 }

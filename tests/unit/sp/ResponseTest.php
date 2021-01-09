@@ -12,7 +12,6 @@ use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
-use SAML2\EncryptedAssertion;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
@@ -247,6 +246,7 @@ class ResponseTest extends Unit
             $user
         );
 
+
         $response->getAssertions()[0]->setNameId(null);
         $this->expectException(InvalidMessage::class);
         Saml::getInstance()->getUser()->getByResponse(
@@ -264,6 +264,32 @@ class ResponseTest extends Unit
             $settings
         );
     }
+
+    public function testGetByResponseNameIdOverride()
+    {
+
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp
+        );
+        $settings = new Settings();
+        $settings->nameIdAttributeOverride = ClaimTypes::EMAIL_ADDRESS;
+        $user = Saml::getInstance()->getUser()->getByResponse(
+            $response,
+            $sp,
+            $idp,
+            $settings
+        );
+
+        $this->assertInstanceOf(
+            User::class,
+            $user
+        );
+    }
+
     public function testAssertionTrait(){
 
         $idp = $this->getIdp();

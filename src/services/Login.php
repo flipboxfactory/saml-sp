@@ -32,6 +32,18 @@ class Login extends Component
     const EVENT_BEFORE_RESPONSE_TO_USER = 'eventBeforeResponseToUser';
     const EVENT_AFTER_RESPONSE_TO_USER = 'eventAfterResponseToUser';
 
+    /**
+     * @param User $user
+     * @param SamlResponse $response
+     * @param ProviderRecord $idp
+     * @param ProviderRecord $sp
+     * @param Settings $settings
+     * @return User
+     * @throws UserException
+     * @throws \Throwable
+     * @throws \craft\errors\ElementNotFoundException
+     * @throws \yii\base\Exception
+     */
     public function transformToUser(
         User $user,
         SamlResponse $response,
