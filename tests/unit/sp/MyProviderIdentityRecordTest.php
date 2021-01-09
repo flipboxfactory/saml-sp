@@ -7,6 +7,7 @@ use Codeception\Scenario;
 use Codeception\Test\Unit;
 use craft\elements\User;
 use flipbox\saml\core\records\AbstractProvider;
+use flipbox\saml\core\records\AbstractProviderIdentity;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\Saml;
 use Step\Unit\Common\Metadata;
@@ -66,7 +67,7 @@ class MyProviderIdentityRecordTest extends Unit
     {
         $recordClass = $this->module->getProviderIdentityRecordClass();
         $this->assertInstanceOf(
-            AbstractProvider::class,
+            AbstractProviderIdentity::class,
             new $recordClass
         );
     }
