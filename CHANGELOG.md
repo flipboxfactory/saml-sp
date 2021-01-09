@@ -1,8 +1,16 @@
 # Release Notes for SAML SP
 
 ## 2.6.0 - TBA
+
+> {warning} Breaking changes: There are significant endpoint and metadata changes with this release. Please make sure you have a testing site and test this upgrade with your code when you apply this change.
+
 ### Added
 - Better multisite support.
+- EntityID is is now editible
+
+## Changed
+- Breaking change: Url formating from settings (if you are using the settings model for URLs, check this!)
+- Breaking change: `flipbox\saml\core\services\Metadata::create` (moved to providers records)
 
 ## 2.5.3 - 2020-12-16
 ### Added
