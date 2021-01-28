@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.6.1 - 2021-01-28
+
+### Fixed
+- Updated login for Craft version 3.5.18 and greater.
+
 ## 2.6.0 - 2021-01-08
 
 > {warning} Breaking changes: There are significant endpoint and metadata changes with this release. Please make sure you have a testing site and test this upgrade with your code when you apply this change.
