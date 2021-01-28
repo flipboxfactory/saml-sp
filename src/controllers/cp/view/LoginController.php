@@ -54,7 +54,7 @@ class LoginController extends GeneralController
             '>='
         ) === true;
 
-        if($useLatestTemplate) {
+        if ($useLatestTemplate) {
             return self::LOGIN_TEMPLATE;
         }
 

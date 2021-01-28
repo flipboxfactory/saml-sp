@@ -35,5 +35,4 @@ class ProviderIdentityRecord extends AbstractProviderIdentity
             ]
         );
     }
-
 }
