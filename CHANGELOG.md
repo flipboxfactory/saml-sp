@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.6.2 - 2021-02-10
+
+### Fixed
+- Fixing latest login page.`dashboard` isn't a variable, it's the destination (string).
+
 ## 2.6.1 - 2021-01-28
 
 ### Fixed
