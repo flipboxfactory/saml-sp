@@ -6,6 +6,9 @@
 [![codecov](https://codecov.io/gh/flipboxfactory/saml-sp/branch/master/graph/badge.svg?token=IF9CNPKNWM)](https://codecov.io/gh/flipboxfactory/saml-sp)
 [![Total Downloads](https://img.shields.io/packagist/dt/flipboxfactory/saml-sp.svg?style=flat-square)](https://packagist.org/packages/flipboxfactory/saml-sp)
 
+## Upgrading to Craft CMS verison 3.6
+ - DO NOT PROCEED UNTIL THIS IS FIXED: https://github.com/flipboxfactory/saml-sp/issues/98
+
 ## Docs
 
 [Read the docs](https://saml-sp.flipboxfactory.com/)
