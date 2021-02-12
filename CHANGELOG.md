@@ -1,6 +1,11 @@
 # Release Notes for SAML SP
 
-## 2.6.4 - 2021-02-11
+## 2.6.4 - 2021-02-12
+
+### Fixed
+- Fixing migration issue with duplicate metadataOptions error.
+
+## 2.6.3 - 2021-02-11
 
 ### Fixed
 - Forcing core update for those updating to Craft CMS 3.6 (from a lower version).
