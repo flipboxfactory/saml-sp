@@ -161,18 +161,6 @@ class Metadata extends \UnitTester
             $settings->setEntityId($metadata->getEntityID());
         }
 
-//        $service = $this->module->getMetadata();
-//
-//        $keypair = null;
-//        if ($withKey) {
-//            $keypair = $withKey;
-//        }
-//
-//        $metadata = $service->create(
-//            $settings,
-//            $provider
-//        );
-
         $I->assertEquals(
             $settings->getEntityId(),
             $metadata->getEntityID()

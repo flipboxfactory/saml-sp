@@ -15,6 +15,7 @@ services:
             - './src:/var/www/html/src'
             - './tests:/var/www/html/tests'
         environment:
+            XDEBUG_MODE: coverage
             XDEBUG_ON: "yes"
             XDEBUG_HOST: "host.docker.internal"
             XDEBUG_IDEKEY: "PHPSTORM"

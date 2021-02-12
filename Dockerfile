@@ -29,4 +29,3 @@ ENV DB_PASSWORD password
 ENV DB_DATABASE test
 ENV DB_DRIVER mysql
 
-RUN env

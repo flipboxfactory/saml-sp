@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.6.4 - 2021-02-11
+
+### Fixed
+- Forcing core update for those updating to Craft CMS 3.6 (from a lower version).
+
 ## 2.6.2 - 2021-02-10
 
 ### Fixed
