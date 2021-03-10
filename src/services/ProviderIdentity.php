@@ -78,7 +78,7 @@ class ProviderIdentity extends AbstractProviderIdentityService
         // Get Identity
         $identity = $this->forceGet(
             $this->getNameId(
-                $this->getFirstAssertion($response, $serviceProvider),
+                $firstAssertion = $this->getFirstAssertion($response, $serviceProvider),
                 $idpProvider
             ),
             $idpProvider
