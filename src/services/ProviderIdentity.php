@@ -36,6 +36,31 @@ class ProviderIdentity extends AbstractProviderIdentityService
      * ACS Methods
      */
 
+    private function getNameId(Assertion $assertion, ProviderRecord $idpProvider) {
+
+        $nameId = null;
+        /**
+         * If you the admin is using the nameIdOverride AND the NameID isn't being sent,
+         * we'll check these here.
+         */
+        if(is_null($assertion->getNameId()) && $idpProvider->nameIdOverride) {
+            $attributes = $assertion->getAttributes();
+            if(
+                isset($attributes[$idpProvider->nameIdOverride]) &&
+                isset($attributes[$idpProvider->nameIdOverride][0])
+            ) {
+                $nameId = $attributes[$idpProvider->nameIdOverride][0];
+
+            }
+        }else{
+            /**
+             * Otherwise, pull the name ID value.
+             */
+            $nameId = $assertion->getNameID()->getValue();
+        }
+        return $nameId;
+    }
+
     /**
      * @param User $user
      * @param SamlResponse $response
@@ -50,11 +75,12 @@ class ProviderIdentity extends AbstractProviderIdentityService
         ProviderRecord $idpProvider
     ) {
 
-        $firstAssertion = $this->getFirstAssertion($response, $serviceProvider);
-
         // Get Identity
         $identity = $this->forceGet(
-            $firstAssertion->getNameID()->getValue(),
+            $this->getNameId(
+                $this->getFirstAssertion($response, $serviceProvider),
+                $idpProvider
+            ),
             $idpProvider
         );
 
