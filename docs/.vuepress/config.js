@@ -43,6 +43,7 @@ module.exports = {
                         ['/configure/settings', 'Settings'],
                         ['/configure/events', 'Events'],
                         ['/configure/idps/', 'IdPs'],
+                        ['/configure/examples/', 'Examples'],
                         ['/configure/faqs', 'FAQs'],
                     ]
                 },

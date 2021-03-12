@@ -11,13 +11,9 @@ Azure AD expects the Service Provider's Entity ID to match the "Application ID" 
 You can find the Azure AD Application ID here:  
 ![Finding the Application ID](../../assets/azure-ad-app-id.png)
 
-Once you have this ID, goto the "Craft CMS admin > SAML SP Plugin Settings" and change the "Default Entity ID" 
-field to that Application ID value. You can use an environmental variable like shown below.
+You can now edit your providers Entity ID on the Craft SAML Plugin Service Provider ("my provider") edit page.
 
-![Default Entity ID](../../assets/default-entity-id.png)
-
-Once this is set create "My Provider" in the saml plugin and the Entity ID will be set appropriately. If one already exists,
-delete that one and recreate it so the Metadata XML is appropriately created.
+![Edit My Provider Entity ID](../../assets/edit-entity-id.png)
 
 #### Info Needed by Azure AD
 These steps assume you don't have access to managing the Azure AD instance. If you are the person managing this instance,
