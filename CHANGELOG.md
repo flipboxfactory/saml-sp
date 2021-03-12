@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.6.5 - 2021-03-11
+
+### Fixed
+- adding support for when there is not NameID sent and admin is using nameIDOverride.
+
 ## 2.6.4 - 2021-02-12
 
 ### Fixed
