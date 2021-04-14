@@ -14,5 +14,7 @@
     "vue-template-compiler": "^2.6.11",
     "vuepress": "^1.2.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ssri": "^8.0.1"
+  }
 }
