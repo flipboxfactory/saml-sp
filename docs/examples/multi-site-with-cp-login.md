@@ -19,7 +19,7 @@ As of Craft CMS version 3.6.10 (maybe before?), we now have an option to set Cra
 We recommend adding a site specifically for the Craft CMS control panel/backend. This allows the plugin to easily utilize
 the base url for building the SAML documents as needed.
 
-![Create a Site for the Control Panel](../../assets/set-cp-site.png)
+![Create a Site for the Control Panel](../assets/set-cp-site.png)
 
 ### Selecting the Site as the Service Provider endpoint
 
@@ -29,10 +29,10 @@ set the site desired to associate the url (base url from the site) as needed.
 At the "My Provider" edit page, on the side bar, select the Craft CMS control panel/backend/admin Site you
 just created.
 
-![Selecting a site in the Craft CMS Backend](../../assets/multi-site-selector.png)
+![Selecting a site in the Craft CMS Backend](../assets/multi-site-selector.png)
 
 ### Login - Utilize CP Login Buttons
 
 Instruct users to login via the Control Panel login but by using the SAML SP "via" buttons.
 
-![Login to the Control Panel](../../assets/cp-login-screen.png)
+![Login to the Control Panel](../assets/cp-login-screen.png)

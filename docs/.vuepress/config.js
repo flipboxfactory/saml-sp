@@ -25,16 +25,15 @@ module.exports = {
             '/': [
                 {
                     title: 'Getting Started',
-                    collapsable: false,
                     children: [
                         ['/', 'Introduction'],
                         ['/installation', 'Installation / Upgrading'],
                         ['/support', 'Support'],
+                        ['/faqs', 'FAQs'],
                     ]
                 },
                 {
                     title: 'Configure',
-                    collapsable: false,
                     children: [
                         ['/configure/', 'Overview'],
                         ['/configure/login', 'Login'],
@@ -42,9 +41,20 @@ module.exports = {
                         ['/configure/keychain', 'KeyChain'],
                         ['/configure/settings', 'Settings'],
                         ['/configure/events', 'Events'],
-                        ['/configure/idps/', 'IdPs'],
-                        ['/configure/examples/', 'Examples'],
-                        ['/configure/faqs', 'FAQs'],
+                    ]
+                },
+                {
+                    title: 'IdPs',
+                    children: [
+                        ['/idps/', 'IdPs'],
+                        ['/idps/azure-ad', 'Azure AD'],
+                    ]
+                },
+                {
+                    title: 'Examples',
+                    children: [
+                        ['/examples/', 'Examples'],
+                        ['/examples/multi-site-with-cp-login', 'Multi-Site with CP Login'],
                     ]
                 },
             ]

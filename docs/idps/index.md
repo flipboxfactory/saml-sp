@@ -4,8 +4,8 @@ All IdPs work a little differently. The plugin doesn't know the ins and outs of 
 goal is to work with the SAML specification, the best it can.
 :::
 
-## [Azure AD](./azure-ad.md)
-[Jump to Azure AD specific instructions](./azure-ad.md) 
+## [Azure AD](azure-ad.md)
+[Jump to Azure AD specific instructions](azure-ad.md) 
 
 
 More coming soon!

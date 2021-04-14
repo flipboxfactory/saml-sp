@@ -1,5 +1,11 @@
 # Release Notes for SAML SP
 
+## 2.6.7 - 2021-04-13
+
+### Added
+- Ability to be explicit with internal provider when passing a request url.
+- docs updates
+
 ## 2.6.5 - 2021-03-11
 
 ### Fixed

@@ -17,18 +17,17 @@ Then the user is synced, logged in, and redirected to where the user initially i
 ::: 
 
 ## What is the Entity ID?
-Answer: An entity ID is a globally unique name for a SAML entity, either an Identity Provider (IdP) or a Service Provider (SP)
+An entity ID is a globally unique name for a SAML entity, either an Identity Provider (IdP) or a Service Provider (SP). 
+Recent plugin updates has made it so Entity ID is editable but be careful when doing so -- the other providers may still 
+have that ID as their link to yours.
 
-## How do I change my Entity ID?
-
-You can currenly update the setting system wide. [More information](/configure/settings.html#plugin-settings)
 
 ## Is there [Multi-Site](https://docs.craftcms.com/v3/sites.html) support?
 Answer: Yes, as of 2.0.1, a multi-site configuration should work seamlessly. 
 
 ::: tip
 Multi-Site
-When you create "My Provider", the Entity Id and endpoints default to the current site. 
+When you create "My Provider", the Entity ID and endpoints default to the current site. 
 This should not create any problems. If the appearance is a aesthetic issue for whatever reason, 
 use the Primary site when creating "My Provider". You can also override the default Entity Id if desired.  
 ::: 

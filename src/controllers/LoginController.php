@@ -218,20 +218,21 @@ class LoginController extends AbstractController
 
 
     /**
-     * @param null $uid
+     * @param string|null $idpUid
+     * @param string|null $spUid
      * @throws HttpException
      * @throws InvalidMetadata
      * @throws \craft\errors\SiteNotFoundException
      * @throws \yii\base\ExitException
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionRequest($uid = null)
+    public function actionRequest(string $idpUid = null, string $spUid = null)
     {
         //build uid condition
         $uidCondition = [];
-        if ($uid) {
+        if ($idpUid) {
             $uidCondition = [
-                'uid' => $uid,
+                'uid' => $idpUid,
             ];
         }
 
@@ -242,10 +243,16 @@ class LoginController extends AbstractController
             $uidCondition
         )->one()
         ) {
-            $this->throwIdpNotFoundWithUid($uid);
+            $this->throwIdpNotFoundWithUid($idpUid);
         }
 
-        if (! $sp = Saml::getInstance()->getProvider()->findOwn()) {
+        $sp = Saml::getInstance()->getProvider()->findBySp([
+                'uid' => $spUid
+                ])->one()
+                ??
+                Saml::getInstance()->getProvider()->findOwn();
+
+        if (! $sp) {
             $this->throwSpNotFound();
         }
 

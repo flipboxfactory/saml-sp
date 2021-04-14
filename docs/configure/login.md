@@ -15,7 +15,7 @@ return [
 ];
 ```
 
-## Explicit Config
+## Explicit Config (recommended)
 If you want to set multiple IDPs by environment, you should be explicit which provider you want to use. 
 
 Under the "Configure" tab there is a "Login/Logout Paths" header which contains read-only properties. Copy the "Login Path"
@@ -31,7 +31,25 @@ return [
        'loginPath' => '/sso/login/request/<production provider uid>',
     ],
     'dev' => [
-       'loginPath' => '/sso/login/request/<local provider uid>',
+       'loginPath' => '/sso/login/request/<dev provider uid>',
+    ],
+];
+```
+
+### 🆕 Specifying Service Provider/My Provider
+You can now go further and specify the uid to the Service Provider want to ensure SAML uses. To do so, append the Service
+Provider/My Provider.
+
+```php
+<?php
+
+//multi-environment example
+return [
+    'production' => [
+       'loginPath' => '/sso/login/request/<production IdP provider uid>/<production SP provider uid>',
+    ],
+    'dev' => [
+       'loginPath' => '/sso/login/request/<dev IdP provider uid>/<dev SP provider uid>',
     ],
 ];
 ```
