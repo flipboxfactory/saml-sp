@@ -1,5 +1,11 @@
 # Release Notes for SAML SP
 
+
+# 2.6.8 - 2021-04-13
+
+### Fixed
+- *Possible* issue with SP initiated SSO. Result from 2.6.7 controller changes.
+
 ## 2.6.7 - 2021-04-13
 
 ### Added
