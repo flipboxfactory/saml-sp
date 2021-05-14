@@ -1,7 +1,11 @@
 # Release Notes for SAML SP
 
+## 2.6.9 2021-05-14
+### Fixed
+- Issue with clipboard (using navigator.clipboard with a fallback of the previous method) #113
+- Disallow viewing to settings when allowAdminChanges is false #114
 
-# 2.6.8 - 2021-04-13
+## 2.6.8 - 2021-04-13
 
 ### Fixed
 - *Possible* issue with SP initiated SSO. Result from 2.6.7 controller changes.
