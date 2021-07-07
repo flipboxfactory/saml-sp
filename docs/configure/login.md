@@ -1,4 +1,9 @@
 # Configure Login (SSO)
+::: tip Use Case
+Configuring login, as documented below, is for frontend use only. If your users are only meant to login via the 
+Craft backend/admin/control panel, these configurations aren't needed. 
+:::
+
 Set the `loginPath` within the Craft general config `config/general.php`.
 
 After the IDP is saved in Craft, navigate back to the provider. Under the "Configure" tab in Craft, navigate back to the provider. 
