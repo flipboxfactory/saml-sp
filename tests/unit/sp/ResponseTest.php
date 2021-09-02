@@ -13,10 +13,13 @@ use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
+use SAML2\DOMDocumentFactory;
+use SAML2\Message;
+use SAML2\Utils;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
-use yii\db\Exception;
+use flipbox\saml\core\validators\Response as ResponseValidator;
 
 class ResponseTest extends Unit
 {
@@ -90,7 +93,12 @@ class ResponseTest extends Unit
             'username' => 'damien@flipboxdigital.com',
         ]);
     }
-    protected static function getMethod(string $class, string $name) {
+
+    /**
+     * @throws \ReflectionException
+     */
+    protected static function getMethod(string $class, string $name): \ReflectionMethod
+    {
         $class = new \ReflectionClass($class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
@@ -98,6 +106,9 @@ class ResponseTest extends Unit
     }
 
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testUserSync()
     {
         $this->pluginHelper->installIfNeeded();
@@ -156,6 +167,101 @@ class ResponseTest extends Unit
 //        Saml::getInstance()->getLogin()->byIdentity($identity);
 
     }
+    public function testResponseNotAfterValidationFailed(){
+        $this->pluginHelper->installIfNeeded();
+        $this->module->loadSaml2Container();
+
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp
+        );
+
+        // set expiration to 5 minutes ago
+        $response->getAssertions()[0]->setNotOnOrAfter(
+            (new \DateTime('-5 minutes'))->getTimestamp()
+        );
+
+        $validator = new ResponseValidator(
+            $idp,
+            $sp
+        );
+
+        $result = $validator->validate($response);
+
+        $this->assertEquals(
+            1,
+            count($result->getErrors())
+        );
+    }
+
+    public function testResponseSignatureValidationFailed(){
+        $this->pluginHelper->installIfNeeded();
+        $this->module->loadSaml2Container();
+
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp
+        );
+
+        $signedMsg = $response->toSignedXML();
+
+        // Manipulate Response XML after it was signed
+        $responseString = str_replace("Wick", "what",$signedMsg->ownerDocument->saveXML());
+
+        $document = DOMDocumentFactory::fromString($responseString);
+        if (!$document->firstChild instanceof \DOMElement) {
+            throw new \Exception('Malformed SAML message received.');
+        }
+
+        /**
+         * @var \SAML2\Response $msg
+         */
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage(
+            "Reference validation failed"
+        );
+        $newResponse = Message::fromXML($document->firstChild);
+
+        $validator = new ResponseValidator(
+            $idp,
+            $sp
+        );
+
+
+        $validator->validate($newResponse);
+
+
+    }
+    public function testResponseValidation(){
+        $this->pluginHelper->installIfNeeded();
+        $this->module->loadSaml2Container();
+
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp
+        );
+
+        $validator = new ResponseValidator(
+            $idp,
+            $sp
+        );
+
+        $result = $validator->validate($response);
+
+        $this->assertEmpty(
+            $result->getErrors()
+        );
+    }
+
     public function testGetByUserAndResponse(){
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();

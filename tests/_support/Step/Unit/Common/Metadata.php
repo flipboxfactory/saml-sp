@@ -53,9 +53,10 @@ class Metadata extends \UnitTester
             ]
         );
 
+
+        $contents = file_get_contents(codecept_data_dir() . '/keypairs/saml-idp.pem');
         $key->loadKey(
-            codecept_data_dir() . '/keypairs/saml-idp.pem',
-            true
+            $contents
         );
 
         return $key;
@@ -129,6 +130,7 @@ class Metadata extends \UnitTester
 
     /**
      * Define custom actions here
+     * @throws \Exception
      */
     public function createMyEntityDescriptor(
         KeyChainRecord $withKey = null,

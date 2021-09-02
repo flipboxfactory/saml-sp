@@ -36,23 +36,22 @@ class ProviderIdentity extends AbstractProviderIdentityService
      * ACS Methods
      */
 
-    private function getNameId(Assertion $assertion, ProviderRecord $idpProvider) {
+    private function getNameId(Assertion $assertion, ProviderRecord $idpProvider)
+    {
 
         $nameId = null;
         /**
          * If you the admin is using the nameIdOverride AND the NameID isn't being sent,
          * we'll check these here.
          */
-        if(is_null($assertion->getNameId()) && $idpProvider->nameIdOverride) {
+        if (is_null($assertion->getNameId()) && $idpProvider->nameIdOverride) {
             $attributes = $assertion->getAttributes();
-            if(
-                isset($attributes[$idpProvider->nameIdOverride]) &&
+            if (isset($attributes[$idpProvider->nameIdOverride]) &&
                 isset($attributes[$idpProvider->nameIdOverride][0])
             ) {
                 $nameId = $attributes[$idpProvider->nameIdOverride][0];
-
             }
-        }else{
+        } else {
             /**
              * Otherwise, pull the name ID value.
              */

@@ -32,6 +32,8 @@ class Response extends \UnitTester
      */
     private $metadataFactory;
 
+    const ENDPOINT = "http://sp.localhost:9090/sso/login";
+
     private $userAttributes = [
         ClaimTypes::EMAIL_ADDRESS => [
             'me@example.com',
@@ -110,7 +112,7 @@ class Response extends \UnitTester
 
         $response->setId($requestId = MessageHelper::generateId());
         $response->setDestination(
-            $serviceProvider->getLoginPath()
+            static::ENDPOINT
         );
         $response->setStatus(
             [
@@ -155,6 +157,7 @@ class Response extends \UnitTester
 
         $assertion->setValidAudiences([
             $serviceProvider->getEntityId(),
+            static::ENDPOINT
         ]);
 
         $assertion->setNotBefore(
@@ -193,11 +196,13 @@ class Response extends \UnitTester
             $this->metadataFactory->idpPrivateKey()
         );
 
+        $idpCert = file_get_contents(
+            codecept_data_dir() . '/keypairs/saml-idp.crt'
+        );
+
         $assertion->setCertificates(
             [
-                file_get_contents(
-                    codecept_data_dir() . '/keypairs/saml-idp.pem'
-                ),
+                $idpCert,
             ]
         );
 
@@ -232,7 +237,7 @@ class Response extends \UnitTester
 
         $response->setCertificates(
             [
-                $identityProvider->signingXMLSecurityKey(),
+                $idpCert,
             ]
         );
 
@@ -274,7 +279,7 @@ class Response extends \UnitTester
         );
 
         $subjectConfirmationData->setRecipient(
-            $serviceProvider->getEntityId()
+            static::ENDPOINT
         );
 
         $subjectConfirmation->setNameID(
