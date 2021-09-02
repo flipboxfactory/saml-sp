@@ -1,5 +1,9 @@
 # Release Notes for SAML SP
 
+## 2.6.10 2021-09-02
+### Fixed
+- Fixing validation errors that don't throw exceptions: https://github.com/flipboxfactory/saml-sp/issues/126
+
 ## 2.6.9 2021-05-14
 ### Fixed
 - Issue with clipboard (using navigator.clipboard with a fallback of the previous method) #113

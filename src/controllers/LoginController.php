@@ -106,7 +106,11 @@ class LoginController extends AbstractController
             $serviceProvider
         );
 
-        $validator->validate($response);
+        $result = $validator->validate($response);
+        if(count($result->getErrors()) > 0) {
+            throw new \Exception("Errors during validation: " . implode($result->getErrors()));
+        }
+
         // Transform to User START!
         Saml::getInstance()->getLogin()->transformToUser(
             $user = Saml::getInstance()->getUser()->getByResponse(
