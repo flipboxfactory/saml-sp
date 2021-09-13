@@ -22,6 +22,21 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $enableCpLoginButtons = true;
 
     /**
+     * Require the Response message to be signed. Messages that aren't signed can be manipulated.
+     * RECOMMENDED TO BE SET TO TRUE
+     *
+     * @var bool
+     */
+    public $requireResponseToBeSigned = true;
+    /**
+     * Require the Assertion (inside the Response message) to be signed. Messages that aren't signed can be manipulated.
+     * RECOMMENDED TO BE SET TO TRUE
+     *
+     * @var bool
+     */
+    public $requireAssertionToBeSigned = true;
+
+    /**
      * When a user logs into the IDP but is not enabled in Craft, the user will
      * be enabled. The IDP should be the authority on whether the user is active
      * or not. Users should be disabled from the IDP if they shouldn't be

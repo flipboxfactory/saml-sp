@@ -14,7 +14,7 @@ use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\services\bindings\Factory;
-use flipbox\saml\core\validators\Response as ResponseValidator;
+use flipbox\saml\sp\validators\Response as ResponseValidator;
 use flipbox\saml\sp\events\RelayState;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
@@ -103,7 +103,9 @@ class LoginController extends AbstractController
 
         $validator = new ResponseValidator(
             $identityProvider,
-            $serviceProvider
+            $serviceProvider,
+            $settings->requireResponseToBeSigned,
+            $settings->requireAssertionToBeSigned
         );
 
         $result = $validator->validate($response);

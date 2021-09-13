@@ -14,12 +14,12 @@ use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
 use SAML2\DOMDocumentFactory;
+use SAML2\EncryptedAssertion;
 use SAML2\Message;
-use SAML2\Utils;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
-use flipbox\saml\core\validators\Response as ResponseValidator;
+use flipbox\saml\sp\validators\Response as ResponseValidator;
 
 class ResponseTest extends Unit
 {
@@ -78,11 +78,48 @@ class ResponseTest extends Unit
 
     private function getResponse(ProviderRecord $idp, ProviderRecord $sp, $encrypted = false)
     {
-        return $this->responseFactory->createSuccessfulResponse(
+        $response = $this->responseFactory->createSuccessfulResponse(
             $idp,
             $sp,
             $encrypted
         );
+
+        $signedMsg = $response->toSignedXML();
+
+        $document = DOMDocumentFactory::fromString(
+            $signedMsg->ownerDocument->saveXML()
+        );
+
+        if (!$document->firstChild instanceof \DOMElement) {
+            throw new \Exception('Malformed SAML message received.');
+        }
+        $idpCert = file_get_contents(
+            codecept_data_dir() . '/keypairs/saml-idp.crt'
+        );
+
+        /**
+         * @var \SAML2\Response $returnResponse
+         */
+        $returnResponse = Message::fromXML($document->firstChild);
+        $returnResponse->setSignatureKey(
+            $this->metadataFactory->idpPrivateKey()
+        );
+        $returnResponse->setCertificates([
+            $idpCert
+        ]);
+
+        $firstAssertion =$returnResponse->getAssertions()[0];
+        if(!($firstAssertion instanceof EncryptedAssertion)) {
+
+            $firstAssertion->setSignatureKey(
+                $this->metadataFactory->idpPrivateKey()
+            );
+            $firstAssertion->setCertificates([
+                $idpCert
+            ]);
+        }
+
+        return $returnResponse;
     }
 
     private function getUser(){
@@ -167,6 +204,7 @@ class ResponseTest extends Unit
 //        Saml::getInstance()->getLogin()->byIdentity($identity);
 
     }
+
     public function testResponseNotAfterValidationFailed(){
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
@@ -209,6 +247,8 @@ class ResponseTest extends Unit
             $sp
         );
 
+        $response->setSignatureKey();
+
         $signedMsg = $response->toSignedXML();
 
         // Manipulate Response XML after it was signed
@@ -235,9 +275,47 @@ class ResponseTest extends Unit
 
 
         $validator->validate($newResponse);
+    }
 
+    public function testResponseWithSignatureRequiredValidation(){
+        $this->pluginHelper->installIfNeeded();
+        $this->module->loadSaml2Container();
+
+        $idp = $this->getIdp();
+        $sp = $this->getSp();
+
+        $response = $this->getResponse(
+            $idp,
+            $sp
+        );
+        $unsigned = $response->toUnsignedXML();
+        $document = DOMDocumentFactory::fromString($unsigned->ownerDocument->saveXML());
+        if (!$document->firstChild instanceof \DOMElement) {
+            throw new \Exception('Malformed SAML message received.');
+        }
+        $newResponse = Message::fromXML($document->firstChild);
+
+        $validator = new ResponseValidator(
+            $idp,
+            $sp,
+            true,
+            true
+        );
+
+        $this->expectException(\Exception::class);
+        $validator->validate($newResponse);
+
+        $validator = new ResponseValidator(
+            $idp,
+            $sp,
+            false,
+            true
+        );
+//        $this->expectException(\Exception::class);
+        $validator->validate($newResponse);
 
     }
+
     public function testResponseValidation(){
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();

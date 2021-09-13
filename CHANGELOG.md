@@ -1,5 +1,18 @@
 # Release Notes for SAML SP
 
+## 2.7.0 2021-09-13
+> {warning} Setting have been added to improve security (requireResponseToBeSigned and requireAssertionToBeSigned). It's recommend to update ASAP and leave these enabled. Test login before deploying.
+
+### Fixed
+- Adding controls to require Response and assertions to be signed. Ref: https://github.com/flipboxfactory/saml-sp/issues/126
+
+### Added
+- `\flipbox\saml\sp\validators\Response`
+- `\flipbox\saml\sp\validators\Assertion`
+- `\flipbox\saml\sp\validators\SignedElement`
+- `\flipbox\saml\sp\models\Settings::$requireResponseToBeSigned`
+- `\flipbox\saml\sp\models\Settings::$requireAssertionToBeSigned`
+
 ## 2.6.10 2021-09-02
 ### Fixed
 - Fixing validation errors that don't throw exceptions: https://github.com/flipboxfactory/saml-sp/issues/126
