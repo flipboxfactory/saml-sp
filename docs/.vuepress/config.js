@@ -38,6 +38,7 @@ module.exports = {
                         ['/configure/', 'Overview'],
                         ['/configure/login', 'Login'],
                         ['/configure/logout', 'Logout'],
+                        ['/configure/groups', 'User Groups / Permissions'],
                         ['/configure/keychain', 'KeyChain'],
                         ['/configure/settings', 'Settings'],
                         ['/configure/events', 'Events'],

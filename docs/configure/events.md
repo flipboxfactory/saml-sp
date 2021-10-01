@@ -21,6 +21,33 @@ There are events within the plugin that developers can hook into.
 
 ### Assign User to a User Group Based on a Property
 
+```php 
+Event::on(
+    \flipbox\saml\sp\services\login\UserGroups::class,
+    \flipbox\saml\sp\services\login\UserGroups::EVENT_BEFORE_USER_GROUP_ASSIGN,
+    function(\flipbox\saml\sp\events\UserGroupAssign $event) {
+        /** @var \craft\elements\User $user */
+        $user=$event->user;
+        /** @var \craft\models\UserGroup[] $existingGroups */
+        $existingGroups = $event->existingGroups;
+        /** @var \craft\models\UserGroup[] $groupsFound */
+        $groupsFound = $event->groupsFoundInAssertions;
+        /** @var \SAML2\Response $response */
+        $response = $event->response;
+
+        // do what you need to do!
+        
+        // get a list/array of groups (*this is a fictional service and method*)
+        /** @var \craft\models\UserGroup[] $groups */
+        $groups = $myService->getGroups($user);
+        
+        // overwrite this property (these will be assigned to the user after event is run)
+        $event->groupToBeAssigned = $groups;
+    }
+);
+```
+
+OR
 ```php
 Event::on(
     \flipbox\saml\sp\services\Login::class,
