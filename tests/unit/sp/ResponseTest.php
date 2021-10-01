@@ -527,6 +527,7 @@ class ResponseTest extends Unit
             $settings
         );
     }
+
     public function testUserDefaultGroups(){
         $user = \Craft::$app->users->getUserByUsernameOrEmail('damien@flipboxdigital.com') ??
             $this->getUser();

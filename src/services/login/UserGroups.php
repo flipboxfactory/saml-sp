@@ -6,9 +6,11 @@
 
 namespace flipbox\saml\sp\services\login;
 
+use craft\base\Component;
 use craft\elements\User as UserElement;
 use craft\helpers\StringHelper;
 use craft\models\UserGroup;
+use flipbox\saml\sp\events\UserGroupAssign;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
@@ -20,9 +22,10 @@ use yii\base\UserException;
  * Class UserGroups
  * @package flipbox\saml\sp\services
  */
-class UserGroups
+class UserGroups extends Component
 {
     use AssertionTrait;
+    const EVENT_BEFORE_USER_GROUP_ASSIGN = 'eventBeforeUserGroupAssign';
 
     /**
      * @param string $groupName
@@ -34,6 +37,7 @@ class UserGroups
     {
 
         $groupHandle = StringHelper::camelCase($groupName);
+        Saml::debug("GROUP LOOKUP ${groupName}");
 
         if (! $userGroup = \Craft::$app->getUserGroups()->getGroupByHandle($groupHandle)) {
             Saml::warning(
@@ -57,13 +61,25 @@ class UserGroups
      */
     public function sync(UserElement $user, Response $response, ProviderRecord $serviceProvider, Settings $settings)
     {
+        $groups = [];
         foreach ($this->getAssertions($response, $serviceProvider) as $assertion) {
-            $this->syncByAssertion(
-                $user,
-                $assertion,
-                $settings
+            // add all of the groups from assertions to the groups array
+            $groups = array_merge(
+                $groups,
+                $this->getGroupsByAssertion(
+                    $assertion,
+                    $settings
+                )
             );
         }
+
+        // sync the groups
+        $this->syncGroups(
+            $user,
+            $response,
+            $groups,
+            $settings
+        );
 
         $this->assignDefaultGroups(
             $user,
@@ -74,22 +90,22 @@ class UserGroups
     }
 
     /**
-     * @param UserElement $user
      * @param Assertion $assertion
-     * @return bool
+     * @param Settings $settings
+     * @return array
      * @throws UserException
      * @throws \craft\errors\WrongEditionException
      */
-    protected function syncByAssertion(
-        UserElement $user,
+    protected function getGroupsByAssertion(
         Assertion $assertion,
         Settings $settings
-    ) {
+    )
+    {
         /**
          * Nothing to do, move on
          */
         if (false === $settings->syncGroups) {
-            return true;
+            return [];
         }
 
         $groupNames = $settings->groupAttributeNames;
@@ -97,11 +113,11 @@ class UserGroups
         /**
          * Make sure there is an attribute statement
          */
-        if (! $assertion->getAttributes()) {
+        if (!$assertion->getAttributes()) {
             Saml::debug(
                 'No attribute statement found, moving on.'
             );
-            return true;
+            return [];
         }
 
         foreach ($assertion->getAttributes() as $attributeName => $attributeValue) {
@@ -131,7 +147,7 @@ class UserGroups
                  *           </saml2:AttributeValue>
                  * </saml2:Attribute>
                  */
-                if (! is_array($attributeValue)) {
+                if (!is_array($attributeValue)) {
                     $attributeValue = [$attributeValue];
                 }
 
@@ -143,7 +159,7 @@ class UserGroups
                                 $group->name
                             )
                         );
-                        $groups[] = $group->id;
+                        $groups[] = $group;
                     } else {
                         Saml::debug(
                             sprintf(
@@ -159,28 +175,57 @@ class UserGroups
          * just return if this is empty
          */
         if (empty($groups)) {
-            return true;
+            return [];
         }
+        return $groups;
+    }
 
-        /**
-         * Get existing groups
-         */
-        $existingGroupIds = array_map(
-            function ($group) {
-                return (int)$group->id;
-            },
-            $user->getGroups()
+    /**
+     * @param UserElement $user
+     * @param Response $response
+     * @param UserGroup[] $groups
+     * @param Settings $settings
+     * @throws \Throwable
+     */
+    protected function syncGroups(
+        UserElement $user,
+        Response $response,
+        array $groups,
+        Settings $settings
+    ) {
+
+        $event = new UserGroupAssign();
+        $event->user = $user;
+        $event->response = $response;
+        $event->existingGroups = $user->getGroups();
+        $event->groupsFoundInAssertions = $groups;
+        $event->groupToBeAssigned = array_merge(
+            $settings->mergeExistingGroups ? $user->getGroups() : [],
+            $groups
         );
 
-        return \Craft::$app->getUsers()->assignUserToGroups(
+        $this->trigger(
+            static::EVENT_BEFORE_USER_GROUP_ASSIGN,
+            $event
+        );
+
+        if(\Craft::$app->getUsers()->assignUserToGroups(
             $user->id,
+            // pass the list of unique ids
             array_unique(
-                array_merge(
-                    $existingGroupIds,
-                    $groups
+                array_map(
+                    function ($group) {
+                        return (int)$group->id;
+                    },
+                    $event->groupToBeAssigned
                 )
             )
-        );
+        )) {
+            $user->setGroups(
+                $event->groupToBeAssigned
+            );
+        }
+        return;
     }
 
     /**

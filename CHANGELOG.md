@@ -1,6 +1,16 @@
 # Release Notes for SAML SP
 
-## 2.7.0 2021-09-13
+## 2.7.1 2021-10-01
+> {warning} Encrypted Assertions are now set to be decrypted before events may interact with them. If you currently decrypt assertions in an custom event, verify the assertion is an instance of `\SAML2\EncryptedAssertion` before decryption.
+
+### Added
+- Event `\flipbox\saml\sp\events\UserGroupAssign` and `\flipbox\saml\sp\services\login\UserGroups::EVENT_BEFORE_USER_GROUP_ASSIGN` manipulate groups to be assigned before assignment #133
+- Config (which can be added in `config/saml-sp.php`) `mergeExistingGroups` to opt-in to merging groups if desired. Default is true, the groups will be merged. #133
+
+### Changed
+- Add decrypted assertions to Response after assertions are initially decrypted. See above warning.
+
+## 2.7.0 2021-09-13 [CRITICAL]
 > {warning} Setting have been added to improve security (requireResponseToBeSigned and requireAssertionToBeSigned). It's recommend to update ASAP and leave these enabled. Test login before deploying.
 
 ### Fixed

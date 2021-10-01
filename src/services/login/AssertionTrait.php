@@ -66,6 +66,10 @@ trait AssertionTrait
             }
         }
 
+        $response->setAssertions(
+            $this->decryptedAssertions
+        );
+
         return $this->decryptedAssertions;
     }
 }

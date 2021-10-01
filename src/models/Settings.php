@@ -108,6 +108,14 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $syncGroups = true;
 
     /**
+     * When true, the plugin will merge the existing groups the user has assigned with the
+     * groups found in the SSO/SAML Response.
+     * If you want groups to be strictly managed by the plugin, toggle this to false.
+     * @var bool
+     */
+    public $mergeExistingGroups = true;
+
+    /**
      * A list of strings that will be used to look through the attributes xml
      * nodes sent by the IDP to be identified as a group. This is a key to the
      * group name values.
