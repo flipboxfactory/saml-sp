@@ -515,8 +515,10 @@ class ResponseTest extends Unit
             $identityProvider,
             $serviceProvider
         );
+        $user->email = "me@test2.com";
+        $user->username = "me@test2.com";
 
-//        \Craft::$app->elements->saveElement($user);
+        \Craft::$app->elements->saveElement($user);
 
         $settings = new Settings();
 
