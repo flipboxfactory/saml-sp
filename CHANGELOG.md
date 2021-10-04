@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.7.2 - 2021-10-04
+
+### Fixed
+- fixed missing config being passed to the validator for controls on assertions being signed (thanks @lindseydiloreto for catching this and PR). Ref: https://github.com/flipboxfactory/saml-sp/issues/126
+
 ## 2.7.1 - 2021-10-01
 > {warning} Encrypted Assertions are now set to be decrypted before events may interact with them. If you currently decrypt assertions in an custom event, verify the assertion is an instance of `\SAML2\EncryptedAssertion` before decryption.
 
