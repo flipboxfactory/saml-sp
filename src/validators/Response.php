@@ -103,7 +103,8 @@ class Response
             $validator = new Assertion(
                 $response,
                 $this->identityProvider,
-                $this->serviceProvider
+                $this->serviceProvider,
+                $this->requireAssertionsToBeSigned
             );
 
             $assertionResult = $validator->validate($assertion);
