@@ -61,7 +61,9 @@ return [
 ]; 
 ```
 
-::: tip It is recommended to have both or at least one of the two (Response or Assertion require) for security purposes.
+::: tip 
+Recommended
+It is recommended to have both or at least one of the two (Response or Assertion require) for security purposes.
 The signature helps validate the message is from the trusted Identity Provider.
 :::
 
