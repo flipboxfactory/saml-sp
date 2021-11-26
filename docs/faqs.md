@@ -45,6 +45,26 @@ An example cronjob would look like this:
 0 0 * * * php craft saml-sp/metadata/refresh-with-url <uid> || /opt/notify-admins-on-fail.sh
 ```
 
+## Signature required but not found
+Answer: By default for security reasons, the plugin requires signatures for both the Response and the Assertion. If these are not found 
+you'll see an error "Signature required but not found: Response" or "Signature required but not found: Assertion".
+You can modify the settings of this require (at your own risk) by setting the `config/saml-sp.php` config file with 
+(found in class `\flipbox\saml\sp\models\Settings`) the following settings:
+- `requireAssertionToBeSigned`
+- `requireResponseToBeSigned`
+
+An example config file looks like the following: 
+```php
+return [
+    // assertion is required but not the response
+    'requireResponseToBeSigned' => false,
+]; 
+```
+
+::: tip It is recommended to have both or at least one of the two (Response or Assertion require) for security purposes.
+The signature helps validate the message is from the trusted Identity Provider.
+:::
+
 ## Error: Trying to get property 'keychain' of non-object
 Answer: This usually means "My Provider", the sites metadata/provider can't be found, or possibly, hasn't 
 been created. Go to `https://<your domain>/admin/saml-sp/metadata/my-provider` and create a new provider
