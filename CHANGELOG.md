@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## 2.7.2 - 2021-10-27
+## 2.7.3 - 2021-10-27
 
 ### Fixed
 - updated saml-core: When "This site has it's own base URL" isn't checked but the site is selected. ref: https://github.com/flipboxfactory/saml-sp/issues/139
