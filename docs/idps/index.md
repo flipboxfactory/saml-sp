@@ -7,5 +7,5 @@ goal is to work with the SAML specification, the best it can.
 ## [Azure AD](azure-ad.md)
 [Jump to Azure AD specific instructions](azure-ad.md) 
 
-
-More coming soon!
+## [Okta](okta.md)
+[Jump to Okta specific instructions](okta.md) 

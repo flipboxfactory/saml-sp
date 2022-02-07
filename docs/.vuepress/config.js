@@ -49,6 +49,7 @@ module.exports = {
                     children: [
                         ['/idps/', 'IdPs'],
                         ['/idps/azure-ad', 'Azure AD'],
+                        ['/idps/okta', 'Okta'],
                     ]
                 },
                 {
