@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 2.7.4 - 2022-05-31
+
+### Fixed
+- issue with using the default settings for entity id instead of the provider entity id, closing #171
+
 ## 2.7.3 - 2021-10-27
 
 ### Fixed

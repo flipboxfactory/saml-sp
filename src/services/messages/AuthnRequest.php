@@ -88,7 +88,7 @@ class AuthnRequest extends Component
         );
 
         $issuer->setValue(
-            Saml::getInstance()->getSettings()->getEntityId()
+            $serviceProvider->getEntityId()
         );
 
         /**
