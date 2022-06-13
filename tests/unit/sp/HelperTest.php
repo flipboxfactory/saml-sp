@@ -22,6 +22,7 @@ class HelperTest extends Unit
             'firstName' => 'Test First Name',
             'lastName' => 'Test Last Name',
         ]);
+        \Craft::$app->elements->saveElement($this->user);
     }
 
     public function testUserHelper()
