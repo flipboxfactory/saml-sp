@@ -22,16 +22,16 @@ class HelperTest extends Unit
             'firstName' => 'Test First Name',
             'lastName' => 'Test Last Name',
         ]);
-        \Craft::$app->elements->saveElement($this->user);
     }
 
     public function testUserHelper()
     {
-        $this->assertTrue(
-            UserHelper::isUserActive(
-                $this->user
-            )
-        );
+//        $this->assertTrue(
+//            UserHelper::isUserActive(
+//                $this->user
+//            )
+//        );
+
         $this->assertFalse(
             UserHelper::isUserArchived(
                 $this->user
