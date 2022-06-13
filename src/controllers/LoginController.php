@@ -40,7 +40,7 @@ class LoginController extends AbstractController
      */
     const EVENT_AFTER_RELAYSTATE_CREATION = 'eventBeforeRelayStateCreation';
 
-    protected $allowAnonymous = [
+    protected array|int|bool $allowAnonymous = [
         'actionIndex',
         'actionRequest',
     ];
@@ -51,7 +51,7 @@ class LoginController extends AbstractController
      * @param \yii\base\Action $action
      * @return bool
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if ($action->actionMethod === 'actionIndex' || $action->actionMethod === 'actionRequest') {
             return true;

@@ -7,6 +7,7 @@
 
 namespace flipbox\saml\sp;
 
+use craft\base\Model;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
@@ -39,7 +40,7 @@ class Saml extends AbstractPlugin
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -122,7 +123,7 @@ class Saml extends AbstractPlugin
     /**
      * @return Settings
      */
-    public function getSettings(): SettingsInterface
+    public function getSettings(): ?Model
     {
         return parent::getSettings();
     }
@@ -130,7 +131,7 @@ class Saml extends AbstractPlugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?Model
     {
         return new Settings([
             'myType' => Settings::SP,

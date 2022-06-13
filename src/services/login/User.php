@@ -197,7 +197,7 @@ class User extends Component
         /**
          * Is User Active?
          */
-        if (! UserHelper::isUserActive($user)) {
+        if ($user->id && ! UserHelper::isUserActive($user)) {
             if (! $settings->enableUsers) {
                 throw new UserException('User access denied.');
             }
