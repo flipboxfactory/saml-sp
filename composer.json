@@ -38,6 +38,12 @@
       "flipbox\\saml\\sp\\tests\\": "tests/"
     }
   },
+  "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+  },
   "support": {
     "email": "support@flipboxfactory.com",
     "issues": "https://github.com/flipboxfactory/saml-sp/issues?state=open",
