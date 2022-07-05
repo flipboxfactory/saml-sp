@@ -28,6 +28,7 @@ module.exports = {
                     children: [
                         ['/', 'Introduction'],
                         ['/installation', 'Installation / Upgrading'],
+                        ['/quick-start', 'Quick Start'],
                         ['/support', 'Support'],
                         ['/faqs', 'FAQs'],
                     ]
