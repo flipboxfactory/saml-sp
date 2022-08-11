@@ -1,5 +1,15 @@
 # Release Notes for SAML SP
 
+## 4.0.1 2022-08-11
+
+### Fixed
+- issues with 4.0 typing matching craft parent classes (saml-core)
+
+## 4.0.0 2022-06-18
+
+### Fixed
+- Craft 4.0 support
+
 ## 2.7.4 - 2022-05-31
 
 ### Fixed
