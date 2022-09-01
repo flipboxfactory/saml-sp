@@ -79,7 +79,9 @@ class LoginController extends AbstractController
         /** @var $identityProvider AbstractProvider */
         if (! $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
             MessageHelper::getIssuer($response->getIssuer())
-        )->one()) {
+        )->andWhere([
+            'enabled' => 1,
+        ])->one()) {
             $this->throwIdpNotFoundWithResponse($response);
         }
 

@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.0.2 - 2022-09-01
+
+### Fixed
+- excluding disabled IdPs in login controller findByEntityId() closing #175
+
 ## 4.0.1 2022-08-11
 
 ### Fixed
@@ -14,6 +19,11 @@
 
 ### Fixed
 - issue with using the default settings for entity id instead of the provider entity id, closing #171
+
+## 2.7.5 - 2022-09-01
+
+### Fixed
+- excluding disabled IdPs in login controller findByEntityId() closing #175
 
 ## 2.7.3 - 2021-10-27
 
