@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML Service Provider",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [

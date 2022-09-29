@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.0.3 - 2022-09-29
+
+### Fixed
+- issue with custom attributes not being picked up by the validation #177
+
 ## 4.0.2 - 2022-09-01
 
 ### Fixed

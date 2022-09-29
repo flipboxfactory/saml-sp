@@ -292,7 +292,7 @@ class User extends Component
             $attributeValue = isset($attributeValue[0]) ? $attributeValue[0] : null;
         }
 
-        if (is_string($craftProperty) && in_array($craftProperty, $user->attributes())) {
+        if (is_string($craftProperty)) {
             Saml::debug(
                 sprintf(
                     'Attribute %s is scalar and should set value "%s" to user->%s',
