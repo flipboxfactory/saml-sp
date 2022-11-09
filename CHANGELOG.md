@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.0.4 - 2022-11-09
+
+### Fixed
+- issue with craft version being off compared to the composer version 🤪. fixes #179
+
 ## 4.0.3 - 2022-09-29
 
 ### Fixed
