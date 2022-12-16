@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.0.5 - 2022-12-15
+
+### Fixed
+- issue with ui https://github.com/flipboxfactory/saml-sp/issues/182
+
 ## 4.0.4 - 2022-11-09
 
 ### Fixed
