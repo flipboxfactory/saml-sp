@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.0.7 - 2023-11-29
+
+### Fixed
+- bumping saml-core to use pinned psr/log at 1.1.4
+
 ## 4.0.6.1 - 2023-11-28
 
 ### Fixed
