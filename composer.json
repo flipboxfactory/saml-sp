@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML Service Provider",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [
@@ -16,7 +16,7 @@
   ],
   "require": {
     "craftcms/cms": "^4.0.0",
-    "flipboxfactory/saml-core": "~4.0.4"
+    "flipboxfactory/saml-core": "~4.0.4.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.4",
@@ -53,7 +53,7 @@
   },
   "extra": {
     "name": "SAML Service Provider",
-    "version":"4.0.6",
+    "version":"4.0.7",
     "schemaVersion":"2.1.0",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",

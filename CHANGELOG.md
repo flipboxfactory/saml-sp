@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.0.6.1 - 2023-11-28
+
+### Fixed
+- revert: issue with logger interface compatibility #197
+
 ## 4.0.6 - 2023-11-28
 
 ### Fixed
