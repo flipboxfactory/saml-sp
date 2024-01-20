@@ -19,19 +19,15 @@ To install, use composer:
 composer require flipboxfactory/saml-sp
 ```
 
-## Upgrade from 1.0 to 2.0
-[Read the docs](https://saml-sp.flipboxfactory.com/installation.html#upgrading-to-2-0)
-
-## Testing
-
-``` bash
-$ docker-compose run --rm test
-```
-
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/flipboxfactory/saml-sp/blob/master/CONTRIBUTING.md) for details.
 
+### Run Unit Tests
+
+``` bash
+$ docker-compose run --rm test
+```
 
 ## Credits
 

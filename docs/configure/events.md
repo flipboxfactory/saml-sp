@@ -48,6 +48,7 @@ Event::on(
 ```
 
 OR
+
 ```php
 Event::on(
     \flipbox\saml\sp\services\Login::class,
@@ -63,12 +64,16 @@ Event::on(
             $groups[$group->id] = $group;
         }
             
-        // Determine if admin, return if not
+        // Note: this is just an example but you can use your own logic here to
+        // add users to groups as needed.
+
+        // Custom/project logic to check if admin, if not, return (don't continue
+        // and add the user to the groups
         if (! MyUserHelper::isAdminUser($user, $response)){
             return;
         }
 
-        // Get default group by handle
+        // Get group by handle
         $group = \Craft::$app->getUserGroups()->getGroupByHandle('myAdminGroup');
 
         // Add it to the group array
@@ -83,13 +88,15 @@ Event::on(
         );
 
         // Assign them to the user groups
+        // Make sure to set all the groups the user needs to be associated with here.
+        // If you want the users to have their existing groups still associated
+        // re-add them (ie, [ ...existingGroupsIds, ...newGroupsIds])
         if (\Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds)) {
             /**
              * Set the groups back on the user just in case it's being used after this.
              *
-             * This may seem strange because the they do this in the `assignUserToGroups`
-             * method but the user they set the groups to isn't *this* user object,
-             * so this is needed.
+             * There is some odd behavior here but this ensures the groups are set 
+             * in the local runtime cache on the user and they are set in the db.
              */
             $user->setGroups($groups);
         }
