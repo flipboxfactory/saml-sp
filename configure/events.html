@@ -8,7 +8,7 @@
     
     <meta name="description" content="SAML SSO Service Provider plugin for Craft CMS">
     
-    <link rel="preload" href="/assets/css/0.styles.9cbc9ea8.css" as="style"><link rel="preload" href="/assets/js/app.b9137ceb.js" as="script"><link rel="preload" href="/assets/js/2.10e26c47.js" as="script"><link rel="preload" href="/assets/js/1.9bb73444.js" as="script"><link rel="preload" href="/assets/js/25.d56a48c4.js" as="script"><link rel="prefetch" href="/assets/js/10.3324c83c.js"><link rel="prefetch" href="/assets/js/11.27d36382.js"><link rel="prefetch" href="/assets/js/12.143bf57e.js"><link rel="prefetch" href="/assets/js/13.cffbdc71.js"><link rel="prefetch" href="/assets/js/14.0cfda640.js"><link rel="prefetch" href="/assets/js/15.27e3a248.js"><link rel="prefetch" href="/assets/js/16.58196ea9.js"><link rel="prefetch" href="/assets/js/17.6a3db793.js"><link rel="prefetch" href="/assets/js/18.ea4aba3f.js"><link rel="prefetch" href="/assets/js/19.c8d6c14b.js"><link rel="prefetch" href="/assets/js/20.4b4a7f9d.js"><link rel="prefetch" href="/assets/js/21.81210588.js"><link rel="prefetch" href="/assets/js/22.85069bd1.js"><link rel="prefetch" href="/assets/js/23.885512a7.js"><link rel="prefetch" href="/assets/js/24.97d17fad.js"><link rel="prefetch" href="/assets/js/26.928c22de.js"><link rel="prefetch" href="/assets/js/27.d6cdf6ba.js"><link rel="prefetch" href="/assets/js/28.8bfeaf9b.js"><link rel="prefetch" href="/assets/js/29.b3666691.js"><link rel="prefetch" href="/assets/js/3.50f33648.js"><link rel="prefetch" href="/assets/js/30.a16119eb.js"><link rel="prefetch" href="/assets/js/31.916c04ce.js"><link rel="prefetch" href="/assets/js/32.211a4f7a.js"><link rel="prefetch" href="/assets/js/33.a1ec3643.js"><link rel="prefetch" href="/assets/js/34.dc383a22.js"><link rel="prefetch" href="/assets/js/35.1c63dc83.js"><link rel="prefetch" href="/assets/js/36.0a13479e.js"><link rel="prefetch" href="/assets/js/37.475902e2.js"><link rel="prefetch" href="/assets/js/38.75f0b186.js"><link rel="prefetch" href="/assets/js/4.c3bbd19c.js"><link rel="prefetch" href="/assets/js/5.81c000f8.js"><link rel="prefetch" href="/assets/js/6.3bba3ea6.js"><link rel="prefetch" href="/assets/js/7.e23775f3.js"><link rel="prefetch" href="/assets/js/vendors~docsearch.857e8e87.js">
+    <link rel="preload" href="/assets/css/0.styles.9cbc9ea8.css" as="style"><link rel="preload" href="/assets/js/app.5e686a15.js" as="script"><link rel="preload" href="/assets/js/2.10e26c47.js" as="script"><link rel="preload" href="/assets/js/1.9bb73444.js" as="script"><link rel="preload" href="/assets/js/25.ccf588d8.js" as="script"><link rel="prefetch" href="/assets/js/10.3324c83c.js"><link rel="prefetch" href="/assets/js/11.27d36382.js"><link rel="prefetch" href="/assets/js/12.143bf57e.js"><link rel="prefetch" href="/assets/js/13.adcff7aa.js"><link rel="prefetch" href="/assets/js/14.0cfda640.js"><link rel="prefetch" href="/assets/js/15.27e3a248.js"><link rel="prefetch" href="/assets/js/16.58196ea9.js"><link rel="prefetch" href="/assets/js/17.cb74d731.js"><link rel="prefetch" href="/assets/js/18.ea4aba3f.js"><link rel="prefetch" href="/assets/js/19.c8d6c14b.js"><link rel="prefetch" href="/assets/js/20.4b4a7f9d.js"><link rel="prefetch" href="/assets/js/21.b3eb7e2c.js"><link rel="prefetch" href="/assets/js/22.85069bd1.js"><link rel="prefetch" href="/assets/js/23.885512a7.js"><link rel="prefetch" href="/assets/js/24.97d17fad.js"><link rel="prefetch" href="/assets/js/26.928c22de.js"><link rel="prefetch" href="/assets/js/27.4e0adf54.js"><link rel="prefetch" href="/assets/js/28.c1a75df4.js"><link rel="prefetch" href="/assets/js/29.b3666691.js"><link rel="prefetch" href="/assets/js/3.50f33648.js"><link rel="prefetch" href="/assets/js/30.a16119eb.js"><link rel="prefetch" href="/assets/js/31.94cbc7cd.js"><link rel="prefetch" href="/assets/js/32.ab2bf4f1.js"><link rel="prefetch" href="/assets/js/33.f1cdd157.js"><link rel="prefetch" href="/assets/js/34.dc383a22.js"><link rel="prefetch" href="/assets/js/35.cd219e04.js"><link rel="prefetch" href="/assets/js/36.0a13479e.js"><link rel="prefetch" href="/assets/js/37.475902e2.js"><link rel="prefetch" href="/assets/js/38.75f0b186.js"><link rel="prefetch" href="/assets/js/4.c3bbd19c.js"><link rel="prefetch" href="/assets/js/5.81c000f8.js"><link rel="prefetch" href="/assets/js/6.3bba3ea6.js"><link rel="prefetch" href="/assets/js/7.e23775f3.js"><link rel="prefetch" href="/assets/js/vendors~docsearch.857e8e87.js">
     <link rel="stylesheet" href="/assets/css/0.styles.9cbc9ea8.css">
   </head>
   <body>
@@ -66,12 +66,16 @@
             <span class="token variable">$groups</span><span class="token punctuation">[</span><span class="token variable">$group</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$group</span><span class="token punctuation">;</span>
         <span class="token punctuation">}</span>
             
-        <span class="token comment">// Determine if admin, return if not</span>
+        <span class="token comment">// Note: this is just an example but you can use your own logic here to</span>
+        <span class="token comment">// add users to groups as needed.</span>
+
+        <span class="token comment">// Custom/project logic to check if admin, if not, return (don't continue</span>
+        <span class="token comment">// and add the user to the groups</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span> <span class="token class-name static-context">MyUserHelper</span><span class="token operator">::</span><span class="token function">isAdminUser</span><span class="token punctuation">(</span><span class="token variable">$user</span><span class="token punctuation">,</span> <span class="token variable">$response</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
             <span class="token keyword">return</span><span class="token punctuation">;</span>
         <span class="token punctuation">}</span>
 
-        <span class="token comment">// Get default group by handle</span>
+        <span class="token comment">// Get group by handle</span>
         <span class="token variable">$group</span> <span class="token operator">=</span> <span class="token class-name class-name-fully-qualified static-context"><span class="token punctuation">\</span>Craft</span><span class="token operator">::</span><span class="token variable">$app</span><span class="token operator">-&gt;</span><span class="token function">getUserGroups</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">getGroupByHandle</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'myAdminGroup'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
         <span class="token comment">// Add it to the group array</span>
@@ -86,13 +90,15 @@
         <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
         <span class="token comment">// Assign them to the user groups</span>
+        <span class="token comment">// Make sure to set all the groups the user needs to be associated with here.</span>
+        <span class="token comment">// If you want the users to have their existing groups still associated</span>
+        <span class="token comment">// re-add them (ie, [ ...existingGroupsIds, ...newGroupsIds])</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name class-name-fully-qualified static-context"><span class="token punctuation">\</span>Craft</span><span class="token operator">::</span><span class="token variable">$app</span><span class="token operator">-&gt;</span><span class="token function">getUsers</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">assignUserToGroups</span><span class="token punctuation">(</span><span class="token variable">$user</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">,</span> <span class="token variable">$groupIds</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
             <span class="token comment">/**
              * Set the groups back on the user just in case it's being used after this.
              *
-             * This may seem strange because the they do this in the `assignUserToGroups`
-             * method but the user they set the groups to isn't *this* user object,
-             * so this is needed.
+             * There is some odd behavior here but this ensures the groups are set 
+             * in the local runtime cache on the user and they are set in the db.
              */</span>
             <span class="token variable">$user</span><span class="token operator">-&gt;</span><span class="token function">setGroups</span><span class="token punctuation">(</span><span class="token variable">$groups</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token punctuation">}</span>
@@ -125,6 +131,6 @@
       </a>
       →
     </span></p></div> </main></div><div class="global-ui"></div></div>
-    <script src="/assets/js/app.b9137ceb.js" defer></script><script src="/assets/js/2.10e26c47.js" defer></script><script src="/assets/js/1.9bb73444.js" defer></script><script src="/assets/js/25.d56a48c4.js" defer></script>
+    <script src="/assets/js/app.5e686a15.js" defer></script><script src="/assets/js/2.10e26c47.js" defer></script><script src="/assets/js/1.9bb73444.js" defer></script><script src="/assets/js/25.ccf588d8.js" defer></script>
   </body>
 </html>
