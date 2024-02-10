@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.1.0 - 2023-02-10
+
+### Fixed
+- Fixing issue with multi-site linking for the external id field
+
 ## 4.0.7 - 2023-11-29
 
 ### Fixed
