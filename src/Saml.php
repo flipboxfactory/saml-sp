@@ -27,6 +27,7 @@ use flipbox\saml\sp\services\login\UserGroups;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
+use flipbox\saml\sp\twig\Extension;
 use SAML2\Compat\AbstractContainer;
 use yii\base\Event;
 
@@ -50,6 +51,12 @@ class Saml extends AbstractPlugin
         // Switch target to console controllers
         if (\Craft::$app instanceof ConsoleApplication) {
             $this->controllerNamespace = __NAMESPACE__ . '\commands';
+        }
+
+        if (\Craft::$app->getRequest()->getIsSiteRequest()) {
+            // Instantiate + register the twig extension
+            $extension = new Extension();
+            \Craft::$app->getView()->registerTwigExtension($extension);
         }
     }
 

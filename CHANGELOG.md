@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.1.1 - 2024-02-10
+
+### Feature
+- Add `samlSpLogoutUrl` for easier logout url generation
+
 ## 4.1.0 - 2024-02-10
 
 ### Fixed
