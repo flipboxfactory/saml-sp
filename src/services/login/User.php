@@ -9,6 +9,7 @@ namespace flipbox\saml\sp\services\login;
 use craft\base\Component;
 use craft\base\Field;
 use craft\elements\User as UserElement;
+use craft\errors\InvalidElementException;
 use craft\events\ElementEvent;
 use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
@@ -85,6 +86,31 @@ class User extends Component
     }
 
     /**
+     * @throws \Throwable
+     * @throws InvalidElementException
+     */
+    private function enableUser(UserElement $user): void
+    {
+        if ($user->getId()) {
+            \Craft::$app->getUsers()->activateUser($user);
+
+            return;
+        }
+
+        $user->enabled = true;
+        $user->archived = false;
+
+        $user->active = true;
+        $user->pending = false;
+        $user->locked = false;
+        $user->suspended = false;
+        $user->verificationCode = null;
+        $user->verificationCodeIssuedDate = null;
+        $user->invalidLoginCount = null;
+        $user->lastInvalidLoginDate = null;
+        $user->lockoutDate = null;
+    }
+    /**
      * @param ProviderIdentityRecord $identity
      * @return bool
      * @throws UserException
@@ -93,9 +119,7 @@ class User extends Component
     public function login(\flipbox\saml\sp\records\ProviderIdentityRecord $identity)
     {
         if ($identity->getUser()->getStatus() !== UserElement::STATUS_ACTIVE) {
-            if (! \Craft::$app->getUsers()->activateUser($identity->getUser())) {
-                throw new UserException("Can't activate user.");
-            }
+            $this->enableUser($identity->getUser());
         }
 
         if (\Craft::$app->getUser()->login(
