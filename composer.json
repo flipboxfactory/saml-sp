@@ -25,7 +25,9 @@
         "craftcms/phpstan": "dev-main",
         "vlucas/phpdotenv": "^5.5",
         "friendsofphp/php-cs-fixer": "^v3.20.0",
-        "phpunit/php-code-coverage": "^11.0.3"
+        "phpunit/php-code-coverage": "^11.0.3",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-db": "^3.1"
     },
     "autoload": {
         "psr-4": {
