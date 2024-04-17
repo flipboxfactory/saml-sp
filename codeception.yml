@@ -6,6 +6,7 @@ paths:
 actor_suffix: Tester
 params:
   - tests/.env
+  - env
 bootstrap: _bootstrap.php
 settings:
   colors: true
