@@ -65,6 +65,7 @@ jobs:
           php ./vendor/bin/codecept build
           php ./vendor/bin/codecept run -vv --coverage --coverage-xml
         env:
+          CRAFT_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_DSN: mysql:host=127.0.0.1;port=${{ job.services.mysql.ports['3306'] }};dbname=test
       - name: codecov.io
         # only do this once
