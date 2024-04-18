@@ -5,6 +5,7 @@ paths:
   support: tests/_support
 actor_suffix: Tester
 params:
+  - tests/.env
   - env
 bootstrap: _bootstrap.php
 settings:
@@ -26,7 +27,8 @@ modules:
   config:
     \craft\test\Craft:
       configFile: 'tests/_craft/config/test.php'
-      edition: 1
+      edition: 2
+      entryUrl: http://saml-sp.test/index.php
       dbSetup:
         clean: true
         setupCraft: true
@@ -42,5 +44,5 @@ modules:
         populate: true
         # cleanup: true
         # reconnect: true
-        dump:
-          - tests/_data/create-dbs.sql
+        # dump:
+        #   - tests/_data/create-dbs.sql

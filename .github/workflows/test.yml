@@ -2,6 +2,8 @@
 name: test
 on:
   push:
+    branches:
+      - master
   pull_request:
   schedule:
     # every tuesday
@@ -19,7 +21,7 @@ jobs:
       DB_CHARSET: utf8
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: password
@@ -31,14 +33,11 @@ jobs:
       fail-fast: false
       matrix:
         php-versions:
-          - '8.0'
+          - '8.2'
+          - '8.3'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      # - name: Set Node.js 10.x
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: 10.x
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
@@ -62,13 +61,15 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Run Tests
         run: |
+          cp tests/.env.test tests/.env
           php ./vendor/bin/codecept build
           php ./vendor/bin/codecept run -vv --coverage --coverage-xml
         env:
+          CRAFT_DB_PORT: ${{ job.services.mysql.ports['3306'] }}
           DB_DSN: mysql:host=127.0.0.1;port=${{ job.services.mysql.ports['3306'] }};dbname=test
       - name: codecov.io
         # only do this once
-        if: ${{ matrix.php-versions == '7.4' }}
+        if: ${{ matrix.php-versions == '8.3' }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: bash <(curl -s https://codecov.io/bash)

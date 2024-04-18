@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 5.0.0 - 2024-04-17
+
+### Fixed
+- Craft 5.0 compatibility
+
 ## 4.1.1 - 2024-02-10
 
 ### Feature

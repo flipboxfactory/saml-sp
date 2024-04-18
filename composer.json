@@ -1,65 +1,73 @@
 {
-  "name": "flipboxfactory/saml-sp",
-  "description": "SAML Service Provider",
-  "version": "4.1.1",
-  "type": "craft-plugin",
-  "license": "proprietary",
-  "keywords": [
-    "cms",
-    "craftcms",
-    "saml",
-    "sso",
-    "sp",
-    "service provider",
-    "federated authentication",
-    "yii2"
-  ],
-  "require": {
-    "craftcms/cms": "^4.0.0",
-    "flipboxfactory/saml-core": "~4.1.0"
-  },
-  "require-dev": {
-    "squizlabs/php_codesniffer": "^3.4",
-    "codeception/codeception": "^4.0.0",
-    "codeception/module-asserts": "^1.0.0",
-    "codeception/module-datafactory": "^1.0.0",
-    "codeception/module-phpbrowser": "^1.0.0",
-    "codeception/module-rest": "^1.0.0",
-    "codeception/module-yii2": "^1.0.0",
-    "codeception/module-db": "^1.1"
-  },
-  "autoload": {
-    "psr-4": {
-      "flipbox\\saml\\sp\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "flipbox\\saml\\sp\\tests\\": "tests/"
-    }
-  },
-  "config": {
+    "name": "flipboxfactory/saml-sp",
+    "description": "SAML Service Provider",
+    "version": "5.0.0",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "keywords": [
+        "cms",
+        "craftcms",
+        "saml",
+        "sso",
+        "sp",
+        "service provider",
+        "federated authentication",
+        "yii2"
+    ],
+    "require": {
+        "craftcms/cms": "^5.0.0",
+        "flipboxfactory/saml-core": "~5.0.0"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.0",
+        "codeception/module-yii2": "^1.1",
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main",
+        "vlucas/phpdotenv": "^5.5",
+        "friendsofphp/php-cs-fixer": "^v3.20.0",
+        "phpunit/php-code-coverage": "^11.0.3",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-db": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "flipbox\\saml\\sp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "flipbox\\saml\\sp\\tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "codecept run -vvv",
+        "test-cvg": "codecept run -vvv --coverage --coverage-html",
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G"
+    },
+    "config": {
         "allow-plugins": {
             "yiisoft/yii2-composer": true,
             "craftcms/plugin-installer": true
         }
-  },
-  "support": {
-    "email": "support@flipboxfactory.com",
-    "issues": "https://github.com/flipboxfactory/saml-sp/issues?state=open",
-    "source": "https://github.com/flipboxfactory/saml-sp",
-    "docs":   "https://github.com/flipboxfactory/saml-sp",
-    "rss":    "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
-  },
-  "extra": {
-    "name": "SAML Service Provider",
-    "version":"4.1.1",
-    "schemaVersion":"2.1.0",
-    "handle": "saml-sp",
-    "class": "flipbox\\saml\\sp\\Saml",
-    "developer": "Flipbox Digital",
-    "developerUrl": "https://www.flipboxdigital.com",
-    "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/saml-sp/master/CHANGELOG.md",
-    "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip"
-  }
+    },
+    "support": {
+        "email": "support@flipboxfactory.com",
+        "issues": "https://github.com/flipboxfactory/saml-sp/issues?state=open",
+        "source": "https://github.com/flipboxfactory/saml-sp",
+        "docs":   "https://github.com/flipboxfactory/saml-sp",
+        "rss":    "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
+    },
+    "extra": {
+        "name": "SAML Service Provider",
+        "version":"5.0.0",
+        "schemaVersion":"2.1.0",
+        "handle": "saml-sp",
+        "class": "flipbox\\saml\\sp\\Saml",
+        "developer": "Flipbox Digital",
+        "developerUrl": "https://www.flipboxdigital.com",
+        "changelogUrl": "https://raw.githubusercontent.com/flipboxfactory/saml-sp/master/CHANGELOG.md",
+        "downloadUrl": "https://github.com/flipboxfactory/saml-sp/archive/master.zip"
+    }
 }
