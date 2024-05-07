@@ -13,12 +13,14 @@ use craft\events\ElementEvent;
 use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\ProviderHelper;
+use flipbox\saml\sp\events\UserQueryCriteria;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use SAML2\Response as SamlResponse;
+use yii\base\Event;
 use yii\base\UserException;
 
 /**
@@ -30,6 +32,8 @@ class User extends Component
     use AssertionTrait;
 
     const EVENT_BEFORE_USER_SAVE = 'eventBeforeUserSave';
+
+    const EVENT_GET_CUSTOM_USER_CRITERIA = 'eventGetCustomUserCriteria';
 
     /**
      * @var FieldLayout|null
@@ -411,8 +415,7 @@ class User extends Component
      */
     protected function getByUsernameOrEmail($usernameOrEmail, $archived = false)
     {
-
-        return UserElement::find()
+        $userQuery = UserElement::find()
             ->where(
                 [
                     'or',
@@ -421,8 +424,24 @@ class User extends Component
                 ]
             )
             ->status(null)
-            ->archived($archived)
-            ->one();
+            ->archived($archived);
+
+        if (Event::hasHandlers(self::class, self::EVENT_GET_CUSTOM_USER_CRITERIA)) {
+            $event = new UserQueryCriteria([
+                'userQuery'       => $userQuery,
+                'usernameOrEmail' => $usernameOrEmail,
+                'archived'        => $archived,
+            ]);
+
+            Event::trigger(
+                self::class,
+                self::EVENT_GET_CUSTOM_USER_CRITERIA,
+                $event
+            );
+            $userQuery = $event->userQuery;
+        }
+
+        return $userQuery->one();
     }
 
     private function getAttributeValue($attributeValue)
