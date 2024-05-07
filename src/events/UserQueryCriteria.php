@@ -11,5 +11,7 @@ class UserQueryCriteria extends Event
 
     public string $usernameOrEmail;
 
+    public bool $applyDefaultCriteria = true;
+
     public bool $archived;
 }

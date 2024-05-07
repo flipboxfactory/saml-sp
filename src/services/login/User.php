@@ -415,33 +415,30 @@ class User extends Component
      */
     protected function getByUsernameOrEmail($usernameOrEmail, $archived = false)
     {
-        $userQuery = UserElement::find()
-            ->where(
-                [
-                    'or',
-                    ['username' => $usernameOrEmail],
-                    ['email' => $usernameOrEmail],
-                ]
-            )
-            ->status(null)
-            ->archived($archived);
+        $event = new UserQueryCriteria([
+            'userQuery'       => UserElement::find(),
+            'usernameOrEmail' => $usernameOrEmail,
+            'archived'        => $archived,
+        ]);
 
         if (Event::hasHandlers(self::class, self::EVENT_GET_CUSTOM_USER_CRITERIA)) {
-            $event = new UserQueryCriteria([
-                'userQuery'       => $userQuery,
-                'usernameOrEmail' => $usernameOrEmail,
-                'archived'        => $archived,
-            ]);
-
             Event::trigger(
                 self::class,
                 self::EVENT_GET_CUSTOM_USER_CRITERIA,
                 $event
             );
-            $userQuery = $event->userQuery;
         }
 
-        return $userQuery->one();
+        return ($event->applyDefaultCriteria ? $event->userQuery
+            ->where(
+                [
+                    'or',
+                    ['username' => $event->usernameOrEmail],
+                    ['email'    => $event->usernameOrEmail],
+                ]
+            )
+            ->status(null)
+            ->archived($event->archived) : $event->userQuery)->one();
     }
 
     private function getAttributeValue($attributeValue)
