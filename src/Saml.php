@@ -7,6 +7,7 @@
 
 namespace flipbox\saml\sp;
 
+use craft\base\Model;
 use craft\console\Application as ConsoleApplication;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
@@ -26,6 +27,7 @@ use flipbox\saml\sp\services\login\UserGroups;
 use flipbox\saml\sp\services\messages\AuthnRequest;
 use flipbox\saml\sp\services\Provider;
 use flipbox\saml\sp\services\ProviderIdentity;
+use flipbox\saml\sp\twig\Extension;
 use SAML2\Compat\AbstractContainer;
 use yii\base\Event;
 
@@ -39,7 +41,7 @@ class Saml extends AbstractPlugin
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -49,6 +51,12 @@ class Saml extends AbstractPlugin
         // Switch target to console controllers
         if (\Craft::$app instanceof ConsoleApplication) {
             $this->controllerNamespace = __NAMESPACE__ . '\commands';
+        }
+
+        if (\Craft::$app->getRequest()->getIsSiteRequest()) {
+            // Instantiate + register the twig extension
+            $extension = new Extension();
+            \Craft::$app->getView()->registerTwigExtension($extension);
         }
     }
 
@@ -122,7 +130,7 @@ class Saml extends AbstractPlugin
     /**
      * @return Settings
      */
-    public function getSettings(): SettingsInterface
+    public function getSettings(): ?Model
     {
         return parent::getSettings();
     }
@@ -130,7 +138,7 @@ class Saml extends AbstractPlugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?Model
     {
         return new Settings([
             'myType' => Settings::SP,

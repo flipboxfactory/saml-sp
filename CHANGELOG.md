@@ -1,14 +1,74 @@
 # Release Notes for SAML SP
 
-## 2.7.5 - 2022-09-01
+## 5.0.0 - 2024-04-17
+
+### Fixed
+- Craft 5.0 compatibility
+
+## 4.1.1 - 2024-02-10
+
+### Feature
+- Add `samlSpLogoutUrl` for easier logout url generation
+
+## 4.1.0 - 2024-02-10
+
+### Fixed
+- Fixing issue with multi-site linking for the external id field
+
+## 4.0.7 - 2023-11-29
+
+### Fixed
+- bumping saml-core to use pinned psr/log at 1.1.4
+
+## 4.0.6.1 - 2023-11-28
+
+### Fixed
+- revert: issue with logger interface compatibility #197
+
+## 4.0.6 - 2023-11-28
+
+### Fixed
+- issue with logger interface compatibility #197
+
+## 4.0.5 - 2022-12-15
+
+### Fixed
+- issue with ui https://github.com/flipboxfactory/saml-sp/issues/182
+
+## 4.0.4 - 2022-11-09
+
+### Fixed
+- issue with craft version being off compared to the composer version 🤪. fixes #179
+
+## 4.0.3 - 2022-09-29
+
+### Fixed
+- issue with custom attributes not being picked up by the validation #177
+
+## 4.0.2 - 2022-09-01
 
 ### Fixed
 - excluding disabled IdPs in login controller findByEntityId() closing #175
+
+## 4.0.1 2022-08-11
+
+### Fixed
+- issues with 4.0 typing matching craft parent classes (saml-core)
+
+## 4.0.0 2022-06-18
+
+### Fixed
+- Craft 4.0 support
 
 ## 2.7.4 - 2022-05-31
 
 ### Fixed
 - issue with using the default settings for entity id instead of the provider entity id, closing #171
+
+## 2.7.5 - 2022-09-01
+
+### Fixed
+- excluding disabled IdPs in login controller findByEntityId() closing #175
 
 ## 2.7.3 - 2021-10-27
 

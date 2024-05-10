@@ -33,10 +33,10 @@ and use it as the Craft CMS `loginPath`.
 //multi-environment example
 return [
     'production' => [
-       'loginPath' => '/sso/login/request/<production provider uid>',
+       'loginPath' => '/sso/login/request/<production IdP provider uid>',
     ],
     'dev' => [
-       'loginPath' => '/sso/login/request/<dev provider uid>',
+       'loginPath' => '/sso/login/request/<dev IdP provider uid>',
     ],
 ];
 ```

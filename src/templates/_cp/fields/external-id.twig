@@ -18,8 +18,9 @@
             <td>
                 {{ identity.nameId }}
             </td>
+
             <td>
-                <a href="{{ baseProviderUrl }}/{{ identity.provider.id }}" class="go">
+                <a href="{{ cpUrl(pluginHandle ~ '/metadata/' ~ identity.provider.id) }}" class="go">
                     {{ identity.provider.entityId }}
                 </a>
             </td>
