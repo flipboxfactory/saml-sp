@@ -16,7 +16,7 @@
   ],
   "require": {
     "craftcms/cms": "^4.0.0",
-    "flipboxfactory/saml-core": "~4.1.0"
+    "flipboxfactory/saml-core": "~4.2.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.4",
