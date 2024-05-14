@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.2.0 - 2024-05-14
+
+### Fix
+- fixing issues with psr logging conflicts
+
 ## 4.1.1 - 2024-02-10
 
 ### Feature
