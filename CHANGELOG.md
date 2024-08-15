@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 4.3.0 - 2024-08-14
+
+### Added
+- https://github.com/flipboxfactory/saml-sp/pull/216
+
 ## 4.2.0 - 2024-05-14
 
 ### Fix

@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML Service Provider",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [
@@ -39,22 +39,22 @@
     }
   },
   "config": {
-        "allow-plugins": {
-            "yiisoft/yii2-composer": true,
-            "craftcms/plugin-installer": true
-        }
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
   },
   "support": {
     "email": "support@flipboxfactory.com",
     "issues": "https://github.com/flipboxfactory/saml-sp/issues?state=open",
     "source": "https://github.com/flipboxfactory/saml-sp",
-    "docs":   "https://github.com/flipboxfactory/saml-sp",
-    "rss":    "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
+    "docs": "https://github.com/flipboxfactory/saml-sp",
+    "rss": "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
   },
   "extra": {
     "name": "SAML Service Provider",
-    "version":"4.2.0",
-    "schemaVersion":"2.1.0",
+    "version": "4.3.0",
+    "schemaVersion": "2.1.0",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",
