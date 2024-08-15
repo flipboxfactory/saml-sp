@@ -1,7 +1,7 @@
 {
   "name": "flipboxfactory/saml-sp",
   "description": "SAML Service Provider",
-  "version": "2.7.5",
+  "version": "2.8.0",
   "type": "craft-plugin",
   "license": "proprietary",
   "keywords": [
@@ -42,13 +42,13 @@
     "email": "support@flipboxfactory.com",
     "issues": "https://github.com/flipboxfactory/saml-sp/issues?state=open",
     "source": "https://github.com/flipboxfactory/saml-sp",
-    "docs":   "https://github.com/flipboxfactory/saml-sp",
-    "rss":    "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
+    "docs": "https://github.com/flipboxfactory/saml-sp",
+    "rss": "https://github.com/flipboxfactory/saml-sp/commits/master.atom"
   },
   "extra": {
     "name": "SAML Service Provider",
-    "version":"2.7.5",
-    "schemaVersion":"2.1.0",
+    "version": "2.8.0",
+    "schemaVersion": "2.1.0",
     "handle": "saml-sp",
     "class": "flipbox\\saml\\sp\\Saml",
     "developer": "Flipbox Digital",

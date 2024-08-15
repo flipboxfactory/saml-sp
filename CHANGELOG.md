@@ -1,5 +1,11 @@
 # Release Notes for SAML SP
 
+## 2.8.0 - 2024-08-14
+
+### added
+
+- https://github.com/flipboxfactory/saml-sp/pull/216
+
 ## 2.7.5 - 2022-09-01
 
 ### Fixed
