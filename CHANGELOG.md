@@ -1,5 +1,14 @@
 # Release Notes for SAML SP
 
+## 5.1.2 - 2024-12-03 [CRITICAL]
+
+### Fixed
+- SECURITY PATCH with saml-core/saml2 dependencies. Update REQUIRED! More info can be found here: https://github.com/simplesamlphp/saml2/security/advisories/GHSA-pxm4-r5ph-q2m2#event-375127
+
+## 5.1.1
+### Feature
+- Allow to modify UserQuery in getByUsernameOrEmail (#216)
+
 ## 5.0.0 - 2024-04-17
 
 ### Fixed
@@ -177,7 +186,7 @@
 > {warning} Breaking changes
 
 ### Changed
-- Breaking change: Changed `\flipbox\saml\sp\services\login\User::getByResponse` parameters. 
+- Breaking change: Changed `\flipbox\saml\sp\services\login\User::getByResponse` parameters.
 
 ### Added
 - Added ability to set NameId Override per IdP provider in the backend.
@@ -212,15 +221,15 @@ new class `\flipbox\saml\sp\events\AuthnRequest` instead of `\yii\base\Event`. A
 > {warning} `responseAttributeMap` functionality has been removed. Please use the admin panel interface.
 
 ### Added
-- Added `nameIdAttributeOverride` setting. This is a system level setting override allowing you to map a username 
+- Added `nameIdAttributeOverride` setting. This is a system level setting override allowing you to map a username
 to a different assertion attribute, besides the NameID.
 
 ### Fixed
-- Issue with the `createUser` setting which allowed the user to be created but not login. 
+- Issue with the `createUser` setting which allowed the user to be created but not login.
 The user will no longer be created.
 
 ### Removed / Deprecated
-- The following settings have been deprecated while the functionality of the those 
+- The following settings have been deprecated while the functionality of the those
 settings have been removed:
     - `mergeLocalUsers`
     - `autoCreateGroups`
@@ -242,7 +251,7 @@ settings have been removed:
 
 ## 2.1.12 - 2020-07-10
 ### Fixed
-- Issue with diabled provider (My Provider) being picked as own provider when there's an enabled and disable provider 
+- Issue with diabled provider (My Provider) being picked as own provider when there's an enabled and disable provider
 with the same EntityId #68
 
 ## 2.1.11 - 2020-07-10
@@ -255,11 +264,11 @@ with the same EntityId #68
 
 ## 2.1.9 - 2020-05-18
 ### Added
-- Adding Yii events to allow devs to modify RelayState 
+- Adding Yii events to allow devs to modify RelayState
 
 ## 2.1.8 - 2020-05-15
 ### Added
-- Adding setting to turn off base64 encoding of the RelayState: `encodeRelayState`. 
+- Adding setting to turn off base64 encoding of the RelayState: `encodeRelayState`.
 
 ## 2.1.7 - 2020-05-06
 ### Fixed
@@ -388,7 +397,7 @@ with the same EntityId #68
 ### Fixed
 - Typo in attribute map in the provider table (requires migration)
 
-### Added 
+### Added
 - Support for environmental variables in the plugin settings. Works better with the project config.
 
 ## 1.0.6 - 2018-10-24
@@ -410,4 +419,3 @@ with the same EntityId #68
 ## 1.0.0 - 2018-09-26
 ### Added
 - New Docs! and Tests!
-
