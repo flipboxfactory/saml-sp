@@ -66,15 +66,6 @@ class Saml extends AbstractPlugin
     protected function initEvents()
     {
         /**
-         * CP routes
-         */
-        Event::on(
-            UrlManager::class,
-            UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            [self::class, 'onRegisterCpUrlRules']
-        );
-
-        /**
          * Clean Frontend Endpoints
          */
         Event::on(
@@ -90,6 +81,20 @@ class Saml extends AbstractPlugin
                 $event->types[] = ExternalIdentity::class;
             }
         );
+
+        // Show provider buttons
+        \Craft::$app->getView()->hook('cp.login.alternative-login-methods', function (&$context) {
+            return \Craft::$app->getView()->renderTemplate(
+                'saml-sp/_hooks/login',
+                [
+                    'providers' => Saml::getInstance()->getSettings()->enableCpLoginButtons ?
+                        Saml::getInstance()->getProvider()->findByIdp() :
+                        []
+                ]
+            );
+        });
+
+
     }
 
     /**
@@ -108,23 +113,6 @@ class Saml extends AbstractPlugin
                 'session' => Session::class,
             ]
         );
-    }
-
-    /**
-     * @param RegisterUrlRulesEvent $event
-     */
-    public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event)
-    {
-        if (\Craft::$app->getIsLive()) {
-            $event->rules = array_merge(
-                $event->rules,
-                static::getInstance()->getSettings()->enableCpLoginButtons ?
-                    [
-                        'login' => 'saml-sp/cp/view/login',
-                    ] : []
-            );
-        }
-        parent::onRegisterCpUrlRules($event);
     }
 
     /**
