@@ -14,11 +14,11 @@ use flipbox\saml\core\exceptions\InvalidMetadata;
 use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\services\bindings\Factory;
-use flipbox\saml\sp\validators\Response as ResponseValidator;
 use flipbox\saml\sp\events\RelayState;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
+use flipbox\saml\sp\validators\Response as ResponseValidator;
 use SAML2\AuthnRequest;
 use SAML2\Response as SamlResponse;
 use yii\base\Event;
@@ -32,13 +32,13 @@ class LoginController extends AbstractController
      * Happens before the RelayState is used to redirect the user to where they were
      * initially trying to go.
      */
-    const EVENT_BEFORE_RELAYSTATE_REDIRECT = 'eventBeforeRelayStateRedirect';
+    public const EVENT_BEFORE_RELAYSTATE_REDIRECT = 'eventBeforeRelayStateRedirect';
     /**
      * Happens after the RelayState is created and before the AuthNRequest
      * is sent off to the IdP. Use this event if you want to modify the
      * RelyState before it's sent to the IdP.
      */
-    const EVENT_AFTER_RELAYSTATE_CREATION = 'eventBeforeRelayStateCreation';
+    public const EVENT_AFTER_RELAYSTATE_CREATION = 'eventBeforeRelayStateCreation';
 
     protected array|int|bool $allowAnonymous = [
         'actionIndex',
@@ -77,7 +77,7 @@ class LoginController extends AbstractController
         $response = Factory::receive();
 
         /** @var $identityProvider AbstractProvider */
-        if (! $identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
+        if (!$identityProvider = Saml::getInstance()->getProvider()->findByEntityId(
             MessageHelper::getIssuer($response->getIssuer())
         )->andWhere([
             'enabled' => 1,
@@ -89,7 +89,7 @@ class LoginController extends AbstractController
         $settings = Saml::getInstance()->getSettings();
 
         $condition = [
-            'enabled' => 1
+            'enabled' => 1,
         ];
 
         if ($uid) {
@@ -99,7 +99,7 @@ class LoginController extends AbstractController
         }
 
         /** @var $serviceProvider AbstractProvider */
-        if (! $serviceProvider = Saml::getInstance()->getProvider()->findBySp($condition)->one()) {
+        if (!$serviceProvider = Saml::getInstance()->getProvider()->findBySp($condition)->one()) {
             $this->throwSpNotFound();
         }
 
@@ -111,7 +111,7 @@ class LoginController extends AbstractController
         );
 
         $result = $validator->validate($response);
-        if(count($result->getErrors()) > 0) {
+        if (count($result->getErrors()) > 0) {
             throw new \Exception("Errors during validation: " . implode($result->getErrors()));
         }
 
@@ -247,7 +247,7 @@ class LoginController extends AbstractController
         /**
          * @var ProviderRecord $idp
          */
-        if (! $idp = Saml::getInstance()->getProvider()->findByIdp(
+        if (!$idp = Saml::getInstance()->getProvider()->findByIdp(
             $uidCondition
         )->one()
         ) {
@@ -255,12 +255,12 @@ class LoginController extends AbstractController
         }
 
         $sp = Saml::getInstance()->getProvider()->findBySp([
-                'uid' => $internalUid
+                'uid' => $internalUid,
                 ])->one()
                 ??
                 Saml::getInstance()->getProvider()->findOwn();
 
-        if (! $sp) {
+        if (!$sp) {
             $this->throwSpNotFound();
         }
 

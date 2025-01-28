@@ -8,7 +8,6 @@
 
 namespace flipbox\saml\sp\services;
 
-use flipbox\saml\core\EnsureSAMLPlugin;
 use flipbox\saml\core\services\AbstractProviderService;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;

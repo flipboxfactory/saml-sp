@@ -29,7 +29,7 @@ class UserHelper
             \Craft::$app->getUsers()->unlockUser($user);
         }
 
-        if (! $user->enabled) {
+        if (!$user->enabled) {
             $user->enabled = true;
         }
 
@@ -37,7 +37,7 @@ class UserHelper
             $user->archived = false;
         }
 
-        if (! static::isUserActive($user)) {
+        if (!static::isUserActive($user)) {
             \Craft::$app->getUsers()->activateUser($user);
         }
     }

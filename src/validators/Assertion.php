@@ -43,7 +43,7 @@ class Assertion
         \SAML2\Response $response,
         AbstractProvider $identityProvider,
         AbstractProvider $serviceProvider,
-        bool $requireSignature = true
+        bool $requireSignature = true,
     ) {
         $this->identityProvider = $identityProvider;
         $this->serviceProvider = $serviceProvider;
@@ -77,7 +77,7 @@ class Assertion
         ];
         if ($keyStore = $this->identityProvider->signingXMLSecurityKeyStore()) {
             $this->validators[] = new SignedElement($keyStore, $this->requireSignature, "Assertion");
-        }elseif ($this->requireSignature) {
+        } elseif ($this->requireSignature) {
             throw new \Exception("Assertion must be signed");
         }
     }
@@ -132,7 +132,7 @@ class Assertion
     protected function validateSubjectConfirmations(
         SubjectConfirmationConstraintValidator $validator,
         array $subjectConfirmations,
-        Result $result
+        Result $result,
     ) {
         foreach ($subjectConfirmations as $subjectConfirmation) {
             $validator->validate($subjectConfirmation, $result);

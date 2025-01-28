@@ -17,11 +17,10 @@ use flipbox\saml\sp\Saml;
 
 class ProviderRecord extends AbstractProvider implements ProviderInterface
 {
-
     /**
      * The table alias
      */
-    const TABLE_ALIAS = 'saml_sp_providers';
+    public const TABLE_ALIAS = 'saml_sp_providers';
 
     /**
      * @return AbstractSettings

@@ -8,9 +8,7 @@ namespace flipbox\saml\sp\services\login;
 
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\SecurityHelper;
-use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\records\ProviderRecord;
-use flipbox\saml\sp\Saml;
 use SAML2\Assertion;
 use SAML2\Assertion as SamlAssertion;
 use SAML2\EncryptedAssertion;
@@ -27,11 +25,9 @@ trait AssertionTrait
      */
     public function getFirstAssertion(SamlResponse $response, ProviderRecord $serviceProvider)
     {
-
-
         $assertions = $this->getAssertions($response, $serviceProvider);
 
-        if (! count($assertions)) {
+        if (!count($assertions)) {
             throw new InvalidMessage("Invalid message. No assertions found in response.");
         }
 
