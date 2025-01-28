@@ -16,7 +16,6 @@ use craft\services\Fields;
 use craft\web\UrlManager;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\core\containers\Saml2Container;
-use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\services\Session;
 use flipbox\saml\sp\fields\ExternalIdentity;
 use flipbox\saml\sp\models\Settings;
@@ -87,24 +86,22 @@ class Saml extends AbstractPlugin
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
-            function (RegisterComponentTypesEvent $event) {
+            function(RegisterComponentTypesEvent $event) {
                 $event->types[] = ExternalIdentity::class;
             }
         );
 
         // Show provider buttons
-        \Craft::$app->getView()->hook('cp.login.alternative-login-methods', function (&$context) {
+        \Craft::$app->getView()->hook('cp.login.alternative-login-methods', function(&$context) {
             return \Craft::$app->getView()->renderTemplate(
                 'saml-sp/_hooks/login',
                 [
                     'providers' => Saml::getInstance()->getSettings()->enableCpLoginButtons ?
                         Saml::getInstance()->getProvider()->findByIdp() :
-                        []
+                        [],
                 ]
             );
         });
-
-
     }
 
     /**
