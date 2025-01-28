@@ -2,7 +2,6 @@
 
 namespace flipbox\saml\sp\migrations;
 
-use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\sp\records\ProviderRecord;
 
 /**
@@ -10,7 +9,6 @@ use flipbox\saml\sp\records\ProviderRecord;
  */
 class m190516_200148_attribute_typo extends \flipbox\saml\core\migrations\m190516_200148_attribute_typo
 {
-
     protected static function getProviderRecord(): string
     {
         return ProviderRecord::class;

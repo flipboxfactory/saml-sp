@@ -4,12 +4,12 @@
 namespace flipbox\saml\sp\validators;
 
 use flipbox\saml\core\records\AbstractProvider;
+use SAML2\Assertion\Validation\Result as AssertionResult;
 use SAML2\Configuration\Destination;
+use SAML2\Response as SamlResponse;
 use SAML2\Response\Validation\ConstraintValidator\DestinationMatches;
 use SAML2\Response\Validation\ConstraintValidator\IsSuccessful;
 use SAML2\Response\Validation\Result as ResponseResult;
-use SAML2\Assertion\Validation\Result as AssertionResult;
-use SAML2\Response as SamlResponse;
 
 class Response
 {
@@ -46,9 +46,8 @@ class Response
         AbstractProvider $identityProvider,
         AbstractProvider $serviceProvider,
         $requireResponseToBeSigned = true,
-        $requireAssertionsToBeSigned = true
+        $requireAssertionsToBeSigned = true,
     ) {
-
         $this->identityProvider = $identityProvider;
         $this->serviceProvider = $serviceProvider;
         $this->requireResponseToBeSigned = $requireResponseToBeSigned;
@@ -70,7 +69,7 @@ class Response
         ];
         if ($keyStore = $this->identityProvider->signingXMLSecurityKeyStore()) {
             $this->validators[] = new SignedElement($keyStore, $this->requireResponseToBeSigned, "Response");
-        }elseif ($this->requireResponseToBeSigned) {
+        } elseif ($this->requireResponseToBeSigned) {
             throw new \Exception("Response must be signed");
         }
     }

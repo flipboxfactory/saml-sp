@@ -14,7 +14,6 @@ use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 class EditController extends AbstractEditController
 {
-
     use SamlPluginEnsured;
 
     /**

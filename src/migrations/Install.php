@@ -14,7 +14,6 @@ use yii\base\Module;
  */
 class Install extends AbstractInstall
 {
-
     /**
      * @inheritdoc
      */

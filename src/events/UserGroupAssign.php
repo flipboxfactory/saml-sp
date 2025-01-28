@@ -18,7 +18,6 @@ use yii\base\Event;
  */
 class UserGroupAssign extends Event
 {
-
     /**
      * @var User
      */
@@ -48,5 +47,4 @@ class UserGroupAssign extends Event
      * @var UserGroup[]
      */
     public $groupToBeAssigned;
-
 }
