@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright  Copyright (c) Flipbox Digital Limited
  * @license    https://flipboxfactory.com/software/saml-sp/license
@@ -37,7 +38,6 @@ use yii\base\Event;
  */
 class Saml extends AbstractPlugin
 {
-
     /**
      * @inheritdoc
      */
@@ -63,8 +63,18 @@ class Saml extends AbstractPlugin
     /**
      * Events
      */
-    protected function initEvents()
+    protected function initEvents(): void
     {
+
+        /**
+          * CP routes
+          */
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            [self::class, 'onRegisterCpUrlRules']
+        );
+
         /**
          * Clean Frontend Endpoints
          */
@@ -95,6 +105,14 @@ class Saml extends AbstractPlugin
         });
 
 
+    }
+
+    /**
+     * @param RegisterUrlRulesEvent $event
+     */
+    public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event): void
+    {
+        parent::onRegisterCpUrlRules($event);
     }
 
     /**
