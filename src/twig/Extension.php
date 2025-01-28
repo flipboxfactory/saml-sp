@@ -5,7 +5,6 @@ namespace flipbox\saml\sp\twig;
 use flipbox\saml\core\helpers\UrlHelper;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\Provider;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use yii\base\InvalidArgumentException;
@@ -29,7 +28,7 @@ class Extension extends AbstractExtension
         $providerQuery = Saml::getInstance()->getProvider()->findByEntityId($idpEntityId);
 
         $provider = $providerQuery->one();
-        if (!($provider instanceof ProviderRecord)){
+        if (!($provider instanceof ProviderRecord)) {
             throw new InvalidArgumentException(
                 sprintf(
                     "Provider '%s' not found or not a saml provider. Check the provider configuration.",

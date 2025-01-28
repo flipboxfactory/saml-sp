@@ -9,7 +9,6 @@ use flipbox\saml\sp\records\ProviderRecord;
  */
 class m201029_200000_keychain_link_provideruid extends \flipbox\saml\core\migrations\m201029_200000_keychain_link_provideruid
 {
-
     /**
      * @return ActiveQuery
      */

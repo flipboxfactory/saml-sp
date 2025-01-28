@@ -18,8 +18,7 @@ use yii\base\Event;
 
 class AuthnRequest extends Component
 {
-
-    const EVENT_AFTER_MESSAGE_CREATED = 'eventAfterMessageCreated';
+    public const EVENT_AFTER_MESSAGE_CREATED = 'eventAfterMessageCreated';
 
     /**
      * @param AbstractProvider $identityProvider
@@ -47,9 +46,8 @@ class AuthnRequest extends Component
      */
     public function create(
         ProviderRecord $serviceProvider,
-        AbstractProvider $identityProvider
+        AbstractProvider $identityProvider,
     ): SamlAuthnRequest {
-
         $idpSsoService = $this->firstIdpSsoService($identityProvider);
 
         $location = $idpSsoService->getLocation();

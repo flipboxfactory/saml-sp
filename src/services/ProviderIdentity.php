@@ -10,12 +10,10 @@ namespace flipbox\saml\sp\services;
 
 use craft\elements\User;
 use flipbox\saml\core\exceptions\InvalidMessage;
-use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\core\services\AbstractProviderIdentityService;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
-use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\services\login\AssertionTrait;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
 use SAML2\Assertion;
@@ -29,7 +27,6 @@ use yii\base\UserException;
  */
 class ProviderIdentity extends AbstractProviderIdentityService
 {
-
     use SamlPluginEnsured, AssertionTrait;
 
     /**
@@ -38,7 +35,6 @@ class ProviderIdentity extends AbstractProviderIdentityService
 
     private function getNameId(Assertion $assertion, ProviderRecord $idpProvider)
     {
-
         $nameId = null;
         /**
          * If you the admin is using the nameIdOverride AND the NameID isn't being sent,
@@ -71,7 +67,7 @@ class ProviderIdentity extends AbstractProviderIdentityService
         User $user,
         SamlResponse $response,
         ProviderRecord $serviceProvider,
-        ProviderRecord $idpProvider
+        ProviderRecord $idpProvider,
     ) {
 
         // Get Identity
@@ -103,7 +99,7 @@ class ProviderIdentity extends AbstractProviderIdentityService
     protected function forceGet($nameId, ProviderInterface $provider)
     {
         // @var \flipbox\saml\sp\records\ProviderIdentityRecord $identity
-        if (! $identity = $this->findByNameId(
+        if (!$identity = $this->findByNameId(
             $nameId,
             $provider
         )->one()

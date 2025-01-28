@@ -19,7 +19,6 @@ use flipbox\saml\sp\traits\SamlPluginEnsured;
  */
 class LogoutController extends AbstractLogoutController
 {
-
     use SamlPluginEnsured;
 
     /**

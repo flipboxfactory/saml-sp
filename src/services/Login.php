@@ -10,8 +10,6 @@ namespace flipbox\saml\sp\services;
 
 use craft\base\Component;
 use craft\elements\User;
-use flipbox\saml\core\exceptions\InvalidMessage;
-use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\sp\events\UserLogin;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
@@ -29,8 +27,8 @@ class Login extends Component
 {
     use AssertionTrait;
 
-    const EVENT_BEFORE_RESPONSE_TO_USER = 'eventBeforeResponseToUser';
-    const EVENT_AFTER_RESPONSE_TO_USER = 'eventAfterResponseToUser';
+    public const EVENT_BEFORE_RESPONSE_TO_USER = 'eventBeforeResponseToUser';
+    public const EVENT_AFTER_RESPONSE_TO_USER = 'eventAfterResponseToUser';
 
     /**
      * @param User $user
@@ -49,7 +47,7 @@ class Login extends Component
         SamlResponse $response,
         ProviderRecord $idp,
         ProviderRecord $sp,
-        Settings $settings
+        Settings $settings,
     ) {
         /**
          * Before user transformation
@@ -97,7 +95,7 @@ class Login extends Component
         /**
          * Log user in
          */
-        if (! Saml::getInstance()->getUser()->login($identityRecord)) {
+        if (!Saml::getInstance()->getUser()->login($identityRecord)) {
             throw new UserException("Unknown error while logging in.");
         }
         /**
@@ -105,7 +103,7 @@ class Login extends Component
          * provider identity and save it to the db.
          */
         $identityRecord->lastLoginDate = new \DateTime();
-        if (! Saml::getInstance()->getProviderIdentity()->save($identityRecord)) {
+        if (!Saml::getInstance()->getProviderIdentity()->save($identityRecord)) {
             throw new UserException("Error while saving identity.");
         }
     }

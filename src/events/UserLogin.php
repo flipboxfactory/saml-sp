@@ -16,7 +16,6 @@ use yii\base\Event;
  */
 class UserLogin extends Event
 {
-
     /**
      * @var User
      */

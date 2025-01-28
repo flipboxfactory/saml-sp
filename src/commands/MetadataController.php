@@ -16,7 +16,6 @@ use yii\console\widgets\Table;
  */
 class MetadataController extends Controller
 {
-
     public function actionIndex()
     {
         $providerQuery = ProviderRecord::find();
@@ -62,7 +61,7 @@ class MetadataController extends Controller
         Saml::info($message);
 
         /** @var ProviderRecord $provider */
-        if (! $provider = Saml::getInstance()->getProvider()->findByIdp([
+        if (!$provider = Saml::getInstance()->getProvider()->findByIdp([
             'uid' => $uid,
         ])->one()) {
             $message =
@@ -74,7 +73,7 @@ class MetadataController extends Controller
             return ExitCode::DATAERR;
         }
 
-        if (! $url = $provider->getMetadataOptions()->url) {
+        if (!$url = $provider->getMetadataOptions()->url) {
             $message =
                 sprintf('Provider with uid %s does not have a metadata url.', $uid);
             $this->stderr($message . PHP_EOL);
