@@ -1,0 +1,7 @@
+{% if providers %}
+    {% for provider in providers.all %}
+            <a style="width:100%" href="{{ provider.getLoginRequestPath }}?RelayState={%- if craft.app.user.returnUrl() == siteUrl -%}{{ cpUrl('dashboard') }}{%- else -%}{{ craft.app.user.returnUrl() }}{% endif %}" class="btn submit">
+                Via {{ provider.label ? provider.label : provider.entityId }}
+            </a>
+    {% endfor %}
+{% endif %}

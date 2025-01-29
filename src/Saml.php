@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright  Copyright (c) Flipbox Digital Limited
  * @license    https://flipboxfactory.com/software/saml-sp/license
@@ -15,7 +16,6 @@ use craft\services\Fields;
 use craft\web\UrlManager;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\core\containers\Saml2Container;
-use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\services\Session;
 use flipbox\saml\sp\fields\ExternalIdentity;
 use flipbox\saml\sp\models\Settings;
@@ -37,7 +37,6 @@ use yii\base\Event;
  */
 class Saml extends AbstractPlugin
 {
-
     /**
      * @inheritdoc
      */
@@ -63,11 +62,12 @@ class Saml extends AbstractPlugin
     /**
      * Events
      */
-    protected function initEvents()
+    protected function initEvents(): void
     {
+
         /**
-         * CP routes
-         */
+          * CP routes
+          */
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
@@ -86,10 +86,30 @@ class Saml extends AbstractPlugin
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
-            function (RegisterComponentTypesEvent $event) {
+            function(RegisterComponentTypesEvent $event) {
                 $event->types[] = ExternalIdentity::class;
             }
         );
+
+        // Show provider buttons
+        \Craft::$app->getView()->hook('cp.login.alternative-login-methods', function(&$context) {
+            return \Craft::$app->getView()->renderTemplate(
+                'saml-sp/_hooks/login',
+                [
+                    'providers' => Saml::getInstance()->getSettings()->enableCpLoginButtons ?
+                        Saml::getInstance()->getProvider()->findByIdp() :
+                        [],
+                ]
+            );
+        });
+    }
+
+    /**
+     * @param RegisterUrlRulesEvent $event
+     */
+    public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event): void
+    {
+        parent::onRegisterCpUrlRules($event);
     }
 
     /**
@@ -108,23 +128,6 @@ class Saml extends AbstractPlugin
                 'session' => Session::class,
             ]
         );
-    }
-
-    /**
-     * @param RegisterUrlRulesEvent $event
-     */
-    public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event)
-    {
-        if (\Craft::$app->getIsLive()) {
-            $event->rules = array_merge(
-                $event->rules,
-                static::getInstance()->getSettings()->enableCpLoginButtons ?
-                    [
-                        'login' => 'saml-sp/cp/view/login',
-                    ] : []
-            );
-        }
-        parent::onRegisterCpUrlRules($event);
     }
 
     /**
