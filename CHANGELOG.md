@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 5.1.3 - 2025-01-29
+
+### Fixed
+- admin login screen buttons kicking off sso
+
 ## 5.1.2 - 2024-12-03 [CRITICAL]
 
 ### Fixed
