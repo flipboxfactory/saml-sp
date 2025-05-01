@@ -123,6 +123,7 @@ class Saml extends AbstractPlugin
                         'login' => 'saml-sp/cp/view/login',
                     ] : []
             );
+            self::onRegisterSiteUrlRules($event);
         }
         parent::onRegisterCpUrlRules($event);
     }
