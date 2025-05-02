@@ -1,4 +1,4 @@
-PHP_IMAGE := flipbox/php:74-apache
+PHP_IMAGE := flipbox/php:8.0-apache
 PHPCS_COMMAND := ./vendor/bin/phpcs --standard=psr2 --ignore=./src/web/assets/*/dist/*,./src/migrations/m* ./src
 PHPCBF_COMMAND := ./vendor/bin/phpcbf --standard=psr2 --ignore=./src/web/assets/*/dist/*,./src/migrations/m* ./src
 #

@@ -20,7 +20,7 @@
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.4",
-    "codeception/codeception": "^4.0.0",
+    "codeception/codeception": "^4.2.0",
     "codeception/module-asserts": "^1.0.0",
     "codeception/module-datafactory": "^1.0.0",
     "codeception/module-phpbrowser": "^1.0.0",
@@ -42,6 +42,9 @@
     "allow-plugins": {
       "yiisoft/yii2-composer": true,
       "craftcms/plugin-installer": true
+    },
+    "platform": {
+      "php": "8.0.2"
     }
   },
   "support": {
