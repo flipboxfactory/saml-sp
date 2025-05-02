@@ -77,7 +77,7 @@ class Assertion
         ];
         if ($keyStore = $this->identityProvider->signingXMLSecurityKeyStore()) {
             $this->validators[] = new SignedElement($keyStore, $this->requireSignature, "Assertion");
-        }elseif ($this->requireSignature) {
+        } elseif ($this->requireSignature) {
             throw new \Exception("Assertion must be signed");
         }
     }

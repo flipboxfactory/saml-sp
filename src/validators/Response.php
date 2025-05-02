@@ -70,7 +70,7 @@ class Response
         ];
         if ($keyStore = $this->identityProvider->signingXMLSecurityKeyStore()) {
             $this->validators[] = new SignedElement($keyStore, $this->requireResponseToBeSigned, "Response");
-        }elseif ($this->requireResponseToBeSigned) {
+        } elseif ($this->requireResponseToBeSigned) {
             throw new \Exception("Response must be signed");
         }
     }
