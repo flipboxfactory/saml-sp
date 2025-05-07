@@ -21,7 +21,7 @@ composer require flipboxfactory/saml-sp
 
 ## Contributing
 
-Please see [CONTRIBUTING](https://github.com/flipboxfactory/saml-sp/blob/master/CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Run Unit Tests
 
@@ -35,4 +35,4 @@ $ docker-compose run --rm test
 
 ## License
 
-Please see [License File](https://github.com/flipboxfactory/saml-sp/blob/master/LICENSE) for more information.
+Please see [License File](LICENSE.md) for more information.
