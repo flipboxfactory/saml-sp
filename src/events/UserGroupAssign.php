@@ -48,5 +48,4 @@ class UserGroupAssign extends Event
      * @var UserGroup[]
      */
     public $groupToBeAssigned;
-
 }

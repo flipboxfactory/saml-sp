@@ -29,7 +29,7 @@ We accept contributions via Pull Requests on [Github](https://github.com/flipbox
 ## Running Tests
 
 ``` bash
-$ ./vendor/bin/phpunit
+$ make test
 ```
 
 

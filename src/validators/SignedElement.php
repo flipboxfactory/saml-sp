@@ -26,7 +26,7 @@ class SignedElement
      * SignedElement constructor.
      * @param XMLSecurityKey[] $xmlSecurityKeyStore
      */
-    public function __construct(array $xmlSecurityKeyStore, $requireSignature=true, $elementName="")
+    public function __construct(array $xmlSecurityKeyStore, $requireSignature = true, $elementName = "")
     {
         $this->xmlSecurityKeyStore = $xmlSecurityKeyStore;
         $this->requireSignature = $requireSignature;
@@ -46,8 +46,8 @@ class SignedElement
                     // return on success ... no need to continue
                     \Craft::info("Signature valid and verified.", AbstractPlugin::SAML_CORE_HANDLE);
                     return $result;
-                }else{
-                    if($this->requireSignature) {
+                } else {
+                    if ($this->requireSignature) {
                         throw new \Exception("Signature required but not found: $this->elementName");
                     }
                 }

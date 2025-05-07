@@ -111,7 +111,7 @@ class LoginController extends AbstractController
         );
 
         $result = $validator->validate($response);
-        if(count($result->getErrors()) > 0) {
+        if (count($result->getErrors()) > 0) {
             throw new \Exception("Errors during validation: " . implode($result->getErrors()));
         }
 

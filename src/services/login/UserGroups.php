@@ -99,8 +99,7 @@ class UserGroups extends Component
     protected function getGroupsByAssertion(
         Assertion $assertion,
         Settings $settings
-    )
-    {
+    ) {
         /**
          * Nothing to do, move on
          */
@@ -209,7 +208,7 @@ class UserGroups extends Component
             $event
         );
 
-        if(\Craft::$app->getUsers()->assignUserToGroups(
+        if (\Craft::$app->getUsers()->assignUserToGroups(
             $user->id,
             // pass the list of unique ids
             array_unique(
