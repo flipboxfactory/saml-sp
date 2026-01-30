@@ -32,6 +32,7 @@ $ docker-compose run --rm test
 ## Credits
 
 - [Flipbox Digital](https://github.com/flipbox)
+- [garycrane](https://github.com/garycrane/)
 
 ## License
 
