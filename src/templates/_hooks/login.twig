@@ -1,7 +1,14 @@
-{% if providers %}
-    {% for provider in providers.all %}
+{% set providerList = providers ? providers.all : [] %}
+{% if (requireSsoLogin ?? false) and providerList %}
+    {# Password and passkey sign-in are rejected server-side (Saml::onBeforeAuthenticate); hide the native form too.
+       Without any provider buttons the form stays, so the page isn't blank and failures explain themselves. #}
+    <style>
+        .login-container .login-form-container,
+        .login-container .login-passkey-btn { display: none !important; }
+    </style>
+{% endif %}
+{% for provider in providerList %}
             <a style="width:100%" href="{{ provider.getLoginRequestPath }}?RelayState={%- if craft.app.user.returnUrl() == siteUrl -%}{{ cpUrl('dashboard') }}{%- else -%}{{ craft.app.user.returnUrl() }}{% endif %}" class="btn submit">
                 Via {{ provider.label ? provider.label : provider.entityId }}
             </a>
-    {% endfor %}
-{% endif %}
+{% endfor %}

@@ -22,6 +22,19 @@ class Settings extends AbstractSettings implements SettingsInterface
     public $enableCpLoginButtons = true;
 
     /**
+     * Only allow users to sign in through SAML. When true, Craft's native password
+     * and passkey sign-in is rejected for every user (control panel, front-end login
+     * forms, the session-expired modal and identity re-verification), and the native
+     * form is hidden on the control panel login page.
+     *
+     * Keep a way back in if the IdP is unavailable: drive this from an environment
+     * variable, and/or use `php craft users/impersonate` from the command line.
+     *
+     * @var bool
+     */
+    public $requireSsoLogin = false;
+
+    /**
      * Require the Response message to be signed. Messages that aren't signed can be manipulated.
      * RECOMMENDED TO BE SET TO TRUE
      *
