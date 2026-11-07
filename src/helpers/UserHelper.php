@@ -16,6 +16,9 @@ use craft\elements\User as UserElement;
 class UserHelper
 {
     /**
+     * Re-enables a disabled, archived, suspended, pending or inactive user. It deliberately doesn't
+     * clear a password lockout on an otherwise active user; login is refused until the lockout ends.
+     *
      * @param UserElement $user
      * @throws \Throwable
      */
@@ -23,10 +26,6 @@ class UserHelper
     {
         if (static::isUserSuspended($user)) {
             \Craft::$app->getUsers()->unsuspendUser($user);
-        }
-
-        if (static::isUserLocked($user)) {
-            \Craft::$app->getUsers()->unlockUser($user);
         }
 
         if (!$user->enabled) {
@@ -68,8 +67,8 @@ class UserHelper
      */
     public static function isUserLocked(UserElement $user)
     {
-        return false === static::isUserActive($user) &&
-            $user->getStatus() === UserElement::STATUS_LOCKED;
+        // Craft 5 tracks lockouts with a flag, not a status: getStatus() never returns STATUS_LOCKED
+        return $user->locked;
     }
 
     /**

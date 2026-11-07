@@ -3,10 +3,12 @@
 namespace flipbox\saml\sp\tests\unit\coverage\services;
 
 use Codeception\Test\Unit;
+use craft\db\Table;
 use craft\elements\User as UserElement;
 use craft\events\ElementEvent;
 use craft\fieldlayoutelements\CustomField;
 use craft\fields\PlainText;
+use craft\helpers\Db;
 use craft\models\FieldLayoutTab;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\ClaimTypes;
@@ -326,29 +328,101 @@ class UserServiceTest extends Unit
         $this->assertSame('Security', $user->getFieldValue('department'));
     }
 
-    public function testLoginActivatesPendingUserAndStartsSession(): void
+    public function testLoginStartsSessionForActiveUser(): void
     {
-        $user = new UserElement(['username' => 'pending@example.com', 'email' => 'pending@example.com', 'pending' => true]);
-        $this->assertTrue(\Craft::$app->getElements()->saveElement($user));
-        $this->assertSame(UserElement::STATUS_PENDING, $user->getStatus());
+        $user = $this->userWith(['active' => true]);
         $identity = new ProviderIdentityRecord(['userId' => $user->id]);
 
+        $this->assertTrue($this->loginWithoutUaCheck($identity));
+
+        $this->assertSame($user->id, \Craft::$app->getUser()->getId());
+        // Craft's ActiveRecord stores dates as UTC DB strings
+        $this->assertEqualsWithDelta(time(), (new \DateTime($identity->lastLoginDate, new \DateTimeZone('UTC')))->getTimestamp(), 60);
+    }
+
+    /**
+     * login() used to activate any non-active user itself, regardless of Settings::$enableUsers.
+     */
+    public function testLoginRejectsPendingUser(): void
+    {
+        $user = $this->userWith(['pending' => true]);
+        $this->assertSame(UserElement::STATUS_PENDING, $user->getStatus());
+
+        $this->assertLoginRejected($user);
+        $this->assertSame(
+            UserElement::STATUS_PENDING,
+            \Craft::$app->getUsers()->getUserById($user->id)->getStatus()
+        );
+    }
+
+    public function testLoginRejectsSuspendedUser(): void
+    {
+        $user = $this->userWith(['active' => true]);
+        \Craft::$app->getUsers()->suspendUser($user);
+
+        $this->assertLoginRejected($user);
+        $this->assertTrue((bool)UserElement::find()->id($user->id)->status(null)->one()->suspended);
+    }
+
+    public function testLoginRejectsLockedOutUser(): void
+    {
+        $user = $this->userWith(['active' => true]);
+        // Craft doesn't store lockoutDate for new users, and a lock without one expires on load
+        \Craft::$app->getDb()->createCommand()->update(Table::USERS, [
+            'locked' => true,
+            'invalidLoginCount' => 5,
+            'lockoutDate' => Db::prepareDateForDb(new \DateTime()),
+        ], ['id' => $user->id])->execute();
+
+        $this->assertLoginRejected($user);
+    }
+
+    public function testSyncCreatesNewUsersActiveSoTheyCanLogIn(): void
+    {
+        $idp = $this->idp();
+        $sp = $this->sp();
+        $user = new UserElement(['username' => 'brand-new@example.com']);
+
+        (new UserService())->sync($user, $this->signedResponse($idp, $sp), $idp, $sp, $this->settings(['enableUsers' => false]));
+
+        $this->assertSame(UserElement::STATUS_ACTIVE, \Craft::$app->getUsers()->getUserById($user->id)->getStatus());
+        $this->assertTrue($this->loginWithoutUaCheck(new ProviderIdentityRecord(['userId' => $user->id])));
+        $this->assertSame($user->id, \Craft::$app->getUser()->getId());
+    }
+
+    private function userWith(array $attributes): UserElement
+    {
+        $handle = uniqid('saml');
+        $user = new UserElement(array_merge(['username' => $handle, 'email' => $handle . '@example.com'], $attributes));
+        $this->assertTrue(\Craft::$app->getElements()->saveElement($user, false));
+
+        return $user;
+    }
+
+    private function assertLoginRejected(UserElement $user): void
+    {
+        $identity = new ProviderIdentityRecord(['userId' => $user->id]);
+        try {
+            $this->loginWithoutUaCheck($identity);
+            $this->fail('Login should have been rejected.');
+        } catch (UserException $e) {
+            $this->assertSame('User login failed.', $e->getMessage());
+        }
+
+        $this->assertTrue(\Craft::$app->getUser()->getIsGuest());
+        $this->assertEmpty($identity->lastLoginDate);
+    }
+
+    private function loginWithoutUaCheck(ProviderIdentityRecord $identity): bool
+    {
         // CLI test requests have no user agent/IP, which Craft otherwise requires for a session
         $general = \Craft::$app->getConfig()->getGeneral();
         $requireUa = $general->requireUserAgentAndIpForSession;
         $general->requireUserAgentAndIpForSession = false;
         try {
-            $this->assertTrue((new UserService())->login($identity));
+            return (new UserService())->login($identity);
         } finally {
             $general->requireUserAgentAndIpForSession = $requireUa;
         }
-
-        $this->assertSame($user->id, \Craft::$app->getUser()->getId());
-        // Craft's ActiveRecord stores dates as UTC DB strings
-        $this->assertEqualsWithDelta(time(), (new \DateTime($identity->lastLoginDate, new \DateTimeZone('UTC')))->getTimestamp(), 60);
-        $this->assertSame(
-            UserElement::STATUS_ACTIVE,
-            \Craft::$app->getUsers()->getUserById($user->id)->getStatus()
-        );
     }
 }

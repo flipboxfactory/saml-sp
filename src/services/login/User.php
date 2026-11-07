@@ -9,8 +9,8 @@ namespace flipbox\saml\sp\services\login;
 use craft\base\Component;
 use craft\base\Field;
 use craft\elements\User as UserElement;
-use craft\errors\InvalidElementException;
 use craft\events\ElementEvent;
+use craft\helpers\User as CraftUserHelper;
 use craft\models\FieldLayout;
 use flipbox\saml\core\exceptions\InvalidMessage;
 use flipbox\saml\core\helpers\ProviderHelper;
@@ -89,31 +89,6 @@ class User extends Component
     }
 
     /**
-     * @throws \Throwable
-     * @throws InvalidElementException
-     */
-    private function enableUser(UserElement $user): void
-    {
-        if ($user->getId()) {
-            \Craft::$app->getUsers()->activateUser($user);
-
-            return;
-        }
-
-        $user->enabled = true;
-        $user->archived = false;
-
-        $user->active = true;
-        $user->pending = false;
-        $user->locked = false;
-        $user->suspended = false;
-        $user->verificationCode = null;
-        $user->verificationCodeIssuedDate = null;
-        $user->invalidLoginCount = null;
-        $user->lastInvalidLoginDate = null;
-        $user->lockoutDate = null;
-    }
-    /**
      * @param ProviderIdentityRecord $identity
      * @return bool
      * @throws UserException
@@ -121,12 +96,23 @@ class User extends Component
      */
     public function login(\flipbox\saml\sp\records\ProviderIdentityRecord $identity)
     {
-        if ($identity->getUser()->getStatus() !== UserElement::STATUS_ACTIVE) {
-            $this->enableUser($identity->getUser());
+        $user = $identity->getUser();
+
+        /**
+         * Run the checks Craft's own SSO runs before logging a user in: the user must be active and
+         * not locked out, and must have CP/offline access where the request needs it. (Users loaded
+         * this way don't include passwordResetRequired, so, as in Craft's SSO, that password-only
+         * check doesn't apply.) Reactivating users is sync()'s job (see Settings::$enableUsers);
+         * anything still not allowed to log in by this point is rejected.
+         */
+        $authError = CraftUserHelper::getAuthStatus($user);
+        if ($authError !== null) {
+            Saml::warning(sprintf('Login denied for user %s: %s', $user->id, $authError));
+            throw new UserException('User login failed.');
         }
 
         if (\Craft::$app->getUser()->login(
-            $identity->getUser(),
+            $user,
             /**
              * @todo read session duration from the response
              */
@@ -221,9 +207,12 @@ class User extends Component
         Settings $settings,
     ) {
         /**
-         * Is User Active?
+         * New users are created active; existing users are only reactivated when allowed.
          */
-        if ($user->id && !UserHelper::isUserActive($user)) {
+        if (!$user->id) {
+            $user->active = true;
+            $user->pending = false;
+        } elseif (!UserHelper::isUserActive($user)) {
             if (!$settings->enableUsers) {
                 throw new UserException('User access denied.');
             }
