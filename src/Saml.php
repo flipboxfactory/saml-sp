@@ -10,6 +10,10 @@ namespace flipbox\saml\sp;
 
 use craft\base\Model;
 use craft\console\Application as ConsoleApplication;
+use craft\controllers\UsersController;
+use craft\elements\User as UserElement;
+use craft\events\AuthenticateUserEvent;
+use craft\events\LoginFailureEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\Fields;
@@ -37,6 +41,12 @@ use yii\base\Event;
  */
 class Saml extends AbstractPlugin
 {
+    /**
+     * The `authError` set on a user when native sign-in is rejected because
+     * `requireSsoLogin` is enabled.
+     */
+    public const AUTH_SSO_REQUIRED = 'ssoRequired';
+
     /**
      * @inheritdoc
      */
@@ -91,14 +101,30 @@ class Saml extends AbstractPlugin
             }
         );
 
+        /**
+         * Only allow SAML sign-in (requireSsoLogin)
+         */
+        Event::on(
+            UserElement::class,
+            UserElement::EVENT_BEFORE_AUTHENTICATE,
+            [static::class, 'onBeforeAuthenticate']
+        );
+        Event::on(
+            UsersController::class,
+            UsersController::EVENT_LOGIN_FAILURE,
+            [static::class, 'onLoginFailure']
+        );
+
         // Show provider buttons
         \Craft::$app->getView()->hook('cp.login.alternative-login-methods', function(&$context) {
+            $settings = Saml::getInstance()->getSettings();
             return \Craft::$app->getView()->renderTemplate(
                 'saml-sp/_hooks/login',
                 [
-                    'providers' => Saml::getInstance()->getSettings()->enableCpLoginButtons ?
+                    'providers' => $settings->enableCpLoginButtons ?
                         Saml::getInstance()->getProvider()->findByIdp() :
                         [],
+                    'requireSsoLogin' => (bool)$settings->requireSsoLogin,
                 ]
             );
         });
@@ -110,6 +136,35 @@ class Saml extends AbstractPlugin
     public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event): void
     {
         parent::onRegisterCpUrlRules($event);
+    }
+
+    /**
+     * Rejects Craft's native (password or passkey) authentication when
+     * `requireSsoLogin` is enabled. SAML sign-in doesn't call
+     * `User::authenticate()`, so it isn't affected.
+     */
+    public static function onBeforeAuthenticate(AuthenticateUserEvent $event): void
+    {
+        $plugin = static::getInstance();
+        if (!$plugin || !$plugin->getSettings()->requireSsoLogin) {
+            return;
+        }
+
+        /** @var UserElement $user */
+        $user = $event->sender;
+        $user->authError = self::AUTH_SSO_REQUIRED;
+        $event->performAuthentication = false;
+    }
+
+    /**
+     * Replaces Craft's generic login failure message when native sign-in was
+     * rejected by `requireSsoLogin`.
+     */
+    public static function onLoginFailure(LoginFailureEvent $event): void
+    {
+        if ($event->authError === self::AUTH_SSO_REQUIRED) {
+            $event->message = \Craft::t('saml-sp', 'Sign in with single sign-on (SSO).');
+        }
     }
 
     /**
