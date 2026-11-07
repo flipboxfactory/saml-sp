@@ -73,7 +73,9 @@ jobs:
         with:
           dependency-versions: highest
       - name: Show resolved saml-core / saml2 versions
-        run: composer show flipboxfactory/saml-core simplesamlphp/saml2 | grep -E '^(name|versions)'
+        run: |
+          composer show flipboxfactory/saml-core | grep -E '^versions'
+          composer show simplesamlphp/saml2 | grep -E '^versions'
       - name: Run tests
         if: matrix.php != '8.3'
         run: |
