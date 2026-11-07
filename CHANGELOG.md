@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 5.2.0 - 2026-11-07
+
+### Added
+- `requireSsoLogin` setting: only allow sign-in through SAML. Craft password and passkey sign-in is rejected for every user, and the control panel login page and the session-expired and identity modals show only the IdP buttons ([#52](https://github.com/flipboxfactory/saml-sp/issues/52)).
+
 ## 5.1.4 - 2026-11-07 [CRITICAL]
 
 Security release. Update REQUIRED. Run `composer update flipboxfactory/saml-sp -W` (see the Upgrading notes under Changed).
