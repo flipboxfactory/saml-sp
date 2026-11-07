@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "SAML SP SSO",
   "scripts": {
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "author": "Flipbox Digital",
   "license": "MIT",
   "devDependencies": {
-    "vuepress": "^1.5.3"
-  }
+    "vitepress": "^1.6.4"
+  },
+  "private": true
 }

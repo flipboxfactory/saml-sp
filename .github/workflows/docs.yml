@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - master
+  # Build-only on PRs: VitePress fails the build on dead links
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/docs.yml'
 
 jobs:
   docs:
@@ -19,14 +26,16 @@ jobs:
       - name: Install and Build 🏗️
         uses: actions/setup-node@v6
         with:
-          node-version: '16.x'
+          node-version: '24'
+          cache: npm
       - run: |
-          yarn install
-          yarn docs:build
+          npm ci
+          npm run docs:build
 
       - name: Deploy 🚀
+        if: github.event_name == 'push'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: docs/.vuepress/dist # The folder the action should deploy.
+          folder: docs/.vitepress/dist # The folder the action should deploy.
           clean: true # Automatically remove deleted files from the deploy branch

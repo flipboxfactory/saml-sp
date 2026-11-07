@@ -4,9 +4,9 @@ PHPCBF_COMMAND := ./vendor/bin/phpcbf --standard=psr2 --ignore=./src/web/assets/
 #
 # DOCS
 docs-build:
-	yarn docs:build
+	npm run docs:build
 docs-dev:
-	yarn docs:dev
+	npm run docs:dev
 
 composer-install:
 	docker run --rm -it -v "${PWD}:/var/www/html/" $(PHP_IMAGE) sh -c "composer install"

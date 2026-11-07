@@ -1,6 +1,6 @@
-## Okta
+# Okta
 
-### Create the Craft SP Provider (My Provider)
+## Create the Craft SP Provider (My Provider)
 Within Craft CMS, after the plugin is installed, on the control panel left side navigation 
 click SAML Service Provider > "My Provider". Click "Generate key pair" (under the Security tab), label the provider, and 
 hit save.
@@ -8,17 +8,17 @@ hit save.
 Then go back to the provider you just created and click on the Metadata tab. Leave this browser tab open for easy access
 while configuring Okta.
 
-### Create the Application
+## Create the Application
 
 ![Create the Application](../assets/okta/okta-create-app.png)
-#### General Settings
+### General Settings
 Name the application accordingly and choose SAML 2.0 application. 
 
 ![Choose SAML 2.0](../assets/okta/okta-choose-saml.png)
 
 ![Name the Application](../assets/okta/okta-general.png)
 
-##### Configure SAML
+#### Configure SAML
 - Single sign on URL: Set this to your Craft SP (My Provider) Assertion Consumer Service (ACS) found on the Metadata tab. 
   - For example, `https://your-craft-domain.com/sso/login/1f85b98a-125a-4f34-8daf-4325077c065e` 
 - Audience URI (SP Entity ID): Set this to the SP entity ID 
@@ -28,7 +28,7 @@ Name the application accordingly and choose SAML 2.0 application.
 - Update application username on: You can leave this as "Create and update"
 
 ![Name the Application](../assets/okta/okta-general-2.png)
-##### Advanced Setting
+#### Advanced Setting
 - Response: Signed
 - Assertion Signature: Signed
 - Signature Algorithm: leave on default
@@ -45,7 +45,7 @@ Name the application accordingly and choose SAML 2.0 application.
 
 ![Advanced Settings](../assets/okta/okta-advanced-settings.png)
 
-##### Attribute Statement
+#### Attribute Statement
 These are the attributes sent over in the assertion. All of the attributes sent over from here can be mapped to the Craft user.
 At the minimum, email is required. But for this example, we'll do first and last name as well.
 - Under the first attribute statement:
@@ -63,19 +63,19 @@ At the minimum, email is required. But for this example, we'll do first and last
 
 ![Attribute Statement](../assets/okta/okta-attribute-settings.png)
 
-##### Group Attribute Statements (optional)
+#### Group Attribute Statements (optional)
 Here's where you can send over group data and sync it to Craft. For now, we'll skip this step.
 
-##### Feedback
+#### Feedback
 Just click Finish
 
-#### Assign Users
+### Assign Users
 In Okta, on the application page for your newly created application, click the assignments tab, then the "Assign" and 
 assign users or groups as needed.
 
 ![Assign users](../assets/okta/okta-assign-users.png)
 
-### Copy Over the Metadata (From Okta)
+## Copy Over the Metadata (From Okta)
 After you click the "Finish" button on the Feedback page, there's a button on the right side column labeled 
 "View SAML setup instructions". At the bottom of the page copy the XML in the "Optional" (Provide the following IDP metadata to your SP provider) field. 
 
@@ -95,7 +95,7 @@ Then run through the following step:
 - Click Save
 
 ![Mapping Attributes](../assets/okta/craft-mapping-attributes.png)
-### Finish and Test
+## Finish and Test
 Copy the UID from the new Okta and add/replace the `loginPath` value in Craft's `config/general.php` file, with this 
 format `/sso/login/request/<okta-uid>`.
 

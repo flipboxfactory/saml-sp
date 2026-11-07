@@ -4,7 +4,7 @@ There are two steps to configure the plugin.
 
 ## Getting Started
 
-::: warn
+::: warning
 Quick Warning: Obviously, security is of the utmost importance. There are 2 explicit 
 security settings that may need to be toggled BUT it is crucial you understand 
 that one needs to be set to true.
