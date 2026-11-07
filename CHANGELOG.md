@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## Unreleased
+## 5.2.4 - 2026-11-07
 
 ### Fixed
 - With `syncGroups` set to `false`, logins no longer remove a user's groups. Previously, if `mergeExistingGroups` was also `false`, every SAML login removed all of the user's groups except `defaultGroupAssignments`, including groups assigned earlier in the same login (e.g. in `Login::EVENT_AFTER_RESPONSE_TO_USER`). `UserGroups::EVENT_BEFORE_USER_GROUP_ASSIGN` still fires and can change the assignment.
