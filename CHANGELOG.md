@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## Unreleased
+## 5.2.3 - 2026-11-07
 
 ### Fixed
 - SSO login now runs Craft's own login checks (`craft\helpers\User::getAuthStatus()`, as Craft's built-in SSO does) and refuses users who are locked out, suspended, pending or inactive, or who lack control panel or offline access where the request needs it. Previously the login step reactivated any non-active user itself.
