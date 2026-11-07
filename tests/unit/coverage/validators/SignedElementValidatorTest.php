@@ -39,6 +39,7 @@ class SignedElementValidatorTest extends Unit
         $assertion = $this->signedResponse($this->idp(), $this->sp())->getAssertions()[0];
 
         $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unable to validate Signature');
 
         (new SignedElement([$this->publicKey('saml-sp.crt')]))->validate($assertion, new Result());
     }

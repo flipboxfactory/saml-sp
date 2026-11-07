@@ -15,13 +15,14 @@ use SAML2\Response as SamlResponse;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
-use yii\base\Event;
 use yii\base\ExitException;
 use yii\base\InlineAction;
 use yii\web\HttpException;
 
 class LoginControllerTest extends Unit
 {
+    use \ScopedEvents;
+
     private const RELAY_STATE = 'http://test.craftcms.test/after-login';
 
     private const IDP_SSO_URL = 'http://www.flipboxlabs.com/idp/sso';
@@ -65,7 +66,7 @@ class LoginControllerTest extends Unit
         \Craft::$app->getRequest()->setBodyParams(null);
         \Craft::$app->getRequest()->setQueryParams($this->get);
         \Craft::$app->getUser()->logout(false);
-        Event::offAll();
+        $this->offScopedEvents();
     }
 
     /*
@@ -100,7 +101,7 @@ class LoginControllerTest extends Unit
         $this->postResponse($this->responses->createSuccessfulResponse($idp, $sp), base64_encode(self::RELAY_STATE));
 
         $seen = null;
-        Event::on(
+        $this->onEvent(
             LoginController::class,
             LoginController::EVENT_BEFORE_RELAYSTATE_REDIRECT,
             function(RelayState $event) use (&$seen) {
@@ -192,7 +193,7 @@ class LoginControllerTest extends Unit
         $response->getAssertions()[0]->setSignatureKey($this->metadata->spPrivateKey());
         $this->postResponse($response);
 
-        $this->assertRejected(\Exception::class);
+        $this->assertRejected(\Exception::class, 'Unable to validate Signature');
     }
 
     public function testUnsignedResponseIsRejected(): void
@@ -203,7 +204,7 @@ class LoginControllerTest extends Unit
         $response->getAssertions()[0]->setSignatureKey(null);
         $this->postResponse($response);
 
-        $this->assertRejected(\Exception::class);
+        $this->assertRejected(\Exception::class, 'Signature required but not found: Response');
     }
 
     public function testResponseForAnotherDestinationIsRejected(): void
@@ -282,7 +283,7 @@ class LoginControllerTest extends Unit
     public function testRequestRelayStateEventCanChangeTheRelayState(): void
     {
         [$idp, $sp] = $this->saveProviders();
-        Event::on(
+        $this->onEvent(
             LoginController::class,
             LoginController::EVENT_AFTER_RELAYSTATE_CREATION,
             function(RelayState $event) {

@@ -39,7 +39,8 @@ class AssertionValidatorTest extends Unit
             $assertion->setNotBefore((new \DateTime('+1 hour'))->getTimestamp());
         });
 
-        $this->assertNotEmpty($errors);
+        // Only the check under test may fail
+        $this->assertSame(['Received an assertion that is valid in the future. Check clock synchronization on IdP and SP.'], $errors);
     }
 
     public function testExpiredSessionIsRejected(): void
@@ -48,7 +49,8 @@ class AssertionValidatorTest extends Unit
             $assertion->setSessionNotOnOrAfter((new \DateTime('-1 hour'))->getTimestamp());
         });
 
-        $this->assertNotEmpty($errors);
+        // Only the check under test may fail
+        $this->assertSame(['Received an assertion with a session that has expired. Check clock synchronization on IdP and SP.'], $errors);
     }
 
     public function testNonBearerSubjectConfirmationIsRejected(): void
@@ -57,7 +59,8 @@ class AssertionValidatorTest extends Unit
             $assertion->getSubjectConfirmation()[0]->setMethod(Constants::CM_HOK);
         });
 
-        $this->assertNotEmpty($errors);
+        // Only the check under test may fail
+        $this->assertSame([sprintf('Invalid Method on SubjectConfirmation, current;y only Bearer (%s) is supported', Constants::CM_BEARER)], $errors);
     }
 
     public function testExpiredSubjectConfirmationIsRejected(): void
@@ -67,7 +70,8 @@ class AssertionValidatorTest extends Unit
                 ->setNotOnOrAfter((new \DateTime('-1 hour'))->getTimestamp());
         });
 
-        $this->assertNotEmpty($errors);
+        // Only the check under test may fail
+        $this->assertSame(['NotOnOrAfter in SubjectConfirmationData is in the past'], $errors);
     }
 
     public function testSubjectConfirmationInResponseToMustMatchResponse(): void
@@ -78,7 +82,8 @@ class AssertionValidatorTest extends Unit
                 ->setInResponseTo('_some-other-request-id');
         });
 
-        $this->assertNotEmpty($errors);
+        // Only the check under test may fail
+        $this->assertSame(['InResponseTo in SubjectConfirmationData ("_some-other-request-id") does not match the Response InResponseTo ("_expected-request-id")'], $errors);
     }
 
     public function testIdpWithoutSigningKeysIsAllowedWhenSignatureNotRequired(): void

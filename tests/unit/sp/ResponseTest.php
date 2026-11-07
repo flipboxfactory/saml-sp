@@ -296,24 +296,19 @@ class ResponseTest extends Unit
         }
         $newResponse = Message::fromXML($document->firstChild);
 
-        $validator = new ResponseValidator(
-            $idp,
-            $sp,
-            true,
-            true
-        );
+        // Response signature required: the unsigned Response is rejected
+        try {
+            (new ResponseValidator($idp, $sp, true, true))->validate($newResponse);
+            $this->fail('An unsigned Response was accepted while its signature is required.');
+        } catch (\PHPUnit\Framework\AssertionFailedError $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            $this->assertSame('Signature required but not found: Response', $e->getMessage());
+        }
 
-        $this->expectException(\Exception::class);
-        $validator->validate($newResponse);
-
-        $validator = new ResponseValidator(
-            $idp,
-            $sp,
-            false,
-            true
-        );
-//        $this->expectException(\Exception::class);
-        $validator->validate($newResponse);
+        // Only the assertion signature required: the signed assertion carries it
+        $result = (new ResponseValidator($idp, $sp, false, true))->validate($newResponse);
+        $this->assertSame([], $result->getErrors());
     }
 
     public function testResponseValidation()

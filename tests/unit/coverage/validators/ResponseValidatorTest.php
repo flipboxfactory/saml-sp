@@ -82,6 +82,18 @@ class ResponseValidatorTest extends Unit
         (new ResponseValidator($idp, $sp, true, true))->validate($parsed);
     }
 
+    public function testUnsignedAssertionIsRejectedWhenOnlyAssertionSignatureRequired(): void
+    {
+        // e.g. Entra ID, which signs only the assertion: requireResponseToBeSigned = false
+        $idp = $this->idp();
+        $sp = $this->sp();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Signature required but not found: Assertion');
+
+        (new ResponseValidator($idp, $sp, false, true))->validate($this->unsignedResponse($idp, $sp));
+    }
+
     public function testResponseSignedWithUntrustedKeyIsRejected(): void
     {
         $idp = $this->idp();
@@ -94,6 +106,7 @@ class ResponseValidatorTest extends Unit
         $parsed = $this->parse($response->toSignedXML());
 
         $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unable to validate Signature');
 
         (new ResponseValidator($idp, $sp))->validate($parsed);
     }

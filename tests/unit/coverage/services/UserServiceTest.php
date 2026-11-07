@@ -14,12 +14,12 @@ use flipbox\saml\sp\events\UserQueryCriteria;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\services\login\User as UserService;
-use yii\base\Event;
 use yii\base\UserException;
 
 class UserServiceTest extends Unit
 {
     use \ServiceFixtures;
+    use \ScopedEvents;
 
     protected function _before(): void
     {
@@ -28,7 +28,7 @@ class UserServiceTest extends Unit
 
     protected function _after(): void
     {
-        Event::offAll();
+        $this->offScopedEvents();
         \Craft::$app->getUser()->logout(false);
         $this->tearDownFixtures();
     }
@@ -116,7 +116,7 @@ class UserServiceTest extends Unit
     public function testCustomCriteriaEventReplacesDefaultLookup(): void
     {
         $target = $this->savedUser('matched-by-event', 'event@example.com');
-        Event::on(
+        $this->onEvent(
             UserService::class,
             UserService::EVENT_GET_CUSTOM_USER_CRITERIA,
             function(UserQueryCriteria $event) use ($target) {
