@@ -40,7 +40,16 @@ done
 
 # Sandbox console command + front-end pages
 printf '<?php\nrequire_once "/sandbox/SetupController.php";\nreturn ["controllerMap" => ["sandbox" => \\sandbox\\SetupController::class]];\n' > config/app.console.php
-printf '<?php\nreturn ["entityId" => getenv("SANDBOX_URL")];\n' > config/saml-sp.php
+# Plugin settings; dev/idp-login --test-groups writes temporary overrides to /runtime/saml-sp.overrides.json
+cat > config/saml-sp.php <<'PHP'
+<?php
+$overrides = is_file('/runtime/saml-sp.overrides.json')
+    ? json_decode((string)file_get_contents('/runtime/saml-sp.overrides.json'), true)
+    : [];
+return array_merge(['entityId' => getenv('SANDBOX_URL')], $overrides['settings'] ?? []);
+PHP
+# Login hooks for dev/idp-login --test-groups (inactive without overrides)
+printf '<?php\nreturn ["bootstrap" => [function() { require "/sandbox/hooks.php"; }]];\n' > config/app.web.php
 cp -R /sandbox-templates/. templates/
 
 log "Installing Craft"

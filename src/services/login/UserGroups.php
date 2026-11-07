@@ -233,9 +233,10 @@ class UserGroups extends Component
     /**
      * The user's groups as stored, plus any set on the element but not saved yet.
      *
-     * The element's getGroups() is cached, so on its own it can miss groups assigned earlier in this
-     * login (e.g. by Users::assignUserToGroups() in Login::EVENT_AFTER_RESPONSE_TO_USER without a
-     * setGroups() call), and passing it to assignUserToGroups() would remove them.
+     * The element's getGroups() is cached from the first call. If anything loaded it earlier in this login
+     * (another listener or plugin), it misses groups assigned after that without setGroups() (e.g. by
+     * Users::assignUserToGroups() in Login::EVENT_AFTER_RESPONSE_TO_USER), and passing it to
+     * assignUserToGroups() would remove them.
      *
      * @return UserGroup[]
      */
