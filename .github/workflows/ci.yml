@@ -93,17 +93,8 @@ jobs:
           composer test-coverage
           php .github/scripts/coverage-check.php tests/_output/coverage.xml 85
 
-  version:
-    name: Version bump
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Check version and CHANGELOG
-        run: .github/scripts/version.sh check "${{ github.event.pull_request.base.sha }}"
-
+  # Releases from the conventional-commit PR titles merged since the latest tag (see .github/scripts/version.sh).
+  # The release commit is pushed by the release GitHub App, which may bypass the master ruleset.
   release:
     name: Tag & release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -111,11 +102,29 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: read
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Create tag and GitHub release for a new version
+          persist-credentials: false
+      - name: Work out the next version
+        id: plan
         env:
           GH_TOKEN: ${{ github.token }}
-        run: .github/scripts/version.sh release
+        run: .github/scripts/version.sh plan
+      - name: Get a release app token
+        id: app
+        if: steps.plan.outputs.version != ''
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+      - name: Commit, tag and release ${{ steps.plan.outputs.version }}
+        if: steps.plan.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APP_TOKEN: ${{ steps.app.outputs.token }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+        run: .github/scripts/version.sh release "${{ steps.plan.outputs.version }}"
