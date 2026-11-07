@@ -16,8 +16,8 @@
     ],
     "require": {
         "craftcms/cms": "^5.10.8",
-        "flipboxfactory/saml-core": "^5.0.11",
-        "flipboxfactory/keychain": "^5.0.1"
+        "flipboxfactory/saml-core": "^5.0.12",
+        "flipboxfactory/keychain": "^5.0.3"
     },
     "require-dev": {
         "codeception/codeception": "^5.2",
