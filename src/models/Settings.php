@@ -115,6 +115,8 @@ class Settings extends AbstractSettings implements SettingsInterface
 
     /**
      * Attempt to sync groups via the groups array map in $groupAttributeNames.
+     * When false, logins never remove a user's groups; only $defaultGroupAssignments
+     * (and EVENT_BEFORE_USER_GROUP_ASSIGN listeners) change them.
      *
      * @var bool
      */
@@ -124,6 +126,7 @@ class Settings extends AbstractSettings implements SettingsInterface
      * When true, the plugin will merge the existing groups the user has assigned with the
      * groups found in the SSO/SAML Response.
      * If you want groups to be strictly managed by the plugin, toggle this to false.
+     * Only applies while $syncGroups is true.
      * @var bool
      */
     public $mergeExistingGroups = true;

@@ -43,6 +43,13 @@ Example `config/saml-sp.php`:
     ];
 ```
 
+### Turning Group Sync Off
+
+Set `syncGroups` to `false` to ignore group attributes. Logins then never remove a user's groups, whatever
+`mergeExistingGroups` is set to. `defaultGroupAssignments` are still added, and the
+[`EVENT_BEFORE_USER_GROUP_ASSIGN` event](/configure/events.html#assign-user-to-a-user-group-based-on-a-property)
+still fires if you assign groups yourself.
+
 ### Adding a Default Group
 Using the `defaultGroupAssignments` property, you can add groups to everyone logging-in through SSO automatically. This
 property is a list of User Group ids.
