@@ -1,3 +1,5 @@
+# FAQs
+
 ## What is SAML?
 Answer: [Here's wikipedia's answer](https://en.wikipedia.org/wiki/Security_Assertion_Markup_Language)
 > Security Assertion Markup Language (SAML, pronounced SAM-el) is an open standard for exchanging authentication and authorization data between parties, in particular, between an identity provider and a service provider. SAML is an XML-based markup language for security assertions (statements that service providers use to make access-control decisions). SAML is also:

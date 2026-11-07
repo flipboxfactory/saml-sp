@@ -38,4 +38,4 @@ Tests need MySQL and `tests/.env` (see README "Development").
 - Default branch is `master`. Work on a branch and open a PR; CI (`.github/workflows/ci.yml`) must be green.
 - SemVer. A PR that changes `src/` or `composer.json` must bump `composer.json` `version` and `extra.version` (kept equal) and add a `CHANGELOG.md` entry (newest first, `## X.Y.Z - YYYY-MM-DD` with `### Fixed|Added|Changed|Removed`). CI enforces this. `/bump-version` does the bump.
 - Merging to `master` creates the unprefixed tag (`5.1.4`) and GitHub release from that CHANGELOG entry once checks and tests pass (`.github/scripts/version.sh`). Never tag manually.
-- User docs live in `docs/` (VuePress, published to https://saml-sp.flipboxfactory.com from `master`). Update them with any user-facing change. Keep `README.md` short.
+- User docs live in `docs/` (VitePress: `npm run docs:dev`; published to https://saml-sp.flipboxfactory.com from `master`). Update them with any user-facing change. Keep `README.md` short.
