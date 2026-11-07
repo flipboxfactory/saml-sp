@@ -432,6 +432,7 @@ class User extends Component
      * @param $usernameOrEmail
      * @param bool $archived
      * @return array|bool|\craft\base\ElementInterface|UserElement|null
+     * @throws UserException when more than one user matches
      */
     protected function getByUsernameOrEmail($usernameOrEmail, $archived = false)
     {
@@ -449,16 +450,70 @@ class User extends Component
             );
         }
 
-        return ($event->applyDefaultCriteria ? $event->userQuery
-            ->where(
-                [
-                    'or',
-                    ['username' => $event->usernameOrEmail],
-                    ['email' => $event->usernameOrEmail],
-                ]
-            )
+        if (!$event->applyDefaultCriteria) {
+            return $event->userQuery->one();
+        }
+
+        $value = $event->usernameOrEmail;
+
+        if (\Craft::$app->getDb()->getIsMysql()) {
+            // MySQL collations are already case-insensitive
+            $condition = [
+                'or',
+                ['username' => $value],
+                ['email' => $value],
+            ];
+        } else {
+            // Postgres is case-sensitive. Craft treats usernames and emails case-insensitively
+            // (craft\services\Users::getUserByUsernameOrEmail() and its unique validators), so match
+            // that; otherwise an IdP sending different casing creates a duplicate account (#242).
+            $condition = [
+                'or',
+                ['lower([[username]])' => mb_strtolower($value)],
+                ['lower([[email]])' => mb_strtolower($value)],
+            ];
+        }
+
+        /** @var UserElement[] $users */
+        $users = $event->userQuery
+            ->where($condition)
             ->status(null)
-            ->archived($event->archived) : $event->userQuery)->one();
+            ->archived($event->archived)
+            ->all();
+
+        return $this->resolveSingleUser($users, $value);
+    }
+
+    /**
+     * Picks the one user the SAML username/email refers to. A user whose username or email
+     * matches exactly wins over case-insensitive matches. Anything still ambiguous is rejected
+     * rather than guessed at, so a login never lands on an arbitrary account.
+     *
+     * @param UserElement[] $users
+     * @throws UserException
+     */
+    private function resolveSingleUser(array $users, string $usernameOrEmail): ?UserElement
+    {
+        if (count($users) <= 1) {
+            return $users[0] ?? null;
+        }
+
+        $exact = array_values(array_filter(
+            $users,
+            fn(UserElement $user) => $user->username === $usernameOrEmail || $user->email === $usernameOrEmail
+        ));
+
+        if (count($exact) === 1) {
+            return $exact[0];
+        }
+
+        Saml::error(sprintf(
+            'Login rejected: %d users match the SAML username/email, refusing to pick one. User IDs: %s',
+            count($users),
+            implode(', ', array_map(fn(UserElement $user) => (string)$user->id, $users))
+        ));
+
+        throw new UserException('Multiple users match this login. Contact your administrator.');
     }
 
     private function getAttributeValue($attributeValue)

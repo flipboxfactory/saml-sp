@@ -14,6 +14,7 @@ use flipbox\saml\sp\events\UserQueryCriteria;
 use flipbox\saml\sp\helpers\UserHelper;
 use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\services\login\User as UserService;
+use SAML2\XML\saml\NameID;
 use yii\base\UserException;
 
 class UserServiceTest extends Unit
@@ -55,6 +56,61 @@ class UserServiceTest extends Unit
         $this->assertSame($existing->id, $user->id);
     }
 
+    /**
+     * #242: Azure AD sent "Dande.Sun@…" for a user stored as "dande.sun@…". On Postgres the lookup missed,
+     * a second (inactive) user was created and activating it failed with 'Email … has already been taken'.
+     */
+    public function testMatchesExistingUserWhenNameIdCaseDiffers(): void
+    {
+        $existing = $this->savedUser('dande.sun@example.com');
+
+        $user = $this->getByNameId('Dande.Sun@Example.com', ['createUser' => true]);
+
+        $this->assertSame($existing->id, $user->id);
+    }
+
+    public function testMatchesExistingUsernameWhenNameIdCaseDiffers(): void
+    {
+        $existing = $this->savedUser('JSmith', 'jsmith@example.com');
+
+        $user = $this->getByNameId('jsmith', ['createUser' => true]);
+
+        $this->assertSame($existing->id, $user->id);
+    }
+
+    public function testExactMatchWinsOverCaseInsensitiveMatch(): void
+    {
+        // Craft only enforces unique emails for active/pending users, so legacy data can hold both
+        $this->savedUser('case.user@example.com');
+        $exact = $this->savedUser('Case.User@example.com');
+
+        $user = $this->getByNameId('Case.User@example.com');
+
+        $this->assertSame($exact->id, $user->id);
+    }
+
+    public function testAmbiguousCaseInsensitiveMatchesAreRejected(): void
+    {
+        $this->savedUser('dup.user@example.com');
+        $this->savedUser('DUP.USER@example.com');
+
+        $this->expectException(UserException::class);
+        $this->expectExceptionMessage('Multiple users match this login.');
+
+        $this->getByNameId('Dup.User@example.com', ['createUser' => true]);
+    }
+
+    public function testUsernameOfOneUserAndEmailOfAnotherIsRejected(): void
+    {
+        $this->savedUser('shared@example.com', 'first@example.com');
+        $this->savedUser('second-user', 'shared@example.com');
+
+        $this->expectException(UserException::class);
+        $this->expectExceptionMessage('Multiple users match this login.');
+
+        $this->getByNameId('shared@example.com', ['createUser' => true]);
+    }
+
     public function testUnknownUserIsCreatedUnsavedWhenAllowed(): void
     {
         $idp = $this->idp();
@@ -69,6 +125,23 @@ class UserServiceTest extends Unit
 
         $this->assertNull($user->id);
         $this->assertSame($this->responseFactory->getEmail(), $user->username);
+    }
+
+    private function getByNameId(string $nameIdValue, array $settings = []): UserElement
+    {
+        $idp = $this->idp();
+        $sp = $this->sp();
+        $response = $this->signedResponse($idp, $sp);
+        $nameId = new NameID();
+        $nameId->setValue($nameIdValue);
+        $response->getAssertions()[0]->setNameId($nameId);
+
+        return (new UserService())->getByResponse(
+            $response,
+            $sp,
+            $idp,
+            $this->settings(['nameIdAttributeOverride' => null] + $settings)
+        );
     }
 
     public function testUnknownUserIsRejectedWhenCreationDisabled(): void
