@@ -1,5 +1,27 @@
 # Release Notes for SAML SP
 
+## 4.3.2 - 2026-11-07 [CRITICAL]
+
+Security release for Craft 4. Update REQUIRED. Run `composer update flipboxfactory/saml-sp -W`.
+
+### Fixed
+- Requires `flipboxfactory/saml-core` ^4.2.6, which moves `simplesamlphp/saml2` to 4.19.4 and `robrichards/xmlseclibs` to 3.1.5. Fixes:
+  - [GHSA-6vhm-xfmv-94pj](https://github.com/simplesamlphp/saml2/security/advisories/GHSA-6vhm-xfmv-94pj) (high): unauthenticated denial of service; a small compressed HTTP-Redirect message could exhaust PHP memory.
+  - [GHSA-5cjr-mxj5-wmrx](https://github.com/advisories/GHSA-5cjr-mxj5-wmrx) / CVE-2026-49289 (high): denial of service via XPath Transform.
+  - [GHSA-6929-8p9f-26jx](https://github.com/advisories/GHSA-6929-8p9f-26jx) / CVE-2026-49283 (high): HTTP-Artifact cross-IdP authentication bypass.
+  - [GHSA-4v26-v6cg-g6f9](https://github.com/advisories/GHSA-4v26-v6cg-g6f9) / CVE-2026-32313 (high): xmlseclibs did not validate the AES-GCM authentication tag on encrypted assertions.
+  - [GHSA-c4cc-x928-vjw9](https://github.com/advisories/GHSA-c4cc-x928-vjw9) / CVE-2025-66578 (medium): xmlseclibs canonicalization error could bypass digest/signature validation.
+  - saml-core now enforces decryption algorithm blacklists that were previously ignored.
+- saml-sp 4.3.1 and earlier could resolve to saml-core 4.2.5 with saml2 4.19.4 or later on `composer update`, which fails with a fatal error (`getInflateSizeLimit`). 4.3.2 prevents that combination.
+- Requires Craft CMS ^4.18.3, so saml-sp no longer installs alongside Craft 4 releases with published advisories, including:
+  - [GHSA-265m-7826-wjqm](https://github.com/advisories/GHSA-265m-7826-wjqm) / CVE-2026-72778 and [GHSA-f5wm-88jv-g5hx](https://github.com/advisories/GHSA-f5wm-88jv-g5hx) / CVE-2026-72781 (high): authenticated remote code execution.
+  - [GHSA-v64r-7wg9-23pr](https://github.com/advisories/GHSA-v64r-7wg9-23pr) / CVE-2025-68456 (high): unauthenticated database backup.
+  - [GHSA-f3gw-9ww9-jmc3](https://github.com/advisories/GHSA-f3gw-9ww9-jmc3) / CVE-2025-32432 (critical): remote code execution.
+
+### Changed
+- Upgrading: update Craft CMS to 4.18.3 or later first if you're on an older 4.x release.
+- Upgrading: saml2 4.19.x needs `webmozart/assert` 1.x. If Composer reports a `webmozart/assert` conflict, add `-W`.
+
 ## 4.3.1 - 2024-12-03 [CRITICAL]
 
 ### Fixed
