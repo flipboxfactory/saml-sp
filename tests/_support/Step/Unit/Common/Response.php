@@ -4,12 +4,9 @@
 namespace Step\Unit\Common;
 
 use Codeception\Scenario;
-use craft\test\Craft;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\core\helpers\ClaimTypes;
 use flipbox\saml\core\helpers\MessageHelper;
-use flipbox\saml\core\helpers\SecurityHelper;
-use flipbox\saml\sp\records\ProviderIdentityRecord;
 use flipbox\saml\sp\records\ProviderRecord;
 use SAML2\Assertion;
 use SAML2\Constants;
@@ -19,7 +16,6 @@ use SAML2\XML\saml\Issuer;
 use SAML2\XML\saml\NameID;
 use SAML2\XML\saml\SubjectConfirmation;
 use SAML2\XML\saml\SubjectConfirmationData;
-use yii\helpers\StringHelper;
 
 class Response extends \UnitTester
 {
@@ -32,7 +28,7 @@ class Response extends \UnitTester
      */
     private $metadataFactory;
 
-    const ENDPOINT = "http://sp.localhost:9090/sso/login";
+    public const ENDPOINT = "http://sp.localhost:9090/sso/login";
 
     private $userAttributes = [
         ClaimTypes::EMAIL_ADDRESS => [
@@ -86,7 +82,6 @@ class Response extends \UnitTester
                 'craftProperty' => 'lastName',
             ],
         ]);
-
     }
 
     public function __construct(AbstractPlugin $module, Metadata $metadataFactory, Scenario $scenario)
@@ -99,9 +94,8 @@ class Response extends \UnitTester
     public function createSuccessfulResponse(
         ProviderRecord $identityProvider,
         ProviderRecord $serviceProvider,
-        $encrypted = false
-    )
-    {
+        $encrypted = false,
+    ) {
         $response = new SamlResponse();
         $issuer = new Issuer();
         $issuer->setFormat(Constants::NAMEID_ENTITY);
@@ -157,7 +151,7 @@ class Response extends \UnitTester
 
         $assertion->setValidAudiences([
             $serviceProvider->getEntityId(),
-            static::ENDPOINT
+            static::ENDPOINT,
         ]);
 
         $assertion->setNotBefore(
@@ -246,9 +240,8 @@ class Response extends \UnitTester
 
     protected function createSubjectConfirmation(
         ProviderRecord $serviceProvider,
-        ProviderRecord $identityProvider
-    )
-    {
+        ProviderRecord $identityProvider,
+    ) {
         /**
          * Subject Confirmation
          * Reference: https://stackoverflow.com/a/29546696/1590910

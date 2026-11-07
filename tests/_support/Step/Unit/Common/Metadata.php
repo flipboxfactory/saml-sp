@@ -11,7 +11,6 @@ use flipbox\saml\core\models\SettingsInterface;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\records\ProviderInterface;
 use flipbox\saml\sp\Saml;
-use flipbox\saml\sp\services\Provider;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 use SAML2\DOMDocumentFactory;
 use SAML2\XML\md\EntityDescriptor;
@@ -45,7 +44,6 @@ class Metadata extends \UnitTester
 
     public function idpPrivateKey($type = XMLSecurityKey::RSA_SHA256)
     {
-
         $key = new XMLSecurityKey(
             $type,
             [
@@ -64,7 +62,6 @@ class Metadata extends \UnitTester
 
     public function spPrivateKey($type = XMLSecurityKey::RSA_SHA256)
     {
-
         $key = new XMLSecurityKey(
             $type,
             [
@@ -134,9 +131,8 @@ class Metadata extends \UnitTester
      */
     public function createMyEntityDescriptor(
         KeyChainRecord $withKey = null,
-        $entityId = null
-    )
-    {
+        $entityId = null,
+    ) {
         $I = $this;
 
         $settings = $this->module->getSettings();
@@ -145,10 +141,10 @@ class Metadata extends \UnitTester
             codecept_data_dir() . '/xml/sp-metadata-without-keys.xml'
         );
 
-        $metadata =  new EntityDescriptor($doc->documentElement);
+        $metadata = new EntityDescriptor($doc->documentElement);
 
-        if($withKey) {
-            foreach($metadata->getRoleDescriptor() as $descriptor){
+        if ($withKey) {
+            foreach ($metadata->getRoleDescriptor() as $descriptor) {
                 $this->module->getMetadata()->updateDescriptorCertificates(
                     $descriptor,
                     $withKey
@@ -156,10 +152,10 @@ class Metadata extends \UnitTester
             }
         }
 
-        if($entityId) {
+        if ($entityId) {
             $metadata->setEntityID($entityId);
             $settings->setEntityId($entityId);
-        }else{
+        } else {
             $settings->setEntityId($metadata->getEntityID());
         }
 
@@ -290,7 +286,6 @@ class Metadata extends \UnitTester
                 $ed
             );
         }
-
     }
 
     /**

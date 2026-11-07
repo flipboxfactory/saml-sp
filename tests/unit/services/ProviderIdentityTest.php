@@ -8,7 +8,6 @@ use flipbox\saml\sp\Saml;
 
 class ProviderIdentityTest extends Unit
 {
-
     /**
      * @var Saml
      */

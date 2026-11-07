@@ -8,3 +8,7 @@ composer.lock
 .idea
 .env
 node_modules
+
+# Tests
+tests/_support/_generated
+cpresources/

@@ -3,8 +3,8 @@
 namespace flipbox\saml\sp\tests\traits;
 
 use Codeception\Test\Unit;
-use flipbox\saml\sp\traits\SamlPluginEnsured;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\traits\SamlPluginEnsured;
 
 class SamlPluginEnsuredTest extends Unit
 {

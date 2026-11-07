@@ -2,7 +2,6 @@
 
 namespace Step\Unit\Common;
 
-
 use Codeception\Scenario;
 use flipbox\saml\core\AbstractPlugin;
 
@@ -18,10 +17,8 @@ class SamlPlugin extends \UnitTester
 
     public function installIfNeeded()
     {
-        if (! \Craft::$app->plugins->isPluginInstalled($this->module->getHandle())) {
+        if (!\Craft::$app->plugins->isPluginInstalled($this->module->getHandle())) {
             \Craft::$app->plugins->installPlugin($this->module->getHandle());
         }
-
     }
-
 }

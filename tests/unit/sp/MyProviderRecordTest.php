@@ -17,7 +17,6 @@ use Step\Unit\Common\SamlPlugin;
 
 class MyProviderRecordTest extends Unit
 {
-
     /**
      * @var Saml
      */
@@ -51,7 +50,7 @@ class MyProviderRecordTest extends Unit
         $recordClass = $this->module->getProviderRecordClass();
         $this->assertInstanceOf(
             AbstractProvider::class,
-            new $recordClass
+            new $recordClass()
         );
     }
 
@@ -126,11 +125,10 @@ class MyProviderRecordTest extends Unit
         $this->assertNull(
             $provider->getLogoutRequestPath()
         );
-
     }
 
-    public function testOwnProvider(){
-
+    public function testOwnProvider()
+    {
         $this->pluginHelper->installIfNeeded();
         $metadata = $this->metadataFactory->createMyEntityDescriptorWithKey();
         $provider = new ProviderRecord();
@@ -192,7 +190,5 @@ class MyProviderRecordTest extends Unit
             XMLSecurityKey::class,
             $xmlSecurityKey
         );
-
     }
-
 }

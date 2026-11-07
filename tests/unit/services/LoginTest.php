@@ -14,7 +14,6 @@ use Step\Unit\Common\SamlPlugin;
 
 class LoginTest extends Unit
 {
-
     /**
      * @var Saml
      */
@@ -53,7 +52,8 @@ class LoginTest extends Unit
         );
     }
 
-    private function getUser(){
+    private function getUser()
+    {
         return new User([
             'firstName' => 'Damien',
             'lastName' => 'Smrt',
@@ -92,7 +92,8 @@ class LoginTest extends Unit
 
 
 
-    public function testTransformToUser(){
+    public function testTransformToUser()
+    {
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
 

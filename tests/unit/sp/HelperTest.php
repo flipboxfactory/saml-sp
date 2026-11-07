@@ -3,7 +3,6 @@
 
 namespace tests\unit\sp;
 
-
 use Codeception\Test\Unit;
 use craft\elements\User;
 use flipbox\saml\sp\helpers\UserHelper;
@@ -52,6 +51,5 @@ class HelperTest extends Unit
                 $this->user
             )
         );
-
     }
 }
