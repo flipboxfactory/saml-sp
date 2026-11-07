@@ -136,6 +136,12 @@ class Saml extends AbstractPlugin
     public static function onRegisterCpUrlRules(RegisterUrlRulesEvent $event): void
     {
         parent::onRegisterCpUrlRules($event);
+
+        // Also serve the SSO/SLO endpoints on control panel requests. Headless installs and
+        // installs with a dedicated CP domain (baseCpUrl without a cpTrigger) treat every request
+        // on that host as a CP request, so site-only rules would 404 there. Access control is
+        // unchanged: the login/logout controllers' allowAnonymous applies to CP requests too.
+        static::onRegisterSiteUrlRules($event);
     }
 
     /**

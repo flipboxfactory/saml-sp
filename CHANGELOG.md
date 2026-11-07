@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## 5.2.2 - 2026-11-07
+
+### Fixed
+- SSO and SLO endpoints now also respond on control panel requests, so SAML login works for headless installs and control panels on their own domain (`baseCpUrl` without a `cpTrigger`). Previously they returned 404 there. Thanks to @kabel ([#233](https://github.com/flipboxfactory/saml-sp/pull/233)).
+
 ## 5.2.1 - 2026-11-07
 
 ### Fixed

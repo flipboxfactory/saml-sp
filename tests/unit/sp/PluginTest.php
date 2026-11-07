@@ -69,9 +69,33 @@ class PluginTest extends Unit
     public function testCpRules()
     {
         $plugin = $this->module;
-        $plugin::onRegisterCpUrlRules(
-            new RegisterUrlRulesEvent()
-        );
+        $event = new RegisterUrlRulesEvent();
+        $plugin::onRegisterCpUrlRules($event);
+
+        // CP admin pages are still registered
+        $this->assertSame('saml-sp/cp/view/general/settings', $event->rules['saml-sp/settings'] ?? null);
+    }
+
+    public function testCpRulesIncludeSsoEndpoints()
+    {
+        $plugin = $this->module;
+
+        $siteEvent = new RegisterUrlRulesEvent();
+        $plugin::onRegisterSiteUrlRules($siteEvent);
+        $this->assertNotEmpty($siteEvent->rules);
+
+        $cpEvent = new RegisterUrlRulesEvent();
+        $plugin::onRegisterCpUrlRules($cpEvent);
+
+        // Every site SSO/SLO rule is also routed on CP requests, to the same action
+        foreach ($siteEvent->rules as $pattern => $route) {
+            $this->assertArrayHasKey($pattern, $cpEvent->rules);
+            $this->assertSame($route, $cpEvent->rules[$pattern]);
+        }
+
+        $prefix = $plugin->getSettings()->getEndpointPrefix();
+        $this->assertSame('saml-sp/login', $cpEvent->rules["POST,GET {$prefix}/login"] ?? null);
+        $this->assertSame('saml-sp/login/request', $cpEvent->rules["POST,GET {$prefix}/login/request"] ?? null);
     }
 
     public function testEnsurePlugin()
