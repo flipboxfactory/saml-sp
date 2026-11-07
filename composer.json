@@ -1,7 +1,7 @@
 {
     "name": "flipboxfactory/saml-sp",
     "description": "SAML Service Provider",
-    "version": "5.1.3",
+    "version": "5.1.4",
     "type": "craft-plugin",
     "license": "proprietary",
     "keywords": [
@@ -15,19 +15,18 @@
         "yii2"
     ],
     "require": {
-        "craftcms/cms": "^5.6.0",
-        "flipboxfactory/saml-core": "^5.0.2"
+        "craftcms/cms": "^5.10.8",
+        "flipboxfactory/saml-core": "^5.0.11",
+        "flipboxfactory/keychain": "^5.0.1"
     },
     "require-dev": {
-        "codeception/codeception": "^5.0",
-        "codeception/module-yii2": "^1.1",
+        "codeception/codeception": "^5.2",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-yii2": "^1.1.9",
         "craftcms/ecs": "dev-main",
         "craftcms/phpstan": "dev-main",
-        "vlucas/phpdotenv": "^5.5",
-        "friendsofphp/php-cs-fixer": "^v3.20.0",
-        "phpunit/php-code-coverage": "^11.0.3",
-        "codeception/module-asserts": "^3.0",
-        "codeception/module-db": "^3.1"
+        "phpstan/phpstan": "^2.1",
+        "vlucas/phpdotenv": "^5.4"
     },
     "autoload": {
         "psr-4": {
@@ -40,11 +39,16 @@
         }
     },
     "scripts": {
-        "test": "codecept run -vvv",
-        "test-cvg": "codecept run -vvv --coverage --coverage-html",
+        "test": "codecept run unit",
+        "test-coverage": "codecept run unit --coverage --coverage-xml --coverage-text",
         "check-cs": "ecs check --ansi",
         "fix-cs": "ecs check --ansi --fix",
-        "phpstan": "phpstan --memory-limit=1G"
+        "phpstan": "phpstan --memory-limit=1G",
+        "check": [
+            "@check-cs",
+            "@phpstan",
+            "@test"
+        ]
     },
     "config": {
         "allow-plugins": {
@@ -61,7 +65,7 @@
     },
     "extra": {
         "name": "SAML Service Provider",
-        "version": "5.1.3",
+        "version": "5.1.4",
         "schemaVersion": "2.1.0",
         "handle": "saml-sp",
         "class": "flipbox\\saml\\sp\\Saml",

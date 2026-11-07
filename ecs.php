@@ -6,12 +6,17 @@ use craft\ecs\SetList;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return static function(ECSConfig $ecsConfig): void {
+    $ecsConfig->parallel();
     $ecsConfig->paths([
         __DIR__ . '/src',
+        __DIR__ . '/tests',
         __FILE__,
     ]);
-
-    $ecsConfig->sets([
-        SetList::CRAFT_CMS_4,
+    $ecsConfig->skip([
+        __DIR__ . '/tests/_output',
+        __DIR__ . '/tests/_support/_generated',
+        __DIR__ . '/tests/_craft/storage',
     ]);
+
+    $ecsConfig->sets([SetList::CRAFT_CMS_4]);
 };

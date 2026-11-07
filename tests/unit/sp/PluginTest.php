@@ -3,7 +3,6 @@
 
 namespace tests\unit\sp;
 
-
 use Codeception\Test\Unit;
 use craft\events\RegisterUrlRulesEvent;
 use flipbox\saml\core\AbstractPlugin;
@@ -48,7 +47,6 @@ class PluginTest extends Unit
             AbstractPlugin::class,
             $this->module
         );
-
     }
 
     public function testPluginType()
@@ -78,7 +76,10 @@ class PluginTest extends Unit
 
     public function testEnsurePlugin()
     {
-        $mock = $this->getMockForTrait(SamlPluginEnsured::class);
+        // getMockForTrait() was removed in PHPUnit 11
+        $mock = new class() {
+            use SamlPluginEnsured;
+        };
         $samlPlugin = $mock->getPlugin();
         $this->assertEquals($this->module, $samlPlugin);
 
@@ -112,6 +113,5 @@ class PluginTest extends Unit
             \Psr\Log\LoggerInterface::class,
             $container->getLogger()
         );
-
     }
 }

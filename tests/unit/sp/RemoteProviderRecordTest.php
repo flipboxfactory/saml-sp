@@ -13,7 +13,6 @@ use Step\Unit\Common\SamlPlugin;
 
 class RemoteProviderRecordTest extends Unit
 {
-
     /**
      * @var Saml
      */

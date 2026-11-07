@@ -13,6 +13,16 @@ Within your Craft CMS project admin panel, navigate to the 'Plugin Store' and se
 
 Once the plugin is installed, head over to [configure](/configure/) the plugin.
 
+## Upgrading to 5.1.4
+
+5.1.4 is a security release (see the [changelog](https://github.com/flipboxfactory/saml-sp/blob/master/CHANGELOG.md)). It requires Craft CMS 5.10.8 or later, so update Craft first if needed.
+
+saml-sp 5.1.4 uses `simplesamlphp/saml2` 4.19.x, which needs `webmozart/assert` 1.x, while recent Craft projects lock 2.x. If Composer reports a `webmozart/assert` conflict, allow it to adjust dependencies with `-W`:
+
+```bash
+composer update flipboxfactory/saml-sp -W
+```
+
 ## Upgrading to 2.0
 There are a lot of breaking changes in 2.0. Upgrading is seamless if there is not any custom code that 
 hooks into the SAML SP plugin.  

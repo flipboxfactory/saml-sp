@@ -5,8 +5,6 @@ namespace flipbox\saml\sp\tests\models;
 use Codeception\Test\Unit;
 use craft\elements\User;
 use flipbox\saml\sp\fields\ExternalIdentity;
-use flipbox\saml\sp\models\Settings;
-use flipbox\saml\sp\Saml;
 
 class ExternalIdentityTest extends Unit
 {
@@ -31,5 +29,4 @@ class ExternalIdentityTest extends Unit
 
         $this->assertFalse($field->hasContentColumn());
     }
-
 }

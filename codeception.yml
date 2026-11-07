@@ -1,48 +1,39 @@
-paths:
-  tests: tests
-  output: tests/_output
-  data: tests/_data
-  support: tests/_support
 actor_suffix: Tester
-params:
-  - tests/.env
-  - env
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
 bootstrap: _bootstrap.php
+params:
+    - tests/.env
+    - env
 settings:
-  colors: true
-  memory_limit: 2048M
+    colors: true
+    memory_limit: 1024M
 coverage:
-  enabled: true
-  include:
-    - src/*
-  exclude:
-    - src/icon.svg
-    - src/icon-mask.svg
-    - src/templates/*
-    - src/migrations/*
-extensions:
-  enabled:
-    - Codeception\Extension\RunFailed
+    enabled: true
+    show_uncovered: true
+    include:
+        - src/*
+    exclude:
+        - src/templates/*
+        - src/migrations/*
+        - src/web/assets/*/dist/*
+        - src/icon.svg
+        - src/icon-mask.svg
 modules:
-  config:
-    \craft\test\Craft:
-      configFile: 'tests/_craft/config/test.php'
-      edition: 2
-      entryUrl: http://saml-sp.test/index.php
-      dbSetup:
-        clean: true
-        setupCraft: true
-      plugins:
-        - class: \flipbox\saml\sp\Saml
-          handle: saml-sp
-
-  enabled:
-    - Db:
-        dsn: '%DB_DSN%'
-        user: '%DB_USER%'
-        password: '%DB_PASSWORD%'
-        populate: true
-        # cleanup: true
-        # reconnect: true
-        # dump:
-        #   - tests/_data/create-dbs.sql
+    config:
+        \craft\test\Craft:
+            configFile: 'tests/_craft/config/test.php'
+            entryUrl: 'http://localhost/index.php'
+            projectConfig: {}
+            migrations: []
+            plugins:
+                - class: '\flipbox\keychain\KeyChain'
+                  handle: keychain
+                - class: '\flipbox\saml\sp\Saml'
+                  handle: saml-sp
+            cleanup: true
+            transaction: true
+            dbSetup: { clean: true, setupCraft: true }

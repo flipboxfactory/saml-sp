@@ -3,9 +3,7 @@
 
 namespace tests\unit\sp;
 
-
 class Constants
 {
-    const PLUGIN_HANDLE = 'saml-sp';
-
+    public const PLUGIN_HANDLE = 'saml-sp';
 }

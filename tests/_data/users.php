@@ -12,5 +12,5 @@ return [
         'lastName' => 'Duck',
         'email' => 'donald@duckenterprises.com',
         'username' => 'donald@duckenterprises.com',
-    ]
+    ],
 ];

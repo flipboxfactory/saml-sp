@@ -4,7 +4,6 @@ namespace flipbox\saml\sp\tests\models;
 
 use Codeception\Test\Unit;
 use flipbox\saml\sp\models\Settings;
-use flipbox\saml\sp\Saml;
 
 class SettingsTest extends Unit
 {

@@ -13,7 +13,6 @@ use Step\Unit\Common\SamlPlugin;
 
 class AuthnRequestTest extends Unit
 {
-
     /**
      * @var Saml
      */
@@ -68,7 +67,6 @@ class AuthnRequestTest extends Unit
         $this->assertNull(
             $authnRequest->getSignatureKey()
         );
-
     }
 
     public function testAuthnRequestCreateWithSignature()

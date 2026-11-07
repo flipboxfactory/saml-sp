@@ -12,6 +12,7 @@ use flipbox\saml\core\helpers\ClaimTypes;
 use flipbox\saml\sp\models\Settings;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\validators\Response as ResponseValidator;
 use SAML2\Assertion;
 use SAML2\DOMDocumentFactory;
 use SAML2\EncryptedAssertion;
@@ -19,11 +20,9 @@ use SAML2\Message;
 use Step\Unit\Common\Metadata;
 use Step\Unit\Common\Response;
 use Step\Unit\Common\SamlPlugin;
-use flipbox\saml\sp\validators\Response as ResponseValidator;
 
 class ResponseTest extends Unit
 {
-
     /**
      * @var Saml
      */
@@ -105,24 +104,24 @@ class ResponseTest extends Unit
             $this->metadataFactory->idpPrivateKey()
         );
         $returnResponse->setCertificates([
-            $idpCert
+            $idpCert,
         ]);
 
-        $firstAssertion =$returnResponse->getAssertions()[0];
-        if(!($firstAssertion instanceof EncryptedAssertion)) {
-
+        $firstAssertion = $returnResponse->getAssertions()[0];
+        if (!($firstAssertion instanceof EncryptedAssertion)) {
             $firstAssertion->setSignatureKey(
                 $this->metadataFactory->idpPrivateKey()
             );
             $firstAssertion->setCertificates([
-                $idpCert
+                $idpCert,
             ]);
         }
 
         return $returnResponse;
     }
 
-    private function getUser(){
+    private function getUser()
+    {
         return new User([
             'firstName' => 'Damien',
             'lastName' => 'Smrt',
@@ -170,7 +169,7 @@ class ResponseTest extends Unit
                 $response,
                 $idp,
                 $sp,
-                $this->module->getSettings()
+                $this->module->getSettings(),
             ]
         );
 
@@ -202,10 +201,10 @@ class ResponseTest extends Unit
 //        // TODO fix this
 //        $this->expectException(UserException::class);
 //        Saml::getInstance()->getLogin()->byIdentity($identity);
-
     }
 
-    public function testResponseNotAfterValidationFailed(){
+    public function testResponseNotAfterValidationFailed()
+    {
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
 
@@ -235,7 +234,8 @@ class ResponseTest extends Unit
         );
     }
 
-    public function testResponseSignatureValidationFailed(){
+    public function testResponseSignatureValidationFailed()
+    {
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
 
@@ -277,7 +277,8 @@ class ResponseTest extends Unit
         $validator->validate($newResponse);
     }
 
-    public function testResponseWithSignatureRequiredValidation(){
+    public function testResponseWithSignatureRequiredValidation()
+    {
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
 
@@ -295,28 +296,23 @@ class ResponseTest extends Unit
         }
         $newResponse = Message::fromXML($document->firstChild);
 
-        $validator = new ResponseValidator(
-            $idp,
-            $sp,
-            true,
-            true
-        );
+        // Response signature required: the unsigned Response is rejected
+        try {
+            (new ResponseValidator($idp, $sp, true, true))->validate($newResponse);
+            $this->fail('An unsigned Response was accepted while its signature is required.');
+        } catch (\PHPUnit\Framework\AssertionFailedError $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            $this->assertSame('Signature required but not found: Response', $e->getMessage());
+        }
 
-        $this->expectException(\Exception::class);
-        $validator->validate($newResponse);
-
-        $validator = new ResponseValidator(
-            $idp,
-            $sp,
-            false,
-            true
-        );
-//        $this->expectException(\Exception::class);
-        $validator->validate($newResponse);
-
+        // Only the assertion signature required: the signed assertion carries it
+        $result = (new ResponseValidator($idp, $sp, false, true))->validate($newResponse);
+        $this->assertSame([], $result->getErrors());
     }
 
-    public function testResponseValidation(){
+    public function testResponseValidation()
+    {
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
 
@@ -340,7 +336,8 @@ class ResponseTest extends Unit
         );
     }
 
-    public function testGetByUserAndResponse(){
+    public function testGetByUserAndResponse()
+    {
         $this->pluginHelper->installIfNeeded();
         $this->module->loadSaml2Container();
 
@@ -402,7 +399,6 @@ class ResponseTest extends Unit
 
     public function testGetByResponse()
     {
-
         $idp = $this->getIdp();
         $sp = $this->getSp();
 
@@ -453,7 +449,6 @@ class ResponseTest extends Unit
 
     public function testGetByResponseNameIdOverride()
     {
-
         $idp = $this->getIdp();
         $sp = $this->getSp();
 
@@ -476,8 +471,8 @@ class ResponseTest extends Unit
         );
     }
 
-    public function testAssertionTrait(){
-
+    public function testAssertionTrait()
+    {
         $idp = $this->getIdp();
         $sp = $this->getSp();
 
@@ -502,10 +497,10 @@ class ResponseTest extends Unit
             $response,
             $sp
         );
-
     }
 
-    public function testUserGroups(){
+    public function testUserGroups()
+    {
         $user = $this->getUser();
 
         $identityProvider = $this->getIdp();
@@ -530,7 +525,8 @@ class ResponseTest extends Unit
         );
     }
 
-    public function testUserDefaultGroups(){
+    public function testUserDefaultGroups()
+    {
         $user = \Craft::$app->users->getUserByUsernameOrEmail('damien@flipboxdigital.com') ??
             $this->getUser();
 
@@ -542,8 +538,8 @@ class ResponseTest extends Unit
             $serviceProvider
         );
 
-        if(!$user->getId()){
-            if(!\Craft::$app->elements->saveElement($user)) {
+        if (!$user->getId()) {
+            if (!\Craft::$app->elements->saveElement($user)) {
                 throw new \Exception('Error saving user ' . \json_encode($user->getErrors()));
             }
         }
@@ -558,7 +554,7 @@ class ResponseTest extends Unit
         Saml::debug($userGroup->id);
 
         $settings->defaultGroupAssignments = [
-            $userGroup->id
+            $userGroup->id,
         ];
 
         Saml::getInstance()->getUserGroups()->sync(
