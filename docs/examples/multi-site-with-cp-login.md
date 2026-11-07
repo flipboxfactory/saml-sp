@@ -36,3 +36,13 @@ just created.
 Instruct users to login via the Control Panel login but by using the SAML SP "via" buttons.
 
 ![Login to the Control Panel](../assets/cp-login-screen.png)
+
+### Control panel on its own domain
+
+As of 5.2.2, the SSO and SLO endpoints (`/sso/login`, `/sso/login/request/...`, `/sso/logout/...`) also respond on
+control panel requests. This covers a control panel served from its own domain with `baseCpUrl` and no `cpTrigger`,
+where every request on that domain is a control panel request. Earlier versions returned a 404 there.
+
+Use the same domain for the whole flow: the CP site's base URL from the step above should be the CP domain, so the
+login buttons, the ACS URL in your SP metadata and the IdP's configuration all point at it. The SAML request ID is stored
+in the session for that domain, and a response arriving on a different domain is rejected.
