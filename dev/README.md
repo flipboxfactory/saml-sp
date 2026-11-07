@@ -49,6 +49,21 @@ dev/idp-login -o xml                  # print the Response instead of sending it
 
 For different users, groups or attributes, edit `dev/.runtime/saml-tool.config.ts`. `-n` changes only the NameID; Craft takes the email from the `email` attribute. Groups match by name or handle (`Editors`/`editors`).
 
+### Group sync checks
+
+```bash
+dev/idp-login --test-groups
+```
+
+Runs `dev/test-groups.ts` against the running sandbox, without a browser. For each scenario it:
+
+1. sets plugin settings and login hooks in `dev/.runtime/saml-sp.overrides.json`;
+2. gives the config's user a starting set of groups;
+3. POSTs a signed Response asserting `Editors`;
+4. checks the user's stored groups.
+
+It covers `syncGroups`/`mergeExistingGroups` combinations, default groups, and a group assigned during login after the user's groups were cached. The overrides file is deleted afterwards. Sandboxes created before this was added need `dev/up` again.
+
 ## Options
 
 | Variable | Default | |

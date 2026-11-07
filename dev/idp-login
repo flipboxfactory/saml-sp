@@ -4,9 +4,13 @@
 #   dev/idp-login -n someone@example.com          # different NameID (email etc. come from the config attributes)
 #   dev/idp-login --no-sign-assertion             # should be rejected
 #   dev/idp-login --in-response-to <ID> -r <RS>   # answer an SP-initiated AuthnRequest
+#   dev/idp-login --test-groups                   # run the group sync checks (dev/test-groups.ts)
 set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 SAML_TOOL_DIR="${SAML_TOOL_DIR:-$HOME/Code/dsmrt/saml-tool}"
 CONFIG="$DIR/.runtime/saml-tool.config.ts"
 [ -f "$CONFIG" ] || { echo "✖ No sandbox config. Run dev/up first." >&2; exit 1; }
+if [ "${1:-}" = "--test-groups" ]; then
+    exec bun "$DIR/test-groups.ts" "$DIR" "$SAML_TOOL_DIR"
+fi
 cd "$SAML_TOOL_DIR" && exec bun send-response.ts -c "$CONFIG" "$@"
