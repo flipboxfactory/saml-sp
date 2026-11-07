@@ -172,6 +172,61 @@ class UserGroupsServiceTest extends Unit
         $this->assertSame($expected, $ids);
     }
 
+    /**
+     * Merging used the element's cached groups, so a group stored earlier in the login was removed.
+     */
+    public function testMergingKeepsGroupsAssignedEarlierInTheLogin(): void
+    {
+        $earlier = $this->group('Saml Merge Earlier');
+        $asserted = $this->group('Saml Merge Asserted');
+        $user = $this->savedUser('groups14@example.com');
+        $user->getGroups(); // cache the (empty) groups on the element, as a loaded user would
+        // e.g. a Login::EVENT_AFTER_RESPONSE_TO_USER listener that doesn't call setGroups()
+        \Craft::$app->getUsers()->assignUserToGroups($user->id, [$earlier->id]);
+
+        $this->sync($user, ['groups' => ['Saml Merge Asserted']], ['mergeExistingGroups' => true]);
+
+        $ids = $this->groupIds($user);
+        sort($ids);
+        $expected = [$earlier->id, $asserted->id];
+        sort($expected);
+        $this->assertSame($expected, $ids);
+    }
+
+    public function testMergingStillSavesGroupsOnlySetOnTheElement(): void
+    {
+        $inMemory = $this->group('Saml Merge In Memory');
+        $asserted = $this->group('Saml Merge Asserted Two');
+        $user = $this->savedUser('groups15@example.com');
+        $user->setGroups([$inMemory]);
+
+        $this->sync($user, ['groups' => ['Saml Merge Asserted Two']], ['mergeExistingGroups' => true]);
+
+        $ids = $this->groupIds($user);
+        sort($ids);
+        $expected = [$inMemory->id, $asserted->id];
+        sort($expected);
+        $this->assertSame($expected, $ids);
+    }
+
+    public function testBeforeAssignEventSeesStoredGroupsAsExisting(): void
+    {
+        $stored = $this->group('Saml Stored Existing');
+        $user = $this->savedUser('groups16@example.com');
+        $user->getGroups();
+        \Craft::$app->getUsers()->assignUserToGroups($user->id, [$stored->id]);
+        $service = new UserGroups();
+        $existing = null;
+        $service->on(UserGroups::EVENT_BEFORE_USER_GROUP_ASSIGN, function(UserGroupAssign $event) use (&$existing) {
+            $existing = array_map(fn($g) => $g->id, $event->existingGroups);
+        });
+
+        $this->sync($user, [], ['mergeExistingGroups' => true], $service);
+
+        $this->assertSame([$stored->id], $existing);
+        $this->assertSame([$stored->id], $this->groupIds($user));
+    }
+
     public function testBeforeAssignEventCanChangeAssignment(): void
     {
         $group = $this->group('Saml Vetoed');

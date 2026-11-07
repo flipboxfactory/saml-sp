@@ -194,22 +194,17 @@ class UserGroups extends Component
         $event = new UserGroupAssign();
         $event->user = $user;
         $event->response = $response;
-        $event->existingGroups = $user->getGroups();
+        $event->existingGroups = $existingGroups = $this->getExistingGroups($user);
         $event->groupsFoundInAssertions = $groups;
 
-        if ($settings->syncGroups) {
-            $baseGroups = $settings->mergeExistingGroups ? $user->getGroups() : [];
-        } else {
-            /**
-             * Group sync is off, so a login must not remove groups, whatever mergeExistingGroups says.
-             * Start from the groups stored for the user, not the element's cached ones, which can predate
-             * changes made earlier in this login (e.g. in Login::EVENT_AFTER_RESPONSE_TO_USER). Listeners
-             * of EVENT_BEFORE_USER_GROUP_ASSIGN can still change the assignment.
-             */
-            $baseGroups = \Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
-        }
+        /**
+         * Keep existing groups when merging, and always when group sync is off (a login must not remove
+         * groups then, whatever mergeExistingGroups says). Listeners of EVENT_BEFORE_USER_GROUP_ASSIGN
+         * can still change the assignment.
+         */
+        $keepExisting = !$settings->syncGroups || $settings->mergeExistingGroups;
 
-        $event->groupToBeAssigned = array_merge($baseGroups, $groups);
+        $event->groupToBeAssigned = array_merge($keepExisting ? $existingGroups : [], $groups);
 
         $this->trigger(
             static::EVENT_BEFORE_USER_GROUP_ASSIGN,
@@ -236,13 +231,35 @@ class UserGroups extends Component
     }
 
     /**
+     * The user's groups as stored, plus any set on the element but not saved yet.
+     *
+     * The element's getGroups() is cached, so on its own it can miss groups assigned earlier in this
+     * login (e.g. by Users::assignUserToGroups() in Login::EVENT_AFTER_RESPONSE_TO_USER without a
+     * setGroups() call), and passing it to assignUserToGroups() would remove them.
+     *
+     * @return UserGroup[]
+     */
+    protected function getExistingGroups(UserElement $user): array
+    {
+        $groups = [];
+        foreach (\Craft::$app->getUserGroups()->getGroupsByUserId($user->id) as $group) {
+            $groups[$group->id] = $group;
+        }
+        foreach ($user->getGroups() as $group) {
+            $groups[$group->id] ??= $group;
+        }
+
+        return array_values($groups);
+    }
+
+    /**
      * @param UserElement $user
      * @return bool|null
      */
     protected function assignDefaultGroups(\craft\elements\User $user, Settings $settings)
     {
         $groups = array_merge(
-            $user->getGroups(),
+            $this->getExistingGroups($user),
             $newGroups = $this->getDefaultGroups()
         );
 
