@@ -1,0 +1,49 @@
+# Ephemeral saml-sp sandbox. Use dev/up and dev/down rather than calling this directly.
+name: saml-sp-sandbox
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: craft
+    tmpfs:
+      - /var/lib/mysql   # nothing survives `down`
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-proot"]
+      interval: 3s
+      retries: 40
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${SANDBOX_PORT:-8080}:80"
+    environment:
+      SANDBOX_URL: "http://localhost:${SANDBOX_PORT:-8080}"
+      LOCAL_DEPS: "${LOCAL_DEPS:-0}"
+      CRAFT_DB_DRIVER: mysql
+      CRAFT_DB_SERVER: db
+      CRAFT_DB_PORT: "3306"
+      CRAFT_DB_DATABASE: craft
+      CRAFT_DB_USER: root
+      CRAFT_DB_PASSWORD: root
+      CRAFT_ENVIRONMENT: dev
+      CRAFT_DEV_MODE: "true"
+      CRAFT_ALLOW_ADMIN_CHANGES: "true"
+      CRAFT_SECURITY_KEY: sandbox-not-a-secret-key
+      PRIMARY_SITE_URL: "http://localhost:${SANDBOX_PORT:-8080}"
+    volumes:
+      # This saml-sp checkout, installed as a symlinked path package
+      - ..:/plugins/saml-sp:ro
+      # Sibling saml-core/keychain checkouts, used only with LOCAL_DEPS=1
+      - ${SIBLINGS_DIR:-../..}:/siblings:ro
+      - ./sandbox:/sandbox:ro
+      - ./templates:/sandbox-templates:ro
+      - ./.runtime:/runtime
+      - composer-cache:/root/.composer/cache   # cache only; no Craft state
+
+volumes:
+  composer-cache:

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Start a fresh, throwaway saml-sp sandbox: Craft 5 + saml-sp (this working copy) + saml-tool as the IdP.
+# Every run starts from scratch; dev/down destroys everything. See dev/README.md.
+set -euo pipefail
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+SAML_TOOL_DIR="${SAML_TOOL_DIR:-$HOME/Code/dsmrt/saml-tool}"
+IDP_URL="${IDP_URL:-http://localhost:3000}"
+export SANDBOX_PORT="${SANDBOX_PORT:-8080}"
+export LOCAL_DEPS="${LOCAL_DEPS:-0}"
+RUNTIME="$DIR/.runtime"
+
+die() { echo "✖ $*" >&2; exit 1; }
+command -v docker >/dev/null || die "docker is required"
+command -v bun >/dev/null || die "bun is required (for saml-tool)"
+[ -f "$SAML_TOOL_DIR/send-response.ts" ] || die "saml-tool not found at $SAML_TOOL_DIR (set SAML_TOOL_DIR)"
+[ -f "$SAML_TOOL_DIR/certs/idp-cert.pem" ] && [ -f "$SAML_TOOL_DIR/certs/idp-key.pem" ] \
+    || die "saml-tool IdP cert/key missing; run: (cd $SAML_TOOL_DIR && bun generate-metadata.ts idp --gen-cert)"
+
+echo "→ Resetting sandbox"
+docker compose -f "$DIR/compose.yaml" down -v --remove-orphans >/dev/null 2>&1 || true
+rm -rf "$RUNTIME" && mkdir -p "$RUNTIME"
+
+echo "→ Generating saml-tool IdP metadata"
+(cd "$SAML_TOOL_DIR" && bun generate-metadata.ts idp \
+    --entity-id "$IDP_URL/metadata" --cert certs/idp-cert.pem \
+    --sso-url "$IDP_URL/receive" --slo-url "$IDP_URL/receive" \
+    -o "$RUNTIME/idp-metadata.xml" >/dev/null)
+
+echo "→ Building and starting containers (first run takes a few minutes)"
+docker compose -f "$DIR/compose.yaml" up -d --build
+
+echo "→ Installing Craft + saml-sp"
+for _ in $(seq 1 180); do
+    [ -f "$RUNTIME/sandbox.json" ] && break
+    if [ -z "$(docker compose -f "$DIR/compose.yaml" ps -q --status running web)" ]; then
+        docker compose -f "$DIR/compose.yaml" logs web | tail -40
+        die "web container stopped during setup (logs above)"
+    fi
+    sleep 2
+done
+[ -f "$RUNTIME/sandbox.json" ] || { docker compose -f "$DIR/compose.yaml" logs web | tail -40; die "setup timed out"; }
+until curl -fsS -o /dev/null "http://localhost:$SANDBOX_PORT/"; do sleep 1; done
+
+bun "$DIR/saml-tool-config.ts" "$RUNTIME/sandbox.json" "$SAML_TOOL_DIR" "$IDP_URL" "$RUNTIME/saml-tool.config.ts" >/dev/null
+docker compose -f "$DIR/compose.yaml" logs web | grep '^\S* *| \[sandbox\]   ' | sed 's/^[^|]*| \[sandbox\]   /    /' || true
+
+cat <<INFO
+
+✔ Sandbox ready
+    Site            http://localhost:$SANDBOX_PORT
+    Control panel   http://localhost:$SANDBOX_PORT/admin   (admin / password)
+    SP ACS          $(bun -e "console.log((await Bun.file('$RUNTIME/sandbox.json').json()).sp.acsUrl)")
+
+  IdP-initiated login (signed Response for jane@example.com, group Editors):
+    dev/idp-login
+
+  SP-initiated login:
+    (cd $SAML_TOOL_DIR && bun run receiver)      # IdP endpoint on $IDP_URL
+    open http://localhost:$SANDBOX_PORT and click "SP-initiated login"
+    dev/idp-login --in-response-to <ID> -r <RelayState>   # values shown by the receiver
+
+  Tear down:  dev/down
+INFO
