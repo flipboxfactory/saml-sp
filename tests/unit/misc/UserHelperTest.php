@@ -3,7 +3,9 @@
 namespace flipbox\saml\sp\tests\unit\misc;
 
 use Codeception\Test\Unit;
+use craft\db\Table;
 use craft\elements\User;
+use craft\helpers\Db;
 use flipbox\saml\sp\helpers\UserHelper;
 
 class UserHelperTest extends Unit
@@ -23,6 +25,35 @@ class UserHelperTest extends Unit
         UserHelper::enableUser($user);
 
         $this->assertSame(User::STATUS_ACTIVE, $this->reloadUser($user)->getStatus());
+    }
+
+    public function testLockedOutUserIsReportedLocked(): void
+    {
+        $user = $this->lockOut($this->saveUser(['active' => true]));
+
+        // Craft 5 never reports "locked" as a status, so this used to always be false
+        $this->assertTrue(UserHelper::isUserLocked($user));
+    }
+
+    public function testEnableUserLeavesLockoutInPlace(): void
+    {
+        $user = $this->lockOut($this->saveUser(['active' => true, 'enabled' => false]));
+
+        UserHelper::enableUser($user);
+
+        $this->assertTrue($user->enabled);
+        $this->assertTrue((bool)$this->reloadUser($user)->locked);
+    }
+
+    private function lockOut(User $user): User
+    {
+        // Craft doesn't store lockoutDate for new users, and a lock without one expires on load
+        \Craft::$app->getDb()->createCommand()->update(Table::USERS, [
+            'locked' => true,
+            'lockoutDate' => Db::prepareDateForDb(new \DateTime()),
+        ], ['id' => $user->id])->execute();
+
+        return $this->reloadUser($user);
     }
 
     public function testPendingUserIsActivated(): void

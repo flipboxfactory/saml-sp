@@ -9,6 +9,15 @@ Set the `loginPath` within the Craft general config `config/general.php`.
 After the IDP is saved in Craft, navigate back to the provider. Under the "Configure" tab in Craft, navigate back to the provider. 
 The following code snippets show login configuration options.
  
+## Who can log in
+After the response is validated, the plugin finds or creates the user. It reactivates disabled, archived, suspended or
+pending users only when `enableUsers` is `true` (the default). Then it runs the same checks as Craft's built-in SSO. Login is refused if the user:
+
+- is still not active (for example `enableUsers` is `false`),
+- is locked out after too many failed password attempts (until Craft's `cooldownDuration` ends or an admin unlocks them),
+- lacks the "Access the control panel" permission on a control panel request, or
+- lacks offline access while the system is offline.
+
 ## Simple Config
 If there is only one IDP in the system, you can use the following simple config which is also the default.
 ```php
