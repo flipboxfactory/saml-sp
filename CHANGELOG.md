@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## Unreleased
+## 5.2.6 - 2026-11-07
 
 ### Security
 - Requires `flipboxfactory/keychain` ^5.0.3. Earlier KeyChain versions stored the private key of key pairs created with "bring your own key" unencrypted in the `keychain.settings` column, even with "Encrypt at Rest" on, and showed decrypted private keys on the key pair edit page. KeyChain 5.0.3 removes the stored copies on update and hides private keys behind a password-confirmed **Reveal** button. If you used a pasted (BYOK) key pair, consider rotating it: database backups made before the update may contain the plaintext key.
