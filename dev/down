@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Destroy the saml-sp sandbox (containers, database, generated config).
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")" && pwd)"
+docker compose -f "$DIR/compose.yaml" down -v --remove-orphans
+rm -rf "$DIR/.runtime"
+echo "✔ Sandbox removed"

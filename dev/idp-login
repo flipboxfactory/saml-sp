@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Send a signed SAML Response from saml-tool to the sandbox SP (opens your browser to POST it).
+# Extra arguments go to saml-tool's send-response.ts, e.g.:
+#   dev/idp-login -n someone@example.com          # different NameID (email etc. come from the config attributes)
+#   dev/idp-login --no-sign-assertion             # should be rejected
+#   dev/idp-login --in-response-to <ID> -r <RS>   # answer an SP-initiated AuthnRequest
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")" && pwd)"
+SAML_TOOL_DIR="${SAML_TOOL_DIR:-$HOME/Code/dsmrt/saml-tool}"
+CONFIG="$DIR/.runtime/saml-tool.config.ts"
+[ -f "$CONFIG" ] || { echo "✖ No sandbox config. Run dev/up first." >&2; exit 1; }
+cd "$SAML_TOOL_DIR" && exec bun send-response.ts -c "$CONFIG" "$@"

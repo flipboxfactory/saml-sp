@@ -1,0 +1,50 @@
+{# saml-sp sandbox home page (dev/templates). Not part of the plugin. #}
+{% set saml = craft.app.plugins.getPlugin('saml-sp') %}
+{% set idp = saml.getProvider().find({ providerType: 'idp', enabled: true }).one() %}
+{% set user = currentUser %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>saml-sp sandbox</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; max-width: 46rem; margin: 3rem auto; padding: 0 1rem; color: #222; }
+    code, pre { background: #f4f4f5; padding: .1rem .3rem; border-radius: 4px; }
+    pre { padding: .75rem; overflow: auto; }
+    .ok { color: #15803d; } .muted { color: #666; }
+    a.button { display: inline-block; padding: .5rem .9rem; border-radius: 6px; background: #2563eb; color: #fff; text-decoration: none; margin-right: .5rem; }
+    table { border-collapse: collapse; } td { padding: .15rem .75rem .15rem 0; vertical-align: top; }
+  </style>
+</head>
+<body>
+  <h1>saml-sp sandbox</h1>
+
+  {% if user %}
+    <p class="ok"><strong>Logged in</strong> as {{ user.email }}</p>
+    <table>
+      <tr><td>Username</td><td><code>{{ user.username }}</code></td></tr>
+      <tr><td>Name</td><td>{{ user.fullName ?: '—' }}</td></tr>
+      <tr><td>Groups</td><td>{{ user.getGroups()|map(g => g.name)|join(', ') ?: '—' }}</td></tr>
+      <tr><td>Admin</td><td>{{ user.admin ? 'yes' : 'no' }}</td></tr>
+    </table>
+    <p>
+      {% if idp %}<a class="button" href="{{ samlSpLogoutUrl(idp.entityId) }}">Single logout (SLO)</a>{% endif %}
+      <a class="button" href="{{ logoutUrl }}">Local logout</a>
+    </p>
+  {% else %}
+    <p class="muted">Not logged in.</p>
+    {% if idp %}
+      <p><a class="button" href="{{ siteUrl(idp.getLoginRequestPath()|trim('/', 'left')) }}?RelayState={{ url('/')|url_encode }}">SP-initiated login via {{ idp.label }}</a></p>
+      <p class="muted">Sends an AuthnRequest to the saml-tool receiver. Reply with <code>dev/idp-login --in-response-to &lt;ID&gt;</code>.</p>
+    {% endif %}
+    <p class="muted">IdP-initiated login: run <code>dev/idp-login</code>.</p>
+  {% endif %}
+
+  <h2>Setup</h2>
+  <table>
+    <tr><td>Control panel</td><td><a href="{{ cpUrl() }}">{{ cpUrl() }}</a> (admin / password)</td></tr>
+    <tr><td>saml-sp</td><td>{{ saml.version }}</td></tr>
+    {% if idp %}<tr><td>IdP</td><td><code>{{ idp.entityId }}</code></td></tr>{% endif %}
+  </table>
+</body>
+</html>
