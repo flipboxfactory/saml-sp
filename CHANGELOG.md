@@ -1,5 +1,15 @@
 # Release Notes for SAML SP
 
+## Unreleased
+
+### Fixed
+- SSO login now runs Craft's own login checks (`craft\helpers\User::getAuthStatus()`, as Craft's built-in SSO does) and refuses users who are locked out, suspended, pending or inactive, or who lack control panel or offline access where the request needs it. Previously the login step reactivated any non-active user itself.
+- Locked-out users are no longer signed in while their lockout is active. `UserHelper::isUserLocked()` now reads Craft 5's `locked` flag (Craft 5 never reports a `locked` status, so it always returned false).
+
+### Changed
+- New users created at login (`createUser`) are created active, instead of being activated by the login step afterwards.
+- Reactivating existing users is handled only by the `enableUsers` setting. `UserHelper::enableUser()` no longer clears a lockout on a user who is otherwise active.
+
 ## 5.2.2 - 2026-11-07
 
 ### Fixed
