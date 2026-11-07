@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## Unreleased
+## 5.2.5 - 2026-11-07
 
 ### Fixed
 - With `mergeExistingGroups` on (the default), group sync now merges with the user's stored groups, not just the groups cached on the user element. Previously, groups assigned earlier in the same login without `setGroups()` (e.g. by `Users::assignUserToGroups()` in `Login::EVENT_AFTER_RESPONSE_TO_USER`) were removed. Default group assignment uses the same list.
