@@ -15,8 +15,9 @@
         "yii2"
     ],
     "require": {
-        "craftcms/cms": "^5.6.0",
-        "flipboxfactory/saml-core": "^5.0.11"
+        "craftcms/cms": "^5.10.8",
+        "flipboxfactory/saml-core": "^5.0.11",
+        "flipboxfactory/keychain": "^5.0.1"
     },
     "require-dev": {
         "codeception/codeception": "^5.2",

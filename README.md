@@ -20,7 +20,7 @@ Single Sign-On (SSO) and Single Logout (SLO) for Craft CMS using SAML 2.0. Your 
 
 ## Requirements
 
-- Craft CMS 5.6+
+- Craft CMS 5.10.8+
 - PHP 8.2+
 
 ## Installation
@@ -31,6 +31,8 @@ Install from the Craft Plugin Store, or with Composer:
 composer require flipboxfactory/saml-sp
 php craft plugin/install saml-sp
 ```
+
+If Composer reports a `webmozart/assert` conflict, re-run the `composer require` with `-W` (saml2 4.19.x needs `webmozart/assert` 1.x).
 
 Then follow the [quick start](https://saml-sp.flipboxfactory.com/quick-start.html).
 

@@ -1,13 +1,37 @@
 # Release Notes for SAML SP
 
-## 5.1.4 - 2026-11-07
+## 5.1.4 - 2026-11-07 [CRITICAL]
+
+Security release. Update REQUIRED. Run `composer update flipboxfactory/saml-sp -W` (see Upgrading below).
 
 ### Security
-- Requires `flipboxfactory/saml-core` 5.0.11, which updates `simplesamlphp/saml2` to 4.19.4 (GHSA-6vhm-xfmv-94pj, GHSA-5cjr-mxj5-wmrx, GHSA-6929-8p9f-26jx). Update recommended.
+- Requires `flipboxfactory/saml-core` ^5.0.11, which moves `simplesamlphp/saml2` to 4.19.4 and `robrichards/xmlseclibs` to 3.1.5. Fixes:
+  - [GHSA-6vhm-xfmv-94pj](https://github.com/simplesamlphp/saml2/security/advisories/GHSA-6vhm-xfmv-94pj) (high): unauthenticated denial of service; a small compressed HTTP-Redirect message could exhaust PHP memory.
+  - [GHSA-5cjr-mxj5-wmrx](https://github.com/advisories/GHSA-5cjr-mxj5-wmrx) / CVE-2026-49289 (high): denial of service via XPath Transform.
+  - [GHSA-6929-8p9f-26jx](https://github.com/advisories/GHSA-6929-8p9f-26jx) / CVE-2026-49283 (high): HTTP-Artifact cross-IdP authentication bypass.
+  - [GHSA-4v26-v6cg-g6f9](https://github.com/advisories/GHSA-4v26-v6cg-g6f9) / CVE-2026-32313 (high): xmlseclibs did not validate the AES-GCM authentication tag on encrypted assertions.
+  - [GHSA-c4cc-x928-vjw9](https://github.com/advisories/GHSA-c4cc-x928-vjw9) / CVE-2025-66578 (medium): xmlseclibs canonicalization error could bypass digest/signature validation.
+  - saml-core now enforces decryption algorithm blacklists that were previously ignored.
+- Requires Craft CMS ^5.10.8, so saml-sp no longer installs alongside Craft releases with published advisories, including:
+  - [GHSA-wg23-69c2-gjc8](https://github.com/advisories/GHSA-wg23-69c2-gjc8) (critical): passkey login accepted replayed WebAuthn assertions.
+  - [GHSA-p8x7-9vfw-p7vc](https://github.com/advisories/GHSA-p8x7-9vfw-p7vc) (high): arbitrary user password reset leading to admin account takeover.
+  - [GHSA-265m-7826-wjqm](https://github.com/advisories/GHSA-265m-7826-wjqm) / CVE-2026-72778 and [GHSA-f5wm-88jv-g5hx](https://github.com/advisories/GHSA-f5wm-88jv-g5hx) / CVE-2026-72781 (high): authenticated remote code execution.
+  - [GHSA-v64r-7wg9-23pr](https://github.com/advisories/GHSA-v64r-7wg9-23pr) / CVE-2025-68456 (high): unauthenticated database backup.
+  - [GHSA-f3gw-9ww9-jmc3](https://github.com/advisories/GHSA-f3gw-9ww9-jmc3) / CVE-2025-32432 (critical): remote code execution.
+
+### Fixed
+- saml-sp 5.1.3 and earlier could resolve to saml-core 5.0.10 with saml2 4.20.x on `composer update`, which fails to install (blocked Composer plugin) or breaks SAML at runtime. 5.1.4 prevents that combination.
+
+### Changed
+- Requires `flipboxfactory/keychain` ^5.0.1 directly (previously only through saml-core).
 
 ### Added
 - Test suite with 97% line coverage, coding standards (craftcms/ecs) and static analysis (craftcms/phpstan) in CI
 - Merging a version bump to master now tags and publishes the GitHub release automatically
+
+### Upgrading
+- Update Craft CMS to 5.10.8 or later first if you're on an older 5.x release.
+- saml2 4.19.x needs `webmozart/assert` 1.x, while recent Craft projects lock 2.x. If Composer reports a `webmozart/assert` conflict, add `-W`: `composer update flipboxfactory/saml-sp -W`.
 
 ## 5.1.3 - 2025-01-29
 
