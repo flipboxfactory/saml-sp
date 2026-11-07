@@ -70,6 +70,70 @@ class UserGroupsServiceTest extends Unit
         $this->assertSame([], $this->groupIds($user));
     }
 
+    /**
+     * With sync off and merging off, every login used to remove all of the user's groups.
+     */
+    public function testSyncDisabledKeepsExistingGroupsWhenNotMerging(): void
+    {
+        $existing = $this->group('Saml Existing');
+        $this->group('Saml Asserted Ignored');
+        $user = $this->userInGroups('groups10@example.com', [$existing->id]);
+
+        $this->sync($user, ['groups' => ['Saml Asserted Ignored']], ['syncGroups' => false, 'mergeExistingGroups' => false]);
+
+        $this->assertSame([$existing->id], $this->groupIds($user));
+    }
+
+    public function testSyncDisabledKeepsExistingGroupsAndAddsDefaults(): void
+    {
+        $existing = $this->group('Saml Existing Two');
+        $default = $this->group('Saml Default Two');
+        $user = $this->userInGroups('groups11@example.com', [$existing->id]);
+
+        $this->sync($user, [], [
+            'syncGroups' => false,
+            'mergeExistingGroups' => false,
+            'defaultGroupAssignments' => [$default->id],
+        ]);
+
+        $ids = $this->groupIds($user);
+        sort($ids);
+        $expected = [$existing->id, $default->id];
+        sort($expected);
+        $this->assertSame($expected, $ids);
+    }
+
+    public function testSyncDisabledKeepsGroupsAssignedEarlierInTheLogin(): void
+    {
+        $assigned = $this->group('Saml Assigned Earlier');
+        $user = $this->savedUser('groups12@example.com');
+        $user->getGroups(); // cache the (empty) groups on the element, as a loaded user would
+        // e.g. a Login::EVENT_AFTER_RESPONSE_TO_USER listener that doesn't call setGroups()
+        \Craft::$app->getUsers()->assignUserToGroups($user->id, [$assigned->id]);
+
+        $this->sync($user, [], ['syncGroups' => false, 'mergeExistingGroups' => false]);
+
+        $this->assertSame([$assigned->id], $this->groupIds($user));
+    }
+
+    public function testSyncDisabledStillLetsTheBeforeAssignEventSetGroups(): void
+    {
+        $existing = $this->group('Saml Existing Three');
+        $fromEvent = $this->group('Saml From Event');
+        $user = $this->userInGroups('groups13@example.com', [$existing->id]);
+        $service = new UserGroups();
+        $offered = null;
+        $service->on(UserGroups::EVENT_BEFORE_USER_GROUP_ASSIGN, function(UserGroupAssign $event) use (&$offered, $fromEvent) {
+            $offered = array_map(fn($g) => $g->id, $event->groupToBeAssigned);
+            $event->groupToBeAssigned = [$fromEvent];
+        });
+
+        $this->sync($user, [], ['syncGroups' => false, 'mergeExistingGroups' => false], $service);
+
+        $this->assertSame([$existing->id], $offered);
+        $this->assertSame([$fromEvent->id], $this->groupIds($user));
+    }
+
     public function testAssertionWithoutAttributesAssignsNothing(): void
     {
         $user = $this->savedUser('groups5@example.com');
@@ -160,6 +224,17 @@ class UserGroupsServiceTest extends Unit
         }
 
         return $group;
+    }
+
+    /**
+     * A saved user already in the given groups, loaded fresh as a login would load them.
+     */
+    private function userInGroups(string $email, array $groupIds): UserElement
+    {
+        $user = $this->savedUser($email);
+        $this->assertTrue(\Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds));
+
+        return \Craft::$app->getUsers()->getUserById($user->id);
     }
 
     /**

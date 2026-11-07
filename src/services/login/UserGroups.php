@@ -196,10 +196,20 @@ class UserGroups extends Component
         $event->response = $response;
         $event->existingGroups = $user->getGroups();
         $event->groupsFoundInAssertions = $groups;
-        $event->groupToBeAssigned = array_merge(
-            $settings->mergeExistingGroups ? $user->getGroups() : [],
-            $groups
-        );
+
+        if ($settings->syncGroups) {
+            $baseGroups = $settings->mergeExistingGroups ? $user->getGroups() : [];
+        } else {
+            /**
+             * Group sync is off, so a login must not remove groups, whatever mergeExistingGroups says.
+             * Start from the groups stored for the user, not the element's cached ones, which can predate
+             * changes made earlier in this login (e.g. in Login::EVENT_AFTER_RESPONSE_TO_USER). Listeners
+             * of EVENT_BEFORE_USER_GROUP_ASSIGN can still change the assignment.
+             */
+            $baseGroups = \Craft::$app->getUserGroups()->getGroupsByUserId($user->id);
+        }
+
+        $event->groupToBeAssigned = array_merge($baseGroups, $groups);
 
         $this->trigger(
             static::EVENT_BEFORE_USER_GROUP_ASSIGN,
