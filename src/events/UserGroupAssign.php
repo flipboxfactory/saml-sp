@@ -28,8 +28,8 @@ class UserGroupAssign extends Event
     public $response;
 
     /**
-     * Pulled from $user->getGroups()
-     * @var UserGroup
+     * The user's stored groups, plus any set on the user element ($user->setGroups()) but not saved yet
+     * @var UserGroup[]
      */
     public $existingGroups;
     /**
