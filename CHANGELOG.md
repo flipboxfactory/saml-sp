@@ -1,5 +1,13 @@
 # Release Notes for SAML SP
 
+## 5.2.1 - 2026-11-07
+
+### Fixed
+- On PostgreSQL, matching the NameID to an existing user's username or email is now case-insensitive, like Craft. Before, an IdP sending different casing (e.g. Azure AD sending `Jane.Doe@example.com` for `jane.doe@example.com`) created a duplicate user and failed with `Email "…" has already been taken.` ([#242](https://github.com/flipboxfactory/saml-sp/issues/242))
+
+### Changed
+- If more than one user matches the NameID, a user whose username or email matches exactly is used; otherwise the login is now rejected ("Multiple users match this login.") instead of picking one arbitrarily. The matching user IDs are logged.
+
 ## 5.2.0 - 2026-11-07
 
 ### Added

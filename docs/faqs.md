@@ -69,6 +69,16 @@ It is recommended to have both or at least one of the two (Response or Assertion
 The signature helps validate the message is from the trusted Identity Provider.
 :::
 
+## How is the IdP user matched to a Craft user?
+Answer: The NameID (or the attribute set in `nameIdAttributeOverride`) is compared against each Craft user's username
+and email, ignoring case on both MySQL and PostgreSQL, the same way Craft compares them. If no user matches and
+`createUser` is enabled, a new user is created.
+
+If more than one user matches, a user whose username or email matches exactly (same case) is used. Otherwise the login
+is rejected with "Multiple users match this login." and the user IDs are logged. Merge or delete the duplicate
+users to fix it. To change the lookup, use the `\flipbox\saml\sp\services\login\User::EVENT_GET_CUSTOM_USER_CRITERIA`
+event (see [Events](./configure/events.md)).
+
 ## Error: Trying to get property 'keychain' of non-object
 Answer: This usually means "My Provider", the sites metadata/provider can't be found, or possibly, hasn't 
 been created. Go to `https://<your domain>/admin/saml-sp/metadata/my-provider` and create a new provider
