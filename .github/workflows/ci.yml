@@ -5,13 +5,18 @@ on:
     branches:
       - master
   pull_request:
+  schedule:
+    # Weekly, to catch breaking saml-core / saml2 / Craft releases between PRs
+    - cron: '0 0 * * 3'
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  # Never cancel a master run: it may be creating a release
+  # PRs share a group per branch so new pushes cancel old runs. Every other run gets its own group:
+  # a shared group would cancel a *pending* master run when a newer one queues (even with
+  # cancel-in-progress false), and that run's release would never be created.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
