@@ -1,5 +1,14 @@
 # Release Notes for SAML SP
 
+## 5.1.4 - 2026-11-07
+
+### Security
+- Requires `flipboxfactory/saml-core` 5.0.11, which updates `simplesamlphp/saml2` to 4.19.4 (GHSA-6vhm-xfmv-94pj, GHSA-5cjr-mxj5-wmrx, GHSA-6929-8p9f-26jx). Update recommended.
+
+### Added
+- Test suite with 97% line coverage, coding standards (craftcms/ecs) and static analysis (craftcms/phpstan) in CI
+- Merging a version bump to master now tags and publishes the GitHub release automatically
+
 ## 5.1.3 - 2025-01-29
 
 ### Fixed
