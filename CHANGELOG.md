@@ -1,6 +1,6 @@
 # Release Notes for SAML SP
 
-## Unreleased [CRITICAL]
+## 5.2.8 - 2026-11-18 [CRITICAL]
 
 Security release. Update REQUIRED. Craft 4 sites: the same fixes are in 4.3.3.
 
