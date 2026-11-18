@@ -17,6 +17,8 @@ jobs:
       DB_SERVER: 127.0.0.1
       DB_PASSWORD: password
       DB_CHARSET: utf8
+      # Test-only key; controller tests need cookie validation
+      CRAFT_SECURITY_KEY: saml-sp-test-security-key
     services:
       mysql:
         image: mysql:5.7

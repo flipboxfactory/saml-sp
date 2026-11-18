@@ -1,5 +1,25 @@
 # Release Notes for SAML SP
 
+## 4.3.3 - 2026-11-07 [CRITICAL]
+
+Security release for Craft 4. Update REQUIRED.
+
+### Fixed
+- [GHSA-mm3h-q67x-4779](https://github.com/flipboxfactory/saml-sp/security/advisories/GHSA-mm3h-q67x-4779) (high): login Responses were accepted without checking the assertion's `AudienceRestriction` or the Response's `InResponseTo`, and RelayState could redirect users off-site.
+  - An assertion the IdP issued for another service provider could log a user in when its `SubjectConfirmationData` had no `Recipient`, or when both service providers share an ACS URL. Assertions must now be audience-restricted to this site's Entity ID; one with no `AudienceRestriction` is rejected.
+  - A captured Response could be replayed, and a Response from one login could be used in another browser. A Response (or `SubjectConfirmationData`) with `InResponseTo` must now answer an AuthnRequest from this site, sent within the last hour, from the same browser session when its cookie is present, and each one can be used only once.
+  - After login, users were redirected to any URL in `RelayState`, an unsigned form field, which allowed phishing via links like `/actions/saml-sp/login/request?RelayState=https://evil.example`. RelayState is now only followed to a path or a URL on this site's hosts; anything else goes to Craft's default post-login URL.
+- Saving the plugin settings page no longer removes the plugin's other settings from project config on Craft 4.16.18+. Settings such as `enableUsers`, `createUser` and `syncGroups` went back to their defaults when the page was saved ([#262](https://github.com/flipboxfactory/saml-sp/issues/262)). Requires `flipboxfactory/saml-core` ^4.2.7.
+
+### Added
+- `allowIdpInitiatedLogin` setting (default `true`). Set it to `false` to reject unsolicited (IdP-initiated) Responses.
+- `allowedRedirectHosts` setting (default `[]`): extra hosts RelayState may redirect to, for frontends on a different domain from Craft.
+
+### Changed
+- Assertions without an `AudienceRestriction` for this site are rejected. If logins fail with "not a valid audience" or "no AudienceRestriction": set the IdP's audience to this site's Entity ID. See [Settings](https://github.com/flipboxfactory/saml-sp/blob/craft/4.0/docs/configure/settings.md#audience).
+- `flipbox\saml\sp\validators\Response` and `Assertion` now reject any `InResponseTo` not issued through `LoginController::actionRequest`. Code that validates solicited Responses directly must record each AuthnRequest with `flipbox\saml\sp\validators\InResponseTo::remember()`.
+- RelayState redirects to other domains are ignored. Sites whose frontend is on another domain must list its hosts in `allowedRedirectHosts`. See [Settings](https://github.com/flipboxfactory/saml-sp/blob/craft/4.0/docs/configure/settings.md#redirect-after-login).
+
 ## 4.3.2 - 2026-11-07 [CRITICAL]
 
 Security release for Craft 4. Update REQUIRED. Run `composer update flipboxfactory/saml-sp -W`.

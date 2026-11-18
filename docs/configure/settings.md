@@ -46,6 +46,44 @@ share with the IdP. Provider Entity IDs can be modified on the edit page of the 
 
 
 
+### IdP-initiated Login
+`allowIdpInitiatedLogin` (default `true`) accepts logins started at the IdP, such as an app tile on
+the IdP's dashboard. These Responses have no `InResponseTo`.
+
+A Response that does have `InResponseTo` must answer an AuthnRequest this site sent within the last hour, and
+it can only be used once. If every login starts from your site, turn IdP-initiated login off:
+
+```php
+// config/saml-sp.php
+return [
+    'allowIdpInitiatedLogin' => false,
+];
+```
+
+Outstanding AuthnRequest IDs are stored in Craft's cache, so load-balanced sites need a shared cache
+(which Craft already requires).
+
+### Audience
+Every assertion must have an `AudienceRestriction` that includes this site's Entity ID. If logins fail with
+"not a valid audience" or "no AudienceRestriction", configure the IdP's audience (Okta: "Audience URI";
+Entra ID: "Identifier (Entity ID)") to match your Entity ID exactly.
+
+### Redirect After Login
+After login, the user is sent to the URL in `RelayState`, but only when it points to this site: a path, or a URL
+on the current host or any Craft site's host. Anything else is ignored, and the user goes to Craft's default
+post-login URL.
+
+If your frontend is on a different domain from Craft (for example a headless site), list its host names:
+
+```php
+// config/saml-sp.php
+return [
+    'allowedRedirectHosts' => ['www.example.com'],
+];
+```
+
+Use exact host names, without a scheme or port. Subdomains aren't included automatically.
+
 ### Group Configuration/Group Assignment
 #### Group Attribute Name/Group Attribute Mapping
 Many IdPs will send groups as an attribute within the SAML Response. When configured, the plugin use that attribute to

@@ -218,4 +218,23 @@ class Settings extends AbstractSettings implements SettingsInterface
      * @var bool
      */
     public $encodeRelayState = true;
+
+    /**
+     * Accept IdP-initiated (unsolicited) logins: a Response without InResponseTo, such as one started from
+     * an app tile on the IdP's dashboard. A Response that does have InResponseTo must always answer an
+     * AuthnRequest this site sent, and only once. Set to false if every login starts from this site.
+     *
+     * @var bool
+     */
+    public $allowIdpInitiatedLogin = true;
+
+    /**
+     * Extra hosts that RelayState may redirect to after login, e.g. ['www.example.com'] when the
+     * frontend is on a different domain from Craft. Exact host names only, no scheme or port. The
+     * request host and every Craft site's host are always allowed; any other target is ignored and the
+     * user goes to Craft's default post-login URL.
+     *
+     * @var string[]
+     */
+    public $allowedRedirectHosts = [];
 }

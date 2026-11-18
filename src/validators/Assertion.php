@@ -32,23 +32,28 @@ class Assertion
     private $response;
     private $validators;
 
+    private InResponseTo $inResponseTo;
+
     /**
      * Assertion constructor.
      * @param \SAML2\Response $response
      * @param AbstractProvider $identityProvider
      * @param AbstractProvider $serviceProvider
+     * @param InResponseTo|null $inResponseTo shared with the Response validator so a request ID is consumed once
      * @throws \Exception
      */
     public function __construct(
         \SAML2\Response $response,
         AbstractProvider $identityProvider,
         AbstractProvider $serviceProvider,
-        bool $requireSignature = true
+        bool $requireSignature = true,
+        ?InResponseTo $inResponseTo = null
     ) {
         $this->identityProvider = $identityProvider;
         $this->serviceProvider = $serviceProvider;
         $this->response = $response;
         $this->requireSignature = $requireSignature;
+        $this->inResponseTo = $inResponseTo ?? new InResponseTo();
 
         $this->addValidators();
     }
@@ -61,6 +66,7 @@ class Assertion
         $this->validators = [
             new ConstraintValidator\NotBefore(),
             new ConstraintValidator\NotOnOrAfter(),
+            new AudienceRestriction((string)$this->serviceProvider->getEntityId()),
             new ConstraintValidator\SessionNotOnOrAfter(),
             new ConstraintValidator\SubjectConfirmationMethod(),
             new ConstraintValidator\SubjectConfirmationNotBefore(),
@@ -120,6 +126,12 @@ class Assertion
                 ),
                 AbstractPlugin::SAML_CORE_HANDLE
             );
+        }
+
+        foreach ($assertion->getSubjectConfirmation() as $subjectConfirmation) {
+            foreach ($this->inResponseTo->validateSubjectConfirmation($subjectConfirmation) as $error) {
+                $result->addError($error);
+            }
         }
 
         return $result;
