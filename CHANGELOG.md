@@ -2,7 +2,7 @@
 
 ## Unreleased [CRITICAL]
 
-Security release. Update REQUIRED.
+Security release. Update REQUIRED. Craft 4 sites: the same fixes are in 4.3.3.
 
 ### Fixed
 - [GHSA-mm3h-q67x-4779](https://github.com/flipboxfactory/saml-sp/security/advisories/GHSA-mm3h-q67x-4779) (high): login Responses were accepted without checking the assertion's `AudienceRestriction` or the Response's `InResponseTo`, and RelayState could redirect users off-site.
