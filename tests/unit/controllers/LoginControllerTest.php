@@ -95,6 +95,51 @@ class LoginControllerTest extends Unit
         $this->assertSame(self::RELAY_STATE, $response->getHeaders()->get('Location'));
     }
 
+    /**
+     * RelayState is an unsigned form field: whoever posts the Response chooses it.
+     *
+     * @dataProvider offSiteRelayStates
+     */
+    public function testOffSiteRelayStateIsNotFollowed(string $relayState): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->responses->createSuccessfulResponse($idp, $sp), base64_encode($relayState));
+
+        $response = $this->controller()->actionIndex();
+
+        $location = (string)$response->getHeaders()->get('Location');
+        $sameSiteHosts = ['test.craftcms.test', \Craft::$app->getRequest()->getHostName()];
+        $this->assertContains(parse_url($location, PHP_URL_HOST), $sameSiteHosts, "Redirected off-site to $location");
+        $this->assertStringNotContainsString('evil', $location);
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
+    public static function offSiteRelayStates(): array
+    {
+        return [
+            'absolute' => ['https://evil.example.com/login'],
+            'protocol-relative' => ['//evil.example.com/login'],
+            'backslash' => ['/\\evil.example.com/login'],
+            'userinfo' => ['http://test.craftcms.test@evil.example.com/'],
+            'javascript' => ['javascript:alert(document.domain)'],
+            'subdomain lookalike' => ['http://test.craftcms.test.evil.example.com/'],
+            'not base64' => ['%%%not-base64%%%'],
+        ];
+    }
+
+    public function testSameSitePathRelayStateIsFollowed(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->responses->createSuccessfulResponse($idp, $sp), base64_encode('/after-login?tab=2'));
+
+        $response = $this->controller()->actionIndex();
+
+        $this->assertSame(
+            \Craft::$app->getRequest()->getHostInfo() . '/after-login?tab=2',
+            $response->getHeaders()->get('Location')
+        );
+    }
+
     public function testRelayStateEventCanChangeTheRedirect(): void
     {
         [$idp, $sp] = $this->saveProviders();
@@ -227,6 +272,122 @@ class LoginControllerTest extends Unit
         $this->assertRejected(\Exception::class, 'Errors during validation');
     }
 
+    /*
+     * Audience (saml-profiles 4.1.4.2: the assertion MUST be audience-restricted to this SP)
+     */
+
+    public function testAssertionForAnotherAudienceIsRejected(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->setValidAudiences(['https://another-sp.example.com']);
+        $this->postResponse($response);
+
+        $this->assertRejected(\Exception::class, 'not a valid audience');
+    }
+
+    public function testAssertionWithoutAudienceRestrictionIsRejected(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->setValidAudiences(null);
+        $this->postResponse($response);
+
+        $this->assertRejected(\Exception::class, 'no AudienceRestriction');
+    }
+
+    /*
+     * InResponseTo: a solicited response must answer an AuthnRequest we issued, once
+     */
+
+    public function testResponseToOurAuthnRequestLogsUserIn(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->solicitedResponse($idp, $sp, $this->issueAuthnRequest($idp, $sp)));
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
+    public function testResponseToOurAuthnRequestCannotBeReplayed(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->solicitedResponse($idp, $sp, $this->issueAuthnRequest($idp, $sp)));
+        $this->controller()->actionIndex();
+        \Craft::$app->getUser()->logout(false);
+
+        $this->assertRejected(\Exception::class, 'InResponseTo');
+    }
+
+    public function testResponseReturnedToTheRequestingSessionLogsUserIn(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $requestId = $this->issueAuthnRequest($idp, $sp);
+        \Craft::$app->getSession()->setHasSessionId(true);
+        $this->postResponse($this->solicitedResponse($idp, $sp, $requestId));
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
+    public function testResponseDeliveredToAnotherSessionIsRejected(): void
+    {
+        // Login CSRF: an attacker starts a login, then makes the victim's browser post the attacker's Response
+        [$idp, $sp] = $this->saveProviders();
+        $requestId = $this->issueAuthnRequest($idp, $sp);
+        $session = \Craft::$app->getSession();
+        $before = $session->getId();
+        $session->regenerateID(true);
+        $this->assertNotSame($before, $session->getId());
+        $session->setHasSessionId(true);
+        $this->postResponse($this->solicitedResponse($idp, $sp, $requestId));
+
+        $this->assertRejected(\Exception::class, 'InResponseTo');
+    }
+
+    public function testResponseToAnUnknownRequestIsRejected(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->issueAuthnRequest($idp, $sp);
+        $this->postResponse($this->solicitedResponse($idp, $sp, '_not-issued-by-this-sp'));
+
+        $this->assertRejected(\Exception::class, 'InResponseTo');
+    }
+
+    public function testSubjectConfirmationInResponseToAnUnknownRequestIsRejected(): void
+    {
+        // A captured solicited assertion with the (possibly unsigned) Response@InResponseTo stripped
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->getSubjectConfirmation()[0]->getSubjectConfirmationData()
+            ->setInResponseTo('_not-issued-by-this-sp');
+        $this->postResponse($response);
+
+        $this->assertRejected(\Exception::class, 'InResponseTo');
+    }
+
+    public function testUnsolicitedResponseIsAcceptedWhenIdpInitiatedLoginIsAllowed(): void
+    {
+        $this->assertTrue($this->module->getSettings()->allowIdpInitiatedLogin, 'Allowed by default');
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->responses->createSuccessfulResponse($idp, $sp));
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
+    public function testUnsolicitedResponseIsRejectedWhenIdpInitiatedLoginIsDisabled(): void
+    {
+        $this->module->getSettings()->allowIdpInitiatedLogin = false;
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->responses->createSuccessfulResponse($idp, $sp));
+
+        $this->assertRejected(\Exception::class, 'Unsolicited');
+    }
+
     public function testRequestWithoutSamlResponseIsRejected(): void
     {
         $this->saveProviders();
@@ -340,6 +501,27 @@ class LoginControllerTest extends Unit
         $this->module->getProvider()->save($sp);
 
         return [$idp, $sp];
+    }
+
+    /**
+     * Runs actionRequest and returns the ID of the AuthnRequest sent to the IdP.
+     */
+    private function issueAuthnRequest(ProviderRecord $idp, ProviderRecord $sp): string
+    {
+        $html = $this->sendRequest($idp->uid, $sp->uid);
+        \Craft::$app->getResponse()->data = null;
+
+        return $this->postedMessage($html, 'SAMLRequest')->documentElement->getAttribute('ID');
+    }
+
+    private function solicitedResponse(ProviderRecord $idp, ProviderRecord $sp, string $requestId): SamlResponse
+    {
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->setInResponseTo($requestId);
+        $response->getAssertions()[0]->getSubjectConfirmation()[0]->getSubjectConfirmationData()
+            ->setInResponseTo($requestId);
+
+        return $response;
     }
 
     private function postResponse(SamlResponse $response, ?string $relayState = null): void

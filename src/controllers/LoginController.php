@@ -15,9 +15,11 @@ use flipbox\saml\core\helpers\MessageHelper;
 use flipbox\saml\core\records\AbstractProvider;
 use flipbox\saml\core\services\bindings\Factory;
 use flipbox\saml\sp\events\RelayState;
+use flipbox\saml\sp\helpers\SafeRedirect;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
 use flipbox\saml\sp\traits\SamlPluginEnsured;
+use flipbox\saml\sp\validators\InResponseTo;
 use flipbox\saml\sp\validators\Response as ResponseValidator;
 use SAML2\AuthnRequest;
 use SAML2\Response as SamlResponse;
@@ -107,7 +109,8 @@ class LoginController extends AbstractController
             $identityProvider,
             $serviceProvider,
             $settings->requireResponseToBeSigned,
-            $settings->requireAssertionToBeSigned
+            $settings->requireAssertionToBeSigned,
+            new InResponseTo((bool)$settings->allowIdpInitiatedLogin)
         );
 
         $result = $validator->validate($response);
@@ -151,18 +154,20 @@ class LoginController extends AbstractController
         Saml::getInstance()->getLogin()->byIdentity($identity);
         // Identity END
 
-        //get relay state but don't error!
+        // RelayState is an unsigned form field, so only follow it to a same-site URL
         $relayState = $response->getRelayState() ?: \Craft::$app->request->getParam('RelayState');
-        try {
-            $redirect = $relayState;
-            if (Saml::getInstance()->getSettings()->encodeRelayState) {
-                $redirect = base64_decode($relayState);
-            }
-
-            Saml::info('RelayState: ' . $redirect);
-        } catch (\Exception $e) {
-            $redirect = \Craft::$app->getUser()->getReturnUrl();
+        $redirect = is_string($relayState) && $relayState !== '' ? $relayState : null;
+        if ($redirect !== null && $settings->encodeRelayState) {
+            $redirect = base64_decode($redirect, true) ?: null;
         }
+
+        $safeRedirect = SafeRedirect::sameSite($redirect);
+        if ($redirect !== null && $safeRedirect === null) {
+            Saml::warning('Ignoring RelayState that is not a same-site URL.');
+        }
+        $redirect = $safeRedirect
+            ?? SafeRedirect::sameSite(\Craft::$app->getUser()->getReturnUrl())
+            ?? \Craft::$app->getUser()->getDefaultReturnUrl();
 
         Event::trigger(
             self::class,
@@ -278,6 +283,7 @@ class LoginController extends AbstractController
         Saml::getInstance()->getSession()->setRequestId(
             $authnRequest->getID()
         );
+        InResponseTo::remember($authnRequest->getID());
 
 
         // Grab the return URL, or use a param sent as a default

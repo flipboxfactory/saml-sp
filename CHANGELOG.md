@@ -1,5 +1,24 @@
 # Release Notes for SAML SP
 
+## Unreleased [CRITICAL]
+
+Security release. Update REQUIRED.
+
+### Fixed
+- [GHSA-mm3h-q67x-4779](https://github.com/flipboxfactory/saml-sp/security/advisories/GHSA-mm3h-q67x-4779) (high): login Responses were accepted without checking the assertion's `AudienceRestriction` or the Response's `InResponseTo`, and RelayState could redirect users off-site.
+  - An assertion the IdP issued for another service provider could log a user in when its `SubjectConfirmationData` had no `Recipient`, or when both service providers share an ACS URL. Assertions must now be audience-restricted to this site's Entity ID; one with no `AudienceRestriction` is rejected.
+  - A captured Response could be replayed, and a Response from one login could be used in another browser. A Response (or `SubjectConfirmationData`) with `InResponseTo` must now answer an AuthnRequest from this site, sent within the last hour, from the same browser session when its cookie is present, and each one can be used only once.
+  - After login, users were redirected to any URL in `RelayState`, an unsigned form field, which allowed phishing via links like `/actions/saml-sp/login/request?RelayState=https://evil.example`. RelayState is now only followed to a path or a URL on this site's hosts; anything else goes to Craft's default post-login URL.
+
+### Added
+- `allowIdpInitiatedLogin` setting (default `true`). Set it to `false` to reject unsolicited (IdP-initiated) Responses.
+- `allowedRedirectHosts` setting (default `[]`): extra hosts RelayState may redirect to, for frontends on a different domain from Craft.
+
+### Changed
+- Assertions without an `AudienceRestriction` for this site are rejected. If logins fail with "not a valid audience" or "no AudienceRestriction": set the IdP's audience to this site's Entity ID. See [Settings](https://saml-sp.flipboxfactory.com/configure/settings.html#audience).
+- `flipbox\saml\sp\validators\Response` and `Assertion` now reject any `InResponseTo` not issued through `LoginController::actionRequest`. Code that validates solicited Responses directly must record each AuthnRequest with `flipbox\saml\sp\validators\InResponseTo::remember()`.
+- RelayState redirects to other domains are ignored. Sites whose frontend is on another domain must list its hosts in `allowedRedirectHosts`. See [Settings](https://saml-sp.flipboxfactory.com/configure/settings.html#redirect-after-login).
+
 ## 5.2.7 - 2026-11-18
 
 ### Fixed

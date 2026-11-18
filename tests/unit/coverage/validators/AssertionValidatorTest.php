@@ -4,6 +4,7 @@ namespace flipbox\saml\sp\tests\unit\coverage\validators;
 
 use Codeception\Test\Unit;
 use flipbox\saml\sp\validators\Assertion as AssertionValidator;
+use flipbox\saml\sp\validators\InResponseTo;
 use SAML2\Constants;
 use SAML2\EncryptedAssertion;
 
@@ -76,6 +77,8 @@ class AssertionValidatorTest extends Unit
 
     public function testSubjectConfirmationInResponseToMustMatchResponse(): void
     {
+        // Outstanding, so only the Response/SubjectConfirmation mismatch is reported
+        InResponseTo::remember('_some-other-request-id');
         $errors = $this->errorsAfter(function($assertion, $response) {
             $response->setInResponseTo('_expected-request-id');
             $assertion->getSubjectConfirmation()[0]->getSubjectConfirmationData()

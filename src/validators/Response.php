@@ -37,21 +37,26 @@ class Response
      */
     private $validators = [];
 
+    private InResponseTo $inResponseTo;
+
     /**
      * Response constructor.
      * @param AbstractProvider $identityProvider
      * @param AbstractProvider $serviceProvider
+     * @param InResponseTo|null $inResponseTo defaults to allowing unsolicited responses, like the plugin setting
      */
     public function __construct(
         AbstractProvider $identityProvider,
         AbstractProvider $serviceProvider,
         $requireResponseToBeSigned = true,
         $requireAssertionsToBeSigned = true,
+        ?InResponseTo $inResponseTo = null,
     ) {
         $this->identityProvider = $identityProvider;
         $this->serviceProvider = $serviceProvider;
         $this->requireResponseToBeSigned = $requireResponseToBeSigned;
         $this->requireAssertionsToBeSigned = $requireAssertionsToBeSigned;
+        $this->inResponseTo = $inResponseTo ?? new InResponseTo();
 
         $this->addValidators();
     }
@@ -84,8 +89,15 @@ class Response
         foreach ($this->validators as $validator) {
             $validator->validate($response, $responseResult);
         }
+        foreach ($this->inResponseTo->validateResponse($response) as $error) {
+            $responseResult->addError($error);
+        }
 
         $this->validateAssertions($response, $responseResult);
+
+        foreach ($this->inResponseTo->finish() as $error) {
+            $responseResult->addError($error);
+        }
 
 
         return $responseResult;
@@ -103,7 +115,8 @@ class Response
                 $response,
                 $this->identityProvider,
                 $this->serviceProvider,
-                $this->requireAssertionsToBeSigned
+                $this->requireAssertionsToBeSigned,
+                $this->inResponseTo
             );
 
             $assertionResult = $validator->validate($assertion);
