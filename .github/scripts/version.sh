@@ -8,6 +8,8 @@
 #   docs|test|ci|chore|build|refactor|style|revert:   no release
 # An optional scope is allowed: "fix(sso): ...". Release notes go under an "Unreleased" heading at
 # the top of CHANGELOG.md (append " [CRITICAL]" for a critical release); CI replaces it with the version.
+# A security advisory merge has no PR here: GitHub squashes it as "Merge commit from fork", and its
+# body's "* <subject>" lines (the private fork's commits, which must be conventional) decide the release.
 #
 #   version.sh bump <title> [body]  Print major|minor|patch|none; fails if <title> isn't conventional.
 #   version.sh check <base-sha>     PR gate (env PR_TITLE, PR_BODY): conventional title, composer.json version
@@ -22,6 +24,8 @@ set -euo pipefail
 
 TYPES='feat|fix|perf|docs|test|ci|chore|build|refactor|style|revert'
 RELEASE_SUBJECT='chore(release): '
+# Subject GitHub gives the squash commit when a security advisory's private-fork PRs are merged
+ADVISORY_SUBJECT='Merge commit from fork'
 VERSION_HEADING='^#+ v?[0-9]+\.[0-9]+\.[0-9]+'
 NOTES_FILE="${RUNNER_TEMP:-/tmp}/release-notes.md"
 TITLES_FILE="${RUNNER_TEMP:-/tmp}/release-titles.md"
@@ -122,7 +126,7 @@ check() {
 }
 
 plan() {
-    local sha=${GITHUB_SHA:?} later latest b=none c info title body num cb v
+    local sha=${GITHUB_SHA:?} later latest b=none c info title body num cb v titles t
     git_auth "${GH_TOKEN:?}" fetch -q --tags origin master
 
     # Another PR merged after this one: its run releases both, once its checks pass.
@@ -153,14 +157,23 @@ plan() {
             body=$(git log -1 --format=%b "$c")
             num=""
         fi
-        case $title in "$RELEASE_SUBJECT"*) continue ;; esac
-        if ! cb=$(bump "$title" "$body" 2>/dev/null); then
-            echo "::warning::${c:0:7} \"$title\" isn't a conventional commit title, so it doesn't count towards the release."
-            continue
+        titles=$title
+        if [ -z "$info" ] && [ "$title" = "$ADVISORY_SUBJECT" ]; then
+            # A security advisory's private-fork PRs land as one "Merge commit from fork" squash, with no PR in
+            # this repo; its body lists the squashed commits as "* <subject>". Release from those subjects.
+            titles=$(sed -n 's/^\* //p' <<<"$body")
+            [ -n "$titles" ] || titles=$title
         fi
-        echo "${c:0:7} $cb: $title"
-        [ "$(rank "$cb")" -le "$(rank "$b")" ] || b=$cb
-        [ "$cb" = none ] || echo "- ${title#*: }$num" >>"$TITLES_FILE"
+        while IFS= read -r t; do
+            case $t in "$RELEASE_SUBJECT"*) continue ;; esac
+            if ! cb=$(bump "$t" "$body" 2>/dev/null); then
+                echo "::warning::${c:0:7} \"$t\" isn't a conventional commit title, so it doesn't count towards the release."
+                continue
+            fi
+            echo "${c:0:7} $cb: $t"
+            [ "$(rank "$cb")" -le "$(rank "$b")" ] || b=$cb
+            [ "$cb" = none ] || echo "- ${t#*: }$num" >>"$TITLES_FILE"
+        done <<<"$titles"
     done
 
     if [ "$b" = none ]; then
