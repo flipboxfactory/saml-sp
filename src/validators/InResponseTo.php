@@ -124,6 +124,11 @@ class InResponseTo
 
         // The session cookie is often absent on the IdP's cross-site POST; only compare when it's there.
         $session = \Craft::$app->getSession();
+        if ($session->getHasSessionId()) {
+            // Nothing may have opened it yet in this request (e.g. an /actions/ ACS URL), and session_id()
+            // is empty until it's open
+            $session->open();
+        }
         if ($session->getHasSessionId() && !hash_equals((string)$sessionId, Saml::getInstance()->getSession()->getId())) {
             return false;
         }

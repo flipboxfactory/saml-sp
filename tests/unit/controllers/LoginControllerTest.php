@@ -5,6 +5,8 @@ namespace flipbox\saml\sp\tests\unit\controllers;
 use Codeception\Scenario;
 use Codeception\Test\Unit;
 use craft\elements\User;
+use craft\helpers\App;
+use craft\web\Session;
 use flipbox\keychain\KeyChain;
 use flipbox\saml\sp\controllers\LoginController;
 use flipbox\saml\sp\events\RelayState;
@@ -39,11 +41,16 @@ class LoginControllerTest extends Unit
 
     private array $get;
 
+    private array $cookie;
+
+    private ?Session $originalSession = null;
+
     protected function _before(): void
     {
         $this->server = $_SERVER;
         $this->post = $_POST;
         $this->get = $_GET;
+        $this->cookie = $_COOKIE;
 
         $this->module = new Saml('saml-sp');
         $scenario = new Scenario($this);
@@ -63,6 +70,11 @@ class LoginControllerTest extends Unit
         $_SERVER = $this->server;
         $_POST = $this->post;
         $_GET = $this->get;
+        $_COOKIE = $this->cookie;
+        if ($this->originalSession !== null) {
+            \Craft::$app->set('session', $this->originalSession);
+            $this->originalSession = null;
+        }
         \Craft::$app->getRequest()->setBodyParams(null);
         \Craft::$app->getRequest()->setQueryParams($this->get);
         \Craft::$app->getUser()->logout(false);
@@ -332,6 +344,20 @@ class LoginControllerTest extends Unit
         $this->assertLoggedInAs($this->responses->getEmail());
     }
 
+    public function testResponseReturnedToTheRequestingSessionInANewRequestLogsUserIn(): void
+    {
+        // saml-sp#266: the Response arrives in a new PHP request carrying the session cookie, and nothing
+        // has opened the session yet when InResponseTo is checked (the ACS action skips beforeAction).
+        [$idp, $sp] = $this->saveProviders();
+        $requestId = $this->issueAuthnRequest($idp, $sp);
+        $this->startNewRequestWithSessionCookie();
+        $this->postResponse($this->solicitedResponse($idp, $sp, $requestId));
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
     public function testResponseDeliveredToAnotherSessionIsRejected(): void
     {
         // Login CSRF: an attacker starts a login, then makes the victim's browser post the attacker's Response
@@ -512,6 +538,41 @@ class LoginControllerTest extends Unit
         \Craft::$app->getResponse()->data = null;
 
         return $this->postedMessage($html, 'SAMLRequest')->documentElement->getAttribute('ID');
+    }
+
+    /**
+     * End the request that sent the AuthnRequest and start one that carries its session cookie but hasn't
+     * opened the session yet, so session_id() is empty until something opens it, as in a real ACS request.
+     */
+    private function startNewRequestWithSessionCookie(): void
+    {
+        $session = \Craft::$app->getSession();
+        $id = $session->getId();
+        $this->assertNotSame('', $id, 'issueAuthnRequest must have started a session');
+        $session->close();
+        session_id('');
+
+        // session_start() reads the request's cookie, which writing $_COOKIE doesn't reach under the test
+        // runner, so the new request's session adopts the cookie on open the way PHP would.
+        $config = App::sessionConfig();
+        unset($config['class']);
+        $newRequestSession = new class($config) extends Session {
+            public function open()
+            {
+                $cookie = $_COOKIE[$this->getName()] ?? '';
+                if (!$this->getIsActive() && session_id() === '' && $cookie !== '') {
+                    session_id($cookie);
+                }
+                parent::open();
+            }
+        };
+        $this->originalSession = $session;
+        \Craft::$app->set('session', $newRequestSession);
+        $_COOKIE[$newRequestSession->getName()] = $id;
+
+        $this->assertTrue($newRequestSession->getHasSessionId());
+        $this->assertFalse($newRequestSession->getIsActive());
+        $this->assertSame('', $newRequestSession->getId());
     }
 
     private function solicitedResponse(ProviderRecord $idp, ProviderRecord $sp, string $requestId): SamlResponse
