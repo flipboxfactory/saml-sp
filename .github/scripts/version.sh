@@ -14,12 +14,16 @@
 #   version.sh bump <title> [body]  Print major|minor|patch|none; fails if <title> isn't conventional.
 #   version.sh check <base-sha>     PR gate (env PR_TITLE, PR_BODY): conventional title, composer.json version
 #                                   untouched, and a releasing PR has CHANGELOG "Unreleased" notes.
-#   version.sh plan                 On master: print the next version (also to $GITHUB_OUTPUT), or nothing if
+#   version.sh plan                 On the release branch: print the next version (also to $GITHUB_OUTPUT), or nothing if
 #                                   the PRs merged since the latest tag don't release. Also creates a missing
 #                                   GitHub release for the latest tag.
-#   version.sh release <version>    On master: date the Unreleased section, set composer.json version, push a
+#   version.sh release <version>    On the release branch: date the Unreleased section, set composer.json version, push a
 #                                   release commit + tag (env APP_TOKEN, APP_SLUG), create the GitHub release.
 #   version.sh notes <version>      Print the CHANGELOG section for <version> (or "Unreleased").
+#
+# The release branch is $RELEASE_BRANCH, else the pushed branch ($GITHUB_REF_NAME), else master. Versions
+# continue from the newest tag reachable from HEAD, so a maintenance branch (craft/4.0) releases 4.x while
+# master releases 5.x.
 set -euo pipefail
 
 TYPES='feat|fix|perf|docs|test|ci|chore|build|refactor|style|revert'
@@ -30,9 +34,12 @@ VERSION_HEADING='^#+ v?[0-9]+\.[0-9]+\.[0-9]+'
 NOTES_FILE="${RUNNER_TEMP:-/tmp}/release-notes.md"
 TITLES_FILE="${RUNNER_TEMP:-/tmp}/release-titles.md"
 
+BRANCH=${RELEASE_BRANCH:-${GITHUB_REF_NAME:-master}}
+
 fail() { echo "::error::$*" >&2; exit 1; }
 
-latest_tag() { git tag --list '[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1; }
+# Newest release tag on this branch's history (other branches' tags, e.g. 5.x from craft/4.0, don't count)
+latest_tag() { git tag --merged HEAD --list '[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1; }
 
 # git with a token for github.com (checkout runs with persist-credentials: false)
 git_auth() {
@@ -115,6 +122,9 @@ check() {
         return
     fi
 
+    ! git rev-parse -q --verify "refs/tags/$(next "$latest" "$b")" >/dev/null ||
+        fail "\"$PR_TITLE\" would release $(next "$latest" "$b"), which is already tagged: update this branch from its base, or, on a maintenance branch, a $b release isn't possible."
+
     u=$(unreleased_heading)
     first=$(version_heading)
     [ -n "$u" ] && [ -n "$(notes Unreleased | tr -d '[:space:]')" ] ||
@@ -127,15 +137,15 @@ check() {
 
 plan() {
     local sha=${GITHUB_SHA:?} later latest b=none c info title body num cb v titles t
-    git_auth "${GH_TOKEN:?}" fetch -q --tags origin master
+    git_auth "${GH_TOKEN:?}" fetch -q --tags origin "$BRANCH"
 
     # Another PR merged after this one: its run releases both, once its checks pass.
-    later=$(git log --format=%s "$sha..origin/master" | grep -vF "$RELEASE_SUBJECT" || true)
+    later=$(git log --format=%s "$sha..origin/$BRANCH" | grep -vF "$RELEASE_SUBJECT" || true)
     if [ -n "$later" ]; then
-        echo "master has moved past $sha; the run for the newest commit releases instead."
+        echo "$BRANCH has moved past $sha; the run for the newest commit releases instead."
         return
     fi
-    git checkout -q origin/master
+    git checkout -q "origin/$BRANCH"
 
     latest=$(latest_tag)
     [ -n "$latest" ] || fail "No release tag found."
@@ -232,10 +242,10 @@ release() {
         commit -q -m "${RELEASE_SUBJECT}$v [skip ci]" -- CHANGELOG.md composer.json
     git tag "$v"
 
-    if ! git_auth "$APP_TOKEN" push --atomic origin HEAD:refs/heads/master "refs/tags/$v"; then
-        git_auth "$GH_TOKEN" fetch -q origin master
-        [ "$(git rev-parse origin/master)" != "$parent" ] || fail "Couldn't push the $v release commit and tag to master."
-        echo "::warning::master moved on while releasing $v; the run for the newest commit releases instead."
+    if ! git_auth "$APP_TOKEN" push --atomic origin "HEAD:refs/heads/$BRANCH" "refs/tags/$v"; then
+        git_auth "$GH_TOKEN" fetch -q origin "$BRANCH"
+        [ "$(git rev-parse "origin/$BRANCH")" != "$parent" ] || fail "Couldn't push the $v release commit and tag to $BRANCH."
+        echo "::warning::$BRANCH moved on while releasing $v; the run for the newest commit releases instead."
         return
     fi
     gh release create "$v" --verify-tag --title "$v" --notes-file "$NOTES_FILE"
