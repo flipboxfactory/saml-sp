@@ -28,6 +28,9 @@ class LoginControllerSecurityTest extends Unit
 
     private const IDP_SSO_URL = 'http://www.flipboxlabs.com/idp/sso';
 
+    /** Origin of the test SP's ACS URL (http://sp.localhost:9090/sso/login) */
+    private const ACS_ORIGIN = 'http://sp.localhost:9090';
+
     private Saml $module;
 
     private Metadata $metadata;
@@ -56,6 +59,8 @@ class LoginControllerSecurityTest extends Unit
 
         // Craft only creates sessions for requests with a user agent and IP
         \Craft::$app->getRequest()->getHeaders()->set('User-Agent', 'Codeception');
+        // Logins normally start on the ACS host
+        \Craft::$app->getRequest()->setHostInfo(self::ACS_ORIGIN);
         \Craft::$app->getUser()->logout(false);
     }
 
@@ -65,6 +70,8 @@ class LoginControllerSecurityTest extends Unit
         $_POST = $this->post;
         $_GET = $this->get;
         \Craft::$app->getRequest()->setBodyParams(null);
+        \Craft::$app->getRequest()->setHostInfo(null);
+        \Craft::$app->getRequest()->setUrl(null);
         \Craft::$app->getRequest()->setQueryParams($this->get);
         \Craft::$app->getUser()->logout(false);
     }
@@ -233,6 +240,69 @@ class LoginControllerSecurityTest extends Unit
         $this->assertRejected(\Exception::class, 'Unsolicited');
     }
 
+    /*
+     * actionRequest: SP-initiated login
+     */
+
+    public function testRequestFromAnotherHostRedirectsToTheAcsHost(): void
+    {
+        // saml-sp#266: the Response comes back to the ACS host with that host's session cookie, so an
+        // AuthnRequest remembered against another host's session can't match it
+        [$idp, $sp] = $this->saveProviders();
+        $this->startRequestOn('http://cms.example.com', '/sso/login/request/' . $idp->uid, ['foo' => 'bar']);
+        \Craft::$app->getUser()->setReturnUrl('/members');
+
+        $response = $this->controller()->actionRequest($idp->uid, $sp->uid);
+
+        $this->assertInstanceOf(\yii\web\Response::class, $response);
+        $location = (string)$response->getHeaders()->get('Location');
+        $this->assertStringStartsWith(self::ACS_ORIGIN . '/sso/login/request/' . $idp->uid . '?', $location);
+        parse_str((string)parse_url($location, PHP_URL_QUERY), $query);
+        $this->assertSame('bar', $query['foo']);
+        $this->assertSame('1', $query[LoginController::ACS_HOST_PARAM]);
+        $this->assertStringEndsWith('/members', $query['RelayState'], 'The return URL must survive the host change');
+        $this->assertNull(
+            $this->module->getSession()->getRequestId(),
+            'No AuthnRequest may be issued from the wrong host'
+        );
+    }
+
+    public function testRequestFromAnotherHostKeepsTheRelayStateParam(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->startRequestOn('http://cms.example.com', '/sso/login/request/' . $idp->uid, ['RelayState' => '/after']);
+
+        $response = $this->controller()->actionRequest($idp->uid, $sp->uid);
+
+        parse_str((string)parse_url((string)$response->getHeaders()->get('Location'), PHP_URL_QUERY), $query);
+        $this->assertSame('/after', $query['RelayState']);
+    }
+
+    public function testRequestOnTheAcsHostInAnotherCaseIsNotRedirected(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->startRequestOn('HTTP://SP.LOCALHOST:9090', '/sso/login/request/' . $idp->uid);
+
+        $html = $this->sendRequest($idp->uid, $sp->uid);
+
+        $this->assertSame('AuthnRequest', $this->postedMessage($html, 'SAMLRequest')->documentElement->localName);
+    }
+
+    public function testRequestStillOnAnotherHostAfterTheRedirectSendsTheAuthnRequest(): void
+    {
+        // Don't loop when a proxy hides the ACS host; InResponseTo still checks the Response
+        [$idp, $sp] = $this->saveProviders();
+        $this->startRequestOn(
+            'http://cms.example.com',
+            '/sso/login/request/' . $idp->uid,
+            [LoginController::ACS_HOST_PARAM => '1']
+        );
+
+        $html = $this->sendRequest($idp->uid, $sp->uid);
+
+        $this->assertSame('AuthnRequest', $this->postedMessage($html, 'SAMLRequest')->documentElement->localName);
+    }
+
     /**
      * @return ProviderRecord[] [idp, sp]
      */
@@ -259,6 +329,15 @@ class LoginControllerSecurityTest extends Unit
         \Craft::$app->getResponse()->data = null;
 
         return $this->postedMessage($html, 'SAMLRequest')->documentElement->getAttribute('ID');
+    }
+
+    private function startRequestOn(string $hostInfo, string $path, array $query = []): void
+    {
+        $request = \Craft::$app->getRequest();
+        $request->setHostInfo($hostInfo);
+        $request->setUrl($path . ($query ? '?' . http_build_query($query) : ''));
+        $_GET = $query;
+        $request->setQueryParams($query);
     }
 
     private function solicitedResponse(ProviderRecord $idp, ProviderRecord $sp, string $requestId): SamlResponse
