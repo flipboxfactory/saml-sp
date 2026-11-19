@@ -43,6 +43,11 @@ class LoginController extends AbstractController
      */
     const EVENT_AFTER_RELAYSTATE_CREATION = 'eventBeforeRelayStateCreation';
 
+    /**
+     * Marks a login request already redirected to the ACS host, so it isn't redirected again.
+     */
+    public const ACS_HOST_PARAM = 'samlAcsHost';
+
     protected array|int|bool $allowAnonymous = [
         'actionIndex',
         'actionRequest',
@@ -186,6 +191,60 @@ class LoginController extends AbstractController
     }
 
     /**
+     * The IdP posts the Response to the ACS URL, and InResponseTo only accepts it from the session that sent
+     * the AuthnRequest. Session cookies are per host, so a login started on another host (a separate control
+     * panel domain, www vs. bare domain) comes back with a different session, or none. Start it on the ACS
+     * host instead, carrying the return URL along since this host's session doesn't follow.
+     *
+     * Redirects once: if the request still isn't on the ACS host (e.g. a proxy hides the real host), the
+     * login continues here and InResponseTo checks the Response as usual.
+     */
+    protected function redirectToAcsHost(AbstractProvider $sp): ?\yii\web\Response
+    {
+        $request = Craft::$app->getRequest();
+        $acsOrigin = static::origin($sp->firstSpAcsService()?->getLocation());
+        if (!$request->getIsGet() || $acsOrigin === null || static::origin($request->getHostInfo()) === $acsOrigin) {
+            return null;
+        }
+
+        if ($request->getQueryParam(self::ACS_HOST_PARAM)) {
+            Saml::warning(sprintf(
+                'Starting the login on %s, not the ACS host %s; the Response may be rejected.',
+                (string)$request->getHostInfo(),
+                $acsOrigin
+            ));
+            return null;
+        }
+
+        $relayStateParam = Saml::getInstance()->getSettings()->relayStateOverrideParam;
+        $params = $request->getQueryParams();
+        $params[$relayStateParam] = Craft::$app->getUser()->getReturnUrl($request->getQueryParam($relayStateParam));
+        $params[self::ACS_HOST_PARAM] = 1;
+
+        return $this->redirect(UrlHelper::urlWithParams(
+            $acsOrigin . (parse_url($request->getUrl(), PHP_URL_PATH) ?: '/'),
+            $params
+        ));
+    }
+
+    /**
+     * @return string|null scheme://host[:port], lowercased, without a default port
+     */
+    private static function origin(?string $url): ?string
+    {
+        $parts = $url ? parse_url($url) : false;
+        if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+            return null;
+        }
+
+        $scheme = strtolower($parts['scheme']);
+        $port = $parts['port'] ?? null;
+        $defaultPort = ['http' => 80, 'https' => 443][$scheme] ?? null;
+
+        return $scheme . '://' . strtolower($parts['host']) . ($port && $port !== $defaultPort ? ':' . $port : '');
+    }
+
+    /**
      * @param SamlResponse $response
      * @throws HttpException
      */
@@ -268,6 +327,10 @@ class LoginController extends AbstractController
 
         if (! $sp) {
             $this->throwSpNotFound();
+        }
+
+        if ($redirect = $this->redirectToAcsHost($sp)) {
+            return $redirect;
         }
 
         /**
