@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 'craft/*'
   pull_request:
   schedule:
     # Weekly, to catch breaking saml-core / saml2 / Craft releases between PRs
@@ -94,10 +95,11 @@ jobs:
           php .github/scripts/coverage-check.php tests/_output/coverage.xml 85
 
   # Releases from the conventional-commit PR titles merged since the latest tag (see .github/scripts/version.sh).
-  # The release commit is pushed by the release GitHub App, which may bypass the master ruleset.
+  # Releases from master and the craft/X.Y maintenance branches. The release commit is pushed by the release
+  # GitHub App, which may bypass the branch rulesets.
   release:
     name: Tag & release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/craft/'))
     needs: [checks, tests]
     runs-on: ubuntu-latest
     permissions:

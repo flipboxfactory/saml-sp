@@ -22,8 +22,16 @@
 #   version.sh notes <version>      Print the CHANGELOG section for <version> (or "Unreleased").
 #
 # The release branch is $RELEASE_BRANCH, else the pushed branch ($GITHUB_REF_NAME), else master. Versions
-# continue from the newest tag reachable from HEAD, so a maintenance branch (craft/4.0) releases 4.x while
-# master releases 5.x.
+# continue from the newest tag reachable from HEAD, so a maintenance branch (craft/5.0) releases 5.x while
+# master releases 6.x.
+#
+# Prereleases: while .github/prerelease exists (containing alpha, beta or rc), releases are prereleases.
+#   From a stable tag, the bump starts a new prerelease series: 5.2.9 + feat!: -> 6.0.0-beta.1.
+#   From a prerelease tag, any releasing PR continues the series, whatever its bump: 6.0.0-beta.1 -> 6.0.0-beta.2.
+#   Changing the label restarts the number: 6.0.0-beta.3 -> 6.0.0-rc.1.
+#   Deleting .github/prerelease in a releasing PR publishes the final version: 6.0.0-rc.2 -> 6.0.0.
+# Prereleases are GitHub prereleases; a release lower than the highest stable tag (a 5.x fix after 6.0.0) isn't
+# marked as the latest release.
 set -euo pipefail
 
 TYPES='feat|fix|perf|docs|test|ci|chore|build|refactor|style|revert'
@@ -31,6 +39,8 @@ RELEASE_SUBJECT='chore(release): '
 # Subject GitHub gives the squash commit when a security advisory's private-fork PRs are merged
 ADVISORY_SUBJECT='Merge commit from fork'
 VERSION_HEADING='^#+ v?[0-9]+\.[0-9]+\.[0-9]+'
+VERSION_RE='^([0-9]+)\.([0-9]+)\.([0-9]+)(-(alpha|beta|rc)\.([0-9]+))?$'
+PRERELEASE_FILE=.github/prerelease
 NOTES_FILE="${RUNNER_TEMP:-/tmp}/release-notes.md"
 TITLES_FILE="${RUNNER_TEMP:-/tmp}/release-titles.md"
 
@@ -38,8 +48,21 @@ BRANCH=${RELEASE_BRANCH:-${GITHUB_REF_NAME:-master}}
 
 fail() { echo "::error::$*" >&2; exit 1; }
 
-# Newest release tag on this branch's history (other branches' tags, e.g. 5.x from craft/4.0, don't count)
-latest_tag() { git tag --merged HEAD --list '[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1; }
+# Release tags, newest first. versionsort.suffix sorts 6.0.0-beta.1 before 6.0.0, and ^ (from the right) after
+# 5.2.9; only tags matching VERSION_RE count.
+tags() { git -c versionsort.suffix=- tag "$@" --list '[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | grep -E "$VERSION_RE" || true; }
+
+# Newest release tag on this branch's history (other branches' tags, e.g. 6.x on master from craft/5.0, don't count)
+latest_tag() { tags --merged HEAD | head -n1; }
+
+# Prerelease label from .github/prerelease in the working tree, or empty
+prerelease_label() {
+    local label
+    [ -f "$PRERELEASE_FILE" ] || return 0
+    label=$(tr -d '[:space:]' <"$PRERELEASE_FILE")
+    [[ $label =~ ^(alpha|beta|rc)$ ]] || fail "$PRERELEASE_FILE must contain alpha, beta or rc, not \"$label\"."
+    echo "$label"
+}
 
 # git with a token for github.com (checkout runs with persist-credentials: false)
 git_auth() {
@@ -63,14 +86,45 @@ bump() {
 
 rank() { case $1 in major) echo 3 ;; minor) echo 2 ;; patch) echo 1 ;; *) echo 0 ;; esac; }
 
+# next <latest> <bump> [<prerelease label>]: the version after <latest> for a major|minor|patch bump
 next() {
-    local major minor patch
-    IFS=. read -r major minor patch <<<"$1"
-    case $2 in
-        major) echo "$((major + 1)).0.0" ;;
-        minor) echo "$major.$((minor + 1)).0" ;;
-        patch) echo "$major.$minor.$((patch + 1))" ;;
+    local latest=$1 b=$2 label=${3:-} major minor patch base pre num
+    [[ $latest =~ $VERSION_RE ]] || fail "Invalid version: $latest"
+    major=${BASH_REMATCH[1]} minor=${BASH_REMATCH[2]} patch=${BASH_REMATCH[3]} pre=${BASH_REMATCH[5]} num=${BASH_REMATCH[6]}
+    if [ -n "$pre" ]; then
+        # A prerelease series ends in its own version: continue it, or publish it
+        base="$major.$minor.$patch"
+        if [ -z "$label" ]; then
+            echo "$base"
+        elif [ "$label" = "$pre" ]; then
+            echo "$base-$label.$((num + 1))"
+        elif [ "$(rank_label "$label")" -gt "$(rank_label "$pre")" ]; then
+            echo "$base-$label.1"
+        else
+            fail "Can't go from $latest back to a $label prerelease: $PRERELEASE_FILE must say $pre or later."
+        fi
+        return
+    fi
+    case $b in
+        major) base="$((major + 1)).0.0" ;;
+        minor) base="$major.$((minor + 1)).0" ;;
+        patch) base="$major.$minor.$((patch + 1))" ;;
     esac
+    echo "$base${label:+-$label.1}"
+}
+
+rank_label() { case $1 in alpha) echo 1 ;; beta) echo 2 ;; rc) echo 3 ;; esac; }
+
+# gh release create, as a prerelease for X.Y.Z-label.N, and not "latest" below the highest stable tag
+gh_release() {
+    local v=$1 top flags=()
+    if [[ $v == *-* ]]; then
+        flags+=(--prerelease)
+    else
+        top=$(tags | grep -vF -e - | head -n1)
+        [ "$top" = "$v" ] || flags+=(--latest=false)
+    fi
+    gh release create "$v" --verify-tag --title "$v" --notes-file "$NOTES_FILE" ${flags[@]+"${flags[@]}"}
 }
 
 # Section under a heading like "# 1.2.3 2026-01-01", "## 1.2.3 - 2026-01-01" or "## Unreleased", up to the
@@ -97,7 +151,7 @@ unreleased_headings() {
 unreleased_heading() { unreleased_headings | head -n1; }
 
 check() {
-    local base=$1 b changed key latest u first top
+    local base=$1 b changed key latest u first top v
     b=$(bump "${PR_TITLE:?PR_TITLE is required}" "${PR_BODY:-}")
 
     for key in .version '.extra.version // empty'; do
@@ -122,8 +176,12 @@ check() {
         return
     fi
 
-    ! git rev-parse -q --verify "refs/tags/$(next "$latest" "$b")" >/dev/null ||
-        fail "\"$PR_TITLE\" would release $(next "$latest" "$b"), which is already tagged: update this branch from its base, or, on a maintenance branch, a $b release isn't possible."
+    v=$(next "$latest" "$b" "$(prerelease_label)")
+    if [[ $v == *-*.1 && $latest != *-* && $b != major ]]; then
+        echo "::warning::This starts a $v prerelease series from $latest. Prerelease series are meant for the next major (a <type>!: title); remove $PRERELEASE_FILE if this should be a normal release."
+    fi
+    ! git rev-parse -q --verify "refs/tags/$v" >/dev/null ||
+        fail "\"$PR_TITLE\" would release $v, which is already tagged: update this branch from its base, or, on a maintenance branch, a $b release isn't possible."
 
     u=$(unreleased_heading)
     first=$(version_heading)
@@ -132,7 +190,7 @@ check() {
     [ "$(unreleased_headings | wc -l | tr -d ' ')" -eq 1 ] || fail "CHANGELOG.md has more than one Unreleased heading."
     [ -z "$first" ] || [ "${u#* }" = "${first#* }" ] ||
         fail "The CHANGELOG.md Unreleased heading must use \"${first#* }\", like the version headings."
-    echo "OK: merging releases $(next "$latest" "$b") ($b, from $latest)."
+    echo "OK: merging releases $v ($b, from $latest)."
 }
 
 plan() {
@@ -152,7 +210,7 @@ plan() {
     if ! gh release view "$latest" >/dev/null 2>&1; then
         echo "Tag $latest has no GitHub release; creating it."
         notes "$latest" >"$NOTES_FILE"
-        gh release create "$latest" --verify-tag --title "$latest" --notes-file "$NOTES_FILE"
+        gh_release "$latest"
     fi
 
     : >"$TITLES_FILE"
@@ -190,7 +248,7 @@ plan() {
         echo "Nothing to release since $latest."
         return
     fi
-    v=$(next "$latest" "$b")
+    v=$(next "$latest" "$b" "$(prerelease_label)")
     echo "Next version: $v ($b, from $latest)"
     [ -z "${GITHUB_OUTPUT:-}" ] || echo "version=$v" >>"$GITHUB_OUTPUT"
 }
@@ -223,7 +281,7 @@ stamp_changelog() {
 
 release() {
     local v=${1:?version required} parent bot_id
-    [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "Invalid version: $v"
+    [[ $v =~ $VERSION_RE ]] || fail "Invalid version: $v"
     : "${APP_TOKEN:?APP_TOKEN is required}" "${APP_SLUG:?APP_SLUG is required}" "${GH_TOKEN:?}"
     ! git rev-parse -q --verify "refs/tags/$v" >/dev/null || fail "Tag $v already exists."
 
@@ -248,7 +306,7 @@ release() {
         echo "::warning::$BRANCH moved on while releasing $v; the run for the newest commit releases instead."
         return
     fi
-    gh release create "$v" --verify-tag --title "$v" --notes-file "$NOTES_FILE"
+    gh_release "$v"
 }
 
 case "${1:-}" in
