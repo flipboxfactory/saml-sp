@@ -61,6 +61,9 @@ return [
 Outstanding AuthnRequest IDs are stored in Craft's cache, so load-balanced sites need a shared cache
 (which Craft already requires).
 
+The Response must come back to the browser session that sent the AuthnRequest. Session cookies are per host, so
+a login started on another host than the ACS URL's is first redirected to the ACS host.
+
 ## Audience
 Every assertion must have an `AudienceRestriction` that includes this site's Entity ID. If logins fail with
 "not a valid audience" or "no AudienceRestriction", configure the IdP's audience (Okta: "Audience URI";

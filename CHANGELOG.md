@@ -1,5 +1,10 @@
 # Release Notes for SAML SP
 
+## Unreleased
+
+### Fixed
+- SP-initiated logins started on a host other than the ACS URL's (such as a separate control panel domain, or www vs. the bare domain) no longer fail with "The Response InResponseTo does not match an outstanding AuthnRequest from this browser" when the browser already has a session on the ACS host. The login request now redirects to the ACS host before sending the AuthnRequest, keeping the return URL ([saml-sp#266](https://github.com/flipboxfactory/saml-sp/issues/266)).
+
 ## 5.2.8 - 2026-11-18 [CRITICAL]
 
 Security release. Update REQUIRED. Craft 4 sites: the same fixes are in 4.3.3.
