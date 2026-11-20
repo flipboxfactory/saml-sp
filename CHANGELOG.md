@@ -1,5 +1,13 @@
 # Release Notes for SAML SP
 
+## Unreleased
+
+### Fixed
+- When a login is rejected with "The Response InResponseTo does not match an outstanding AuthnRequest from this browser", the plugin log now says why: no such AuthnRequest was issued (or the servers don't share a cache), the Response was posted more than once, or it arrived with a different browser session than the one that started the login. The log entries name the server that issued and received the request, and never include session IDs ([saml-sp#266](https://github.com/flipboxfactory/saml-sp/issues/266)).
+
+### Changed
+- Documented that static and edge caches (such as Servd's static cache) must exclude the plugin's `/sso/` endpoints: a cached login request page fails with the error above. See the [FAQ](https://saml-sp.flipboxfactory.com/faqs.html#error-the-response-inresponseto-does-not-match-an-outstanding-authnrequest).
+
 ## 5.2.10 - 2026-11-20
 
 ### Fixed

@@ -10,6 +10,7 @@ use flipbox\saml\sp\controllers\LoginController;
 use flipbox\saml\sp\events\RelayState;
 use flipbox\saml\sp\records\ProviderRecord;
 use flipbox\saml\sp\Saml;
+use flipbox\saml\sp\validators\InResponseTo;
 use SAML2\Constants;
 use SAML2\Response as SamlResponse;
 use Step\Unit\Common\Metadata;
@@ -443,6 +444,81 @@ class LoginControllerTest extends Unit
         $this->assertRejected(\Exception::class, 'InResponseTo');
     }
 
+    public function testUnknownRequestIdIsLoggedAsNotIssued(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->solicitedResponse($idp, $sp, '_not-issued-by-this-sp'));
+
+        $warnings = $this->captureWarnings(fn() => $this->assertRejected(\Exception::class, 'InResponseTo'));
+
+        $this->assertCount(1, $warnings, 'Response and SubjectConfirmationData share one rejection');
+        $this->assertStringContainsString('_not-issued-by-this-sp: no AuthnRequest with this ID was issued', $warnings[0]);
+    }
+
+    public function testReplayIsLoggedAsAlreadyAnswered(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->solicitedResponse($idp, $sp, $requestId = $this->issueAuthnRequest($idp, $sp)));
+        $this->controller()->actionIndex();
+        \Craft::$app->getUser()->logout(false);
+
+        $warnings = $this->captureWarnings(fn() => $this->assertRejected(\Exception::class, 'InResponseTo'));
+
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString($requestId . ': its AuthnRequest was already answered', $warnings[0]);
+    }
+
+    public function testResponseDeliveredToAnotherSessionIsLoggedWithoutSessionIds(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $requestId = $this->issueAuthnRequest($idp, $sp);
+        $session = \Craft::$app->getSession();
+        $issuingSession = $session->getId();
+        $session->regenerateID(true);
+        $session->setHasSessionId(true);
+        $this->postResponse($this->solicitedResponse($idp, $sp, $requestId));
+
+        $warnings = $this->captureWarnings(fn() => $this->assertRejected(\Exception::class, 'InResponseTo'));
+
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString($requestId . ': the Response arrived with a session cookie for a different session', $warnings[0]);
+        $this->assertStringContainsString('issued 0s ago on ' . gethostname(), $warnings[0]);
+        foreach ([$issuingSession, $session->getId()] as $id) {
+            $this->assertStringNotContainsString($id, $warnings[0]);
+            $this->assertStringNotContainsString(hash('sha256', $id), $warnings[0]);
+        }
+    }
+
+    public function testInvalidInResponseToIsNotWrittenToTheLog(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $this->postResponse($this->solicitedResponse($idp, $sp, "_x\n2026-11-20 [error] forged log line"));
+
+        $warnings = $this->captureWarnings(fn() => $this->assertRejected(\Exception::class, 'InResponseTo'));
+
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString('InResponseTo (invalid value)', $warnings[0]);
+        $this->assertStringNotContainsString('forged', $warnings[0]);
+    }
+
+    public function testRequestIdStoredBy529StillMatches(): void
+    {
+        // 5.2.8 and 5.2.9 cached just the session hash; those AuthnRequests stay valid for an hour after updating
+        [$idp, $sp] = $this->saveProviders();
+        $requestId = $this->issueAuthnRequest($idp, $sp);
+        \Craft::$app->getCache()->set(
+            InResponseTo::CACHE_KEY_PREFIX . hash('sha256', $requestId),
+            $this->module->getSession()->getId(),
+            InResponseTo::TTL
+        );
+        \Craft::$app->getSession()->setHasSessionId(true);
+        $this->postResponse($this->solicitedResponse($idp, $sp, $requestId));
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
     public function testUnsolicitedResponseIsAcceptedWhenIdpInitiatedLoginIsAllowed(): void
     {
         $this->assertTrue($this->module->getSettings()->allowIdpInitiatedLogin, 'Allowed by default');
@@ -673,6 +749,28 @@ class LoginControllerTest extends Unit
             $_POST['RelayState'] = $relayState;
         }
         \Craft::$app->getRequest()->setBodyParams($_POST);
+    }
+
+    /**
+     * @return string[] the plugin's warnings logged while running $fn
+     */
+    private function captureWarnings(callable $fn): array
+    {
+        $original = \Yii::getLogger();
+        \Yii::setLogger($logger = new \yii\log\Logger());
+        try {
+            $fn();
+        } finally {
+            \Yii::setLogger($original);
+        }
+
+        return array_values(array_map(
+            fn(array $message) => (string)$message[0],
+            array_filter(
+                $logger->messages,
+                fn(array $message) => $message[1] === \yii\log\Logger::LEVEL_WARNING && $message[2] === 'saml-sp'
+            )
+        ));
     }
 
     private function assertRejected(string $exception, ?string $message = null, ?string $uid = null): void
