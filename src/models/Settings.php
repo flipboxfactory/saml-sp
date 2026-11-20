@@ -253,4 +253,14 @@ class Settings extends AbstractSettings implements SettingsInterface
      * @var string[]
      */
     public $allowedRedirectHosts = [];
+
+    /**
+     * Extra values accepted in an assertion's AudienceRestriction, in addition to this site's Entity ID
+     * (and `spn:<Entity ID>`, which Microsoft Entra ID sends when the Identifier is the application ID).
+     * Exact match only. Only add values the IdP issues for this site alone: an audience the IdP also uses
+     * for another application would let that application's assertions log users in here.
+     *
+     * @var string[]
+     */
+    public $allowedAudiences = [];
 }

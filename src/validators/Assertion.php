@@ -6,6 +6,7 @@ namespace flipbox\saml\sp\validators;
 use flipbox\saml\core\AbstractPlugin;
 use flipbox\saml\core\helpers\SecurityHelper;
 use flipbox\saml\core\records\AbstractProvider;
+use flipbox\saml\sp\Saml;
 use SAML2\Assertion as SamlAssertion;
 use SAML2\Assertion\Validation\AssertionConstraintValidator;
 use SAML2\Assertion\Validation\ConstraintValidator;
@@ -66,7 +67,10 @@ class Assertion
         $this->validators = [
             new ConstraintValidator\NotBefore(),
             new ConstraintValidator\NotOnOrAfter(),
-            new AudienceRestriction((string)$this->serviceProvider->getEntityId()),
+            new AudienceRestriction(
+                (string)$this->serviceProvider->getEntityId(),
+                (array)Saml::getInstance()->getSettings()->allowedAudiences
+            ),
             new ConstraintValidator\SessionNotOnOrAfter(),
             new ConstraintValidator\SubjectConfirmationMethod(),
             new ConstraintValidator\SubjectConfirmationNotBefore(),
