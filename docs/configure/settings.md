@@ -71,6 +71,21 @@ Every assertion must have an `AudienceRestriction` that includes this site's Ent
 "not a valid audience" or "no AudienceRestriction", configure the IdP's audience (Okta: "Audience URI";
 Entra ID: "Identifier (Entity ID)") to match your Entity ID exactly.
 
+Entra ID sends the audience as `spn:<Entity ID>` when the Identifier is the app's application ID (a bare GUID).
+That form is accepted automatically.
+
+If your IdP sends some other audience you can't change, list it:
+
+```php
+// config/saml-sp.php
+return [
+    'allowedAudiences' => ['urn:example:craft'],
+];
+```
+
+Values must match exactly. Only list values the IdP uses for this site alone: an audience it also issues for
+another application would let that application's assertions log users in here.
+
 ### Redirect After Login
 After login, the user is sent to the URL in `RelayState`, but only when it points to this site: a path, or a URL
 on the current host or any Craft site's host. Anything else is ignored, and the user goes to Craft's default
