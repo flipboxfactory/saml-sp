@@ -1,5 +1,13 @@
 # Release Notes for SAML SP
 
+## Unreleased
+
+### Fixed
+- Logins from Microsoft Entra ID no longer fail with "not a valid audience" when the Entity ID is the app's bare application ID (GUID). Entra sends the audience as `spn:<application ID>`, which is now accepted alongside the Entity ID ([saml-sp#272](https://github.com/flipboxfactory/saml-sp/issues/272)).
+
+### Added
+- `allowedAudiences` setting (default `[]`): extra exact values accepted in an assertion's `AudienceRestriction`, for IdPs that send an audience other than the Entity ID. See [Settings](https://saml-sp.flipboxfactory.com/configure/settings.html#audience).
+
 ## 4.3.4 - 2026-11-19
 
 ### Fixed

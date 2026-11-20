@@ -152,6 +152,74 @@ class LoginControllerSecurityTest extends Unit
         $this->assertRejected(\Exception::class, 'no AudienceRestriction');
     }
 
+    public function testEntraSpnAudienceForThisSpIsAccepted(): void
+    {
+        // Entra ID sends `spn:<application ID>` when the Identifier (our Entity ID) is the bare GUID
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->setValidAudiences(['spn:' . $sp->getEntityId()]);
+        $this->postResponse($response);
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
+    public function testEntraSpnAudienceForAnotherSpIsRejected(): void
+    {
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->setValidAudiences([
+            'spn:00000000-1111-2222-3333-444444444444',
+            'spn:' . $sp->getEntityId() . '-other',
+            'SPN:' . $sp->getEntityId(),
+        ]);
+        $this->postResponse($response);
+
+        $this->assertRejected(\Exception::class, 'not a valid audience');
+    }
+
+    public function testAllowedAudienceIsAccepted(): void
+    {
+        $this->module->getSettings()->allowedAudiences = ['', 42, ' urn:example:this-sp '];
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->setValidAudiences(['urn:example:this-sp']);
+        $this->postResponse($response);
+
+        $this->controller()->actionIndex();
+
+        $this->assertLoggedInAs($this->responses->getEmail());
+    }
+
+    public function testAudienceNotInAllowedAudiencesIsRejected(): void
+    {
+        $this->assertSame([], $this->module->getSettings()->allowedAudiences, 'None by default');
+        $this->module->getSettings()->allowedAudiences = ['urn:example:this-sp'];
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        // Exact match only: no prefix, suffix or case-insensitive matches
+        $response->getAssertions()[0]->setValidAudiences([
+            'urn:example:this-sp:other',
+            'URN:EXAMPLE:THIS-SP',
+            'spn:urn:example:this-sp',
+        ]);
+        $this->postResponse($response);
+
+        $this->assertRejected(\Exception::class, 'not a valid audience');
+    }
+
+    public function testAllowedAudiencesDoNotAcceptMissingAudienceRestriction(): void
+    {
+        $this->module->getSettings()->allowedAudiences = ['urn:example:this-sp'];
+        [$idp, $sp] = $this->saveProviders();
+        $response = $this->responses->createSuccessfulResponse($idp, $sp);
+        $response->getAssertions()[0]->setValidAudiences(null);
+        $this->postResponse($response);
+
+        $this->assertRejected(\Exception::class, 'no AudienceRestriction');
+    }
+
     public function testResponseToOurAuthnRequestLogsUserIn(): void
     {
         [$idp, $sp] = $this->saveProviders();
