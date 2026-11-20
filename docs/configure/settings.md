@@ -64,6 +64,9 @@ Outstanding AuthnRequest IDs are stored in Craft's cache, so load-balanced sites
 The Response must come back to the browser session that sent the AuthnRequest. Session cookies are per host, so
 a login started on another host than the ACS URL's is first redirected to the ACS host.
 
+If logins fail with "The Response InResponseTo does not match an outstanding AuthnRequest", see the
+[FAQ](../faqs.md#error-the-response-inresponseto-does-not-match-an-outstanding-authnrequest).
+
 ## Audience
 Every assertion must have an `AudienceRestriction` that includes this site's Entity ID. If logins fail with
 "not a valid audience" or "no AudienceRestriction", configure the IdP's audience (Okta: "Audience URI";

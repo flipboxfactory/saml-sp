@@ -79,6 +79,17 @@ is rejected with "Multiple users match this login." and the user IDs are logged.
 users to fix it. To change the lookup, use the `\flipbox\saml\sp\services\login\User::EVENT_GET_CUSTOM_USER_CRITERIA`
 event (see [Events](./configure/events.md)).
 
+## Error: The Response InResponseTo does not match an outstanding AuthnRequest
+Answer: The IdP's Response has to answer a login request this site sent, from the same browser session, within the
+last hour, and only once. The `saml-sp` warning in Craft's log says which of these failed. Common causes:
+
+- **A static or edge cache** (such as Servd's static cache, Blitz, or a CDN) served a cached copy of the login request
+  page, so the request belongs to another visitor. Some caches ignore the page's `Cache-Control: no-store`. Exclude
+  the plugin's endpoints from the cache: every URL starting with `/sso/` (the `endpointPrefix` setting). On Servd, add
+  `/sso` under Environment > Static Caching and sync the environment.
+- **Servers that don't share Craft's cache**, on a load-balanced site.
+- **The Response was posted twice**, for example after going back in the browser.
+
 ## Error: Trying to get property 'keychain' of non-object
 Answer: This usually means "My Provider", the sites metadata/provider can't be found, or possibly, hasn't 
 been created. Go to `https://<your domain>/admin/saml-sp/metadata/my-provider` and create a new provider
